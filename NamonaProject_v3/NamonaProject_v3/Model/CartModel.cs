@@ -1,17 +1,14 @@
-﻿namespace NamonaProject_v3_.Model
+﻿using NamonaProject_v3_.Persistance;
+
+namespace NamonaProject_v3_.Model
 {
     public class CartModel
     {
-        public int UserId { get; set; }
-        public List<CartItemModel> Items { get; set; } = new();
-        public int TotalAmount => Items.Sum(i => i.Amount);
-        public int TotalPrice => Items.Sum(i => i.PriceSum);
+        private readonly NamonaDbContext _context;
+        public CartModel(NamonaDbContext context)
+        {
+            _context = context;
+        }
     }
-    public class CartItemModel
-    {
-        public int CartId { get; set; }
-        public int ClothingId { get; set; }
-        public int Amount { get; set; }
-        public int PriceSum { get; set; }
-    }
+
 }
