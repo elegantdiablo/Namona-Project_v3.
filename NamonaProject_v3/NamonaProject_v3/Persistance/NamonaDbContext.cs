@@ -12,6 +12,9 @@ namespace NamonaProject_v3_.Persistance
         public DbSet<Clothes> clothes { get; set; }
         public DbSet<Cart> cart { get; set; }
         public DbSet<Orders> orders { get; set; }
+        public DbSet<Gender> genders { get; set; }
+        public DbSet<Category> categories { get; set; }
+
         public NamonaDbContext(DbContextOptions<NamonaDbContext> options) : base(options) { }
     }
 
@@ -20,6 +23,7 @@ namespace NamonaProject_v3_.Persistance
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ClothingId { get; set; }
+        public int ClothingName { get; set; }
         public string Collection { get; set; }
         public string Category { get; set; }
         public int GenderId { get; set; }
