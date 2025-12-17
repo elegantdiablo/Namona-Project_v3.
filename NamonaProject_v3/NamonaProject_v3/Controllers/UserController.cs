@@ -1,6 +1,11 @@
-﻿namespace NamonaProject_v3_.Controllers
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace NamonaProject_v3_.Controllers
 {
-    public class UserController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserController : ControllerBase
     {
     }
 }
