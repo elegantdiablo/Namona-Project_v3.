@@ -1,0 +1,6 @@
+@NamonaProject_v3__HostAddress = http://localhost:5222
+
+GET {{NamonaProject_v3__HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
