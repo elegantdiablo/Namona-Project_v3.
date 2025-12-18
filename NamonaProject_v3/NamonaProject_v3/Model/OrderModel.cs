@@ -1,4 +1,5 @@
-﻿using NamonaProject_v3_.DTO;
+﻿using Microsoft.AspNetCore.Authorization;
+using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
 namespace NamonaProject_v3_.Model
 {
@@ -9,7 +10,7 @@ namespace NamonaProject_v3_.Model
         {
             _context = context;
         }
-
+        [Authorize(Roles = "Admin")]
         public IEnumerable<OrderDto> AllOrders()
         {
             return _context.orders.Select(x => new OrderDto
@@ -19,7 +20,7 @@ namespace NamonaProject_v3_.Model
                 Address = x.Address
             });
         }
-
+        [Authorize(Roles = "Admin")]
         public void DeleteOrder(int id)
         {
             using (var trx = _context.Database.BeginTransaction())

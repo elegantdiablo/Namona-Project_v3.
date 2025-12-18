@@ -1,4 +1,5 @@
-﻿using NamonaProject_v3_.DTO;
+﻿using Microsoft.AspNetCore.Authorization;
+using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
 using System.Security.Cryptography;
 using System.Text;
@@ -37,6 +38,7 @@ namespace NamonaProject_v3_.Model
             var hash = sha.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
+        [Authorize(Roles = "Admin")]
         public IEnumerable<UserDto> ShowUsers()
         {
             return _context.users.OrderBy(x => x.UserName).Select(x => new UserDto
@@ -46,6 +48,7 @@ namespace NamonaProject_v3_.Model
                 Password = x.Password
             });
         }
+        
         public IEnumerable<UserDto> AdminLogin(string username, string password)
         {
             var hash = HashPassword(password);
@@ -57,6 +60,7 @@ namespace NamonaProject_v3_.Model
                 Password = x.Password
             });
         }
+        [Authorize(Roles = "Admin")]
         public void DeleteUser(int userId)
         {
             var user = _context.users.Find(userId);
@@ -81,6 +85,7 @@ namespace NamonaProject_v3_.Model
             _context.SaveChanges();
             trx.Commit();
         }
+        [Authorize(Roles = "Admin")]
         public void PromoteToAdmin(int userId)
         {
             var user = _context.users.Find(userId);

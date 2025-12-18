@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
 
@@ -26,7 +27,7 @@ namespace NamonaProject_v3_.Model
                 GenderId = x.GenderId,
             });
         }
-
+        [Authorize(Roles = "Admin")]
         public void ChangeClothingData(int id, ChangeClothingDataDto dto)
         {
             int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingName).First().ClothingId;
@@ -44,7 +45,7 @@ namespace NamonaProject_v3_.Model
                 trx.Commit();
             }
         }
-
+        [Authorize(Roles = "Admin")]
         public void DeleteClothes(int id)
         {
             using (var trx = _context.Database.BeginTransaction())
