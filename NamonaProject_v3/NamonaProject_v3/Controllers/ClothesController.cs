@@ -28,8 +28,21 @@ namespace NamonaProject_v3_.Controllers
             {
                 return NoContent();
             }
-
         }
 
+        [HttpDelete("/api/houseworks/{id}")]
+
+        public ActionResult DeleteUser(int id)
+        {
+            try
+            {
+                _clothesModel.DeleteClothes(id);
+                return Ok();
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
     }
 }
