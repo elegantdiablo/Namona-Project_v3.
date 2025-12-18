@@ -24,7 +24,6 @@ namespace NamonaProject_v3_.Model
             _context.SaveChanges();
             trx.Commit();
         }
-
         public Users? ValidateUser(string username, string password)
         {
             var hash = HashPassword(password);
@@ -47,8 +46,52 @@ namespace NamonaProject_v3_.Model
                 Password = x.Password
             });
         }
-
-        //Role Modositas
-        // Jelszó modositas
+        public IEnumerable<UserDto> AdminLogin(string username, string password)
+        {
+            var hash = HashPassword(password);
+            var user = _context.users.Where(x => x.UserName == username && x.Role == "Admin");
+            return user.Where(x => x.Password == hash).Select(x => new UserDto
+            {
+                UserId = x.UserId,
+                UserName = x.UserName,
+                Password = x.Password
+            });
+        }
+        public void DeleteUser(int userId)
+        {
+            var user = _context.users.Find(userId);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found");
+            }
+            using var trx = _context.Database.BeginTransaction();
+            _context.users.Remove(user);
+            _context.SaveChanges();
+            trx.Commit();
+        }
+        public void UpdateUser(int userId, string newPassword)
+        {
+            var user = _context.users.Find(userId);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found");
+            }
+            using var trx = _context.Database.BeginTransaction();
+            user.Password = HashPassword(newPassword);
+            _context.SaveChanges();
+            trx.Commit();
+        }
+        public void PromoteToAdmin(int userId)
+        {
+            var user = _context.users.Find(userId);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found");
+            }
+            using var trx = _context.Database.BeginTransaction();
+            user.Role = "Admin";
+            _context.SaveChanges();
+            trx.Commit();
+        }
     }
 }
