@@ -25,11 +25,16 @@ namespace NamonaProject_v3_.Model
             _context.SaveChanges();
             trx.Commit();
         }
-        public Users? ValidateUser(string username, string password)
+        public UserDto ValidateUser(string username, string password)
         {
             var hash = HashPassword(password);
             var user = _context.users.Where(x => x.UserName == username);
-            return user.Where(x => x.Password == hash).FirstOrDefault();
+            return user.Where(x => x.Password == hash).Select(x => new UserDto
+            {
+                UserId = x.UserId,
+                UserName = x.UserName,
+                Role = x.Role
+            }).First();
         }
         private string HashPassword(string password)
         {
@@ -38,18 +43,18 @@ namespace NamonaProject_v3_.Model
             var hash = sha.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
-        [Authorize(Roles = "Admin")]
+        // controller[Authorize(Roles = "Admin")]
         public IEnumerable<UserDto> ShowUsers()
         {
             return _context.users.OrderBy(x => x.UserName).Select(x => new UserDto
             {
                 UserId = x.UserId,
                 UserName = x.UserName,
-                Password = x.Password
+                Role = x.Role
             });
         }
         
-        public IEnumerable<UserDto> AdminLogin(string username, string password)
+        /*public IEnumerable<UserDto> AdminLogin(string username, string password)
         {
             var hash = HashPassword(password);
             var user = _context.users.Where(x => x.UserName == username && x.Role == "Admin");
@@ -59,8 +64,8 @@ namespace NamonaProject_v3_.Model
                 UserName = x.UserName,
                 Password = x.Password
             });
-        }
-        [Authorize(Roles = "Admin")]
+        }*/
+        // controller[Authorize(Roles = "Admin")]
         public void DeleteUser(int userId)
         {
             var user = _context.users.Find(userId);
@@ -85,7 +90,7 @@ namespace NamonaProject_v3_.Model
             _context.SaveChanges();
             trx.Commit();
         }
-        [Authorize(Roles = "Admin")]
+       // controller [Authorize(Roles = "Admin")]
         public void PromoteToAdmin(int userId)
         {
             var user = _context.users.Find(userId);

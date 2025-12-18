@@ -1,4 +1,5 @@
-﻿using NamonaProject_v3_.DTO;
+﻿using Microsoft.EntityFrameworkCore;
+using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
 
 namespace NamonaProject_v3_.Model
@@ -19,36 +20,29 @@ namespace NamonaProject_v3_.Model
                 UserId = x.UserId,
             });
         }
-        /* 
+        
         public IEnumerable<CartItemDto> GetCartContent()
         {
-            return _context.cart.Select(x => new CartItemDto
+            return _context.cart.Include(x=> x.Clothes) .Select(x => new CartItemDto
             {
                 CartId = x.CartId,
                 ClothingId = x.ClothingId,
-                ClothingName = x.clothes.ClothingName,
-                Category = x.Category,
-                Collection = x.Collection,
-                Color = x.Color,
-                Price = x.Price,
-                Stock = x.Stock,
-                GenderId = x.GenderId,
+                ClothingName = x.Clothes.ClothingName,
+                Collection = x.Clothes.Collection,
+                Color = x.Clothes.Color,
+                Price = x.Clothes.Price,
+                Stock = x.Clothes.Stock,
+                Amount = x.Amount,
+                GenderId = x.Clothes.GenderId,
             });
         }
-        */
-        public void EditCart(int id, ChangeClothingDataDto dto)
+        
+        public void EditCart(int id, CartItemDto dto)
         {
-            int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingName).First().ClothingId;
+            int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
             using (var trx = _context.Database.BeginTransaction())
-            {
-                _context.clothes.Where(x => x.ClothingId == id).First().ClothingName = dto.ClothingName;
-                _context.clothes.Where(x => x.ClothingId == id).First().Collection = dto.Collection;
-                _context.clothes.Where(x => x.ClothingId == id).First().Category = dto.Category;
-                _context.clothes.Where(x => x.ClothingId == id).First().Color = dto.Color;
-                _context.clothes.Where(x => x.ClothingId == id).First().Price = dto.Price;
-                _context.clothes.Where(x => x.ClothingId == id).First().GenderId = _context.genders.Where(x => x.GenderType == dto.GenderType).First().GenderId;
-                _context.clothes.Where(x => x.ClothingId == id).First().Stock = dto.Stock;
-
+                {
+                _context.cart.Where(x => x.ClothingId == id).First().Amount = dto.Amount;               
                 _context.SaveChanges();
                 trx.Commit();
             }

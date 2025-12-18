@@ -27,10 +27,10 @@ namespace NamonaProject_v3_.Model
                 GenderId = x.GenderId,
             });
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public void ChangeClothingData(int id, ChangeClothingDataDto dto)
         {
-            int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingName).First().ClothingId;
+            int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
             using (var trx = _context.Database.BeginTransaction())
             {
                 _context.clothes.Where(x => x.ClothingId == id).First().ClothingName = dto.ClothingName;
@@ -45,7 +45,7 @@ namespace NamonaProject_v3_.Model
                 trx.Commit();
             }
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public void DeleteClothes(int id)
         {
             using (var trx = _context.Database.BeginTransaction())
@@ -55,5 +55,37 @@ namespace NamonaProject_v3_.Model
                 trx.Commit();
             }
         }
+       /* public IEnumerable<AllClothesDto> FilterClothes(string category, string collection, string gender, int minprice = 0, int maxprice= 99999999)
+        {
+            if(category != null && collection != null && gender != null)
+            {
+                //where all
+            }
+            if(category == null && collection != null && gender != null)
+            {
+
+            }
+            if (category != null && collection == null && gender != null)
+            {
+
+            }
+            if (category != null && collection != null && gender == null)
+            {
+
+            }
+            if (category == null && collection == null && gender != null)
+            {
+
+            }
+            if (category != null && collection == null && gender == null)
+            {
+
+            }
+            if (category == null && collection != null && gender == null)
+            {
+
+            }
+        }
+       */
     }
 }
