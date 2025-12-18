@@ -69,7 +69,7 @@ namespace NamonaProject_v3_.Model
             _context.SaveChanges();
             trx.Commit();
         }
-        public void UpdateUser(int userId, string newPassword)
+        public void UpdatePassword(int userId, string newPassword)
         {
             var user = _context.users.Find(userId);
             if (user == null)
