@@ -26,16 +26,6 @@ namespace NamonaProject_v3_.Model
                 GenderId = x.GenderId,
             });
         }
-        
-        public void DeleteClothes(int id)
-        {
-            using (var trx = _context.Database.BeginTransaction())
-            {
-                _context.clothes.Remove(_context.clothes.Where(x => x.ClothingId == id).First());
-                _context.SaveChanges();
-                trx.Commit();
-            }
-        }
 
         public void ChangeClothingData(int id, ChangeClothingDataDto dto)
         {
@@ -47,12 +37,24 @@ namespace NamonaProject_v3_.Model
                 _context.clothes.Where(x => x.ClothingId == id).First().Category = dto.Category;
                 _context.clothes.Where(x => x.ClothingId == id).First().Color = dto.Color;
                 _context.clothes.Where(x => x.ClothingId == id).First().Price = dto.Price;
-                _context.clothes.Where(x => x.ClothingId == id).First().GenderId = _context.genders.Where(x=> x.GenderType == dto.GenderType).First().GenderId;
+                _context.clothes.Where(x => x.ClothingId == id).First().GenderId = _context.genders.Where(x => x.GenderType == dto.GenderType).First().GenderId;
                 _context.clothes.Where(x => x.ClothingId == id).First().Stock = dto.Stock;
 
                 _context.SaveChanges();
                 trx.Commit();
             }
         }
+
+        public void DeleteClothes(int id)
+        {
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.clothes.Remove(_context.clothes.Where(x => x.ClothingId == id).First());
+                _context.SaveChanges();
+                trx.Commit();
+            }
+        }
+
+        
     }
 }
