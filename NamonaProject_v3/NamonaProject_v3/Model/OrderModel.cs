@@ -10,16 +10,24 @@ namespace NamonaProject_v3_.Model
             _context = context;
         }
 
-        public IEnumerable<OrderDto> PreviousOrders()
+        public IEnumerable<OrderDto> AllOrders()
         {
             return _context.orders.Select(x => new OrderDto
             {
                 OrderId = x.OrderId,
                 OrderDate = x.OrderDate,
                 Address = x.Address
-            }).ToList();
+            });
         }
 
-
+        public void DeleteOrder(int id)
+        {
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.orders.Remove(_context.orders.Where(x => x.OrderId == id).First());
+                _context.SaveChanges();
+                trx.Commit();
+            }
+        }
     }
 }
