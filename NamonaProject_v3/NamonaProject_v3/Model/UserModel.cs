@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
 using System.Security.Cryptography;
@@ -54,19 +55,21 @@ namespace NamonaProject_v3_.Model
                 Role = x.Role
             });
         }
-        
-        /*public IEnumerable<UserDto> AdminLogin(string username, string password)
+
+        public UserDto? AdminLogin(string username, string password)
         {
             var hash = HashPassword(password);
-            var user = _context.users.Where(x => x.UserName == username && x.Role == "Admin");
-            return user.Where(x => x.Password == hash).Select(x => new UserDto
+            var user = _context.users.FirstOrDefault(x => x.UserName.ToLower() == username.ToLower() && x.Role == "Admin");
+            if (user == null || user.Password != hash)
+            return null;
+            return new UserDto
             {
-                UserId = x.UserId,
-                UserName = x.UserName,
-                Password = x.Password
-            });
-        }*/
-        // controller[Authorize(Roles = "Admin")]
+                UserId = user.UserId,
+                UserName = user.UserName,
+                Role = user.Role
+            };
+        }
+
         public void DeleteUser(int userId)
         {
             var user = _context.users.Find(userId);
@@ -91,7 +94,7 @@ namespace NamonaProject_v3_.Model
             _context.SaveChanges();
             trx.Commit();
         }
-       // controller [Authorize(Roles = "Admin")]
+
         public void PromoteToAdmin(int userId)
         {
             var user = _context.users.Find(userId);
