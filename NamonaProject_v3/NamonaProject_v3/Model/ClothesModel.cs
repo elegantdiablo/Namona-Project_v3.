@@ -19,7 +19,6 @@ namespace NamonaProject_v3_.Model
             {
                 ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
-                Category = x.Category,
                 Collection = x.Collection,
                 Color = x.Color,
                 Price = x.Price,
@@ -35,7 +34,7 @@ namespace NamonaProject_v3_.Model
             {
                 _context.clothes.Where(x => x.ClothingId == id).First().ClothingName = dto.ClothingName;
                 _context.clothes.Where(x => x.ClothingId == id).First().Collection = dto.Collection;
-                _context.clothes.Where(x => x.ClothingId == id).First().Category = dto.Category;
+                _context.clothes.Include(x => x.category).Where(x => x.ClothingId == id).First().category.CategoryName = dto.Category;
                 _context.clothes.Where(x => x.ClothingId == id).First().Color = dto.Color;
                 _context.clothes.Where(x => x.ClothingId == id).First().Price = dto.Price;
                 _context.clothes.Where(x => x.ClothingId == id).First().GenderId = _context.genders.Where(x => x.GenderType == dto.GenderType).First().GenderId;
@@ -55,37 +54,120 @@ namespace NamonaProject_v3_.Model
                 trx.Commit();
             }
         }
-       /* public IEnumerable<AllClothesDto> FilterClothes(string category, string collection, string gender, int minprice = 0, int maxprice= 99999999)
+        public IEnumerable<AllClothesDto> FilterClothes(
+            string category,
+            string collection,
+            string gender,
+            int minprice = 0,
+            int maxprice = 99999999)
         {
-            if(category != null && collection != null && gender != null)
-            {
-                //where all
-            }
-            if(category == null && collection != null && gender != null)
-            {
+            var query = _context.clothes
+                .Include(x => x.category)
+                .Include(x => x.gender)
+                .AsQueryable();
 
-            }
-            if (category != null && collection == null && gender != null)
+            if (!string.IsNullOrWhiteSpace(category))
             {
-
+                query = query.Where(x =>
+                    x.category.CategoryName.ToLower() == category.ToLower());
             }
-            if (category != null && collection != null && gender == null)
+
+            if (!string.IsNullOrWhiteSpace(collection))
             {
-
+                query = query.Where(x =>
+                    x.Collection.ToLower() == collection.ToLower());
             }
-            if (category == null && collection == null && gender != null)
+
+            if (!string.IsNullOrWhiteSpace(gender))
             {
-
+                query = query.Where(x =>
+                    x.gender.GenderType.ToLower() == gender.ToLower());
             }
-            if (category != null && collection == null && gender == null)
+
+            query = query.Where(x =>
+                x.Price >= minprice && x.Price <= maxprice);
+
+            return query.Select(x => new AllClothesDto
             {
+                ClothingId = x.ClothingId,
+                ClothingName = x.ClothingName,
+                Collection = x.Collection,
+                Category = x.category.CategoryName,
+                GenderId = x.GenderId,
+                Stock = x.Stock,
+                Color = x.Color,
+                Price = x.Price
+            }).ToList();
 
-            }
-            if (category == null && collection != null && gender == null)
-            {
 
-            }
         }
-       */
+        public IEnumerable<AllClothesDto> FilterClothes2(string category, string collection, string gender, int minprice = 0, int maxprice = 99999999)
+        {
+            var result = _context.clothes
+                .AsQueryable();
+            if (category != null && collection != null && gender != null)
+            {
+                result =
+                _context.clothes.Include(x => x.gender).Include(x => x.category)
+                .Where(x => x.category.CategoryName == category.ToLower() &&
+                x.Collection == collection.ToLower() &&
+                x.gender.GenderType == gender);
+            }
+            else if (category == null && collection != null && gender != null)
+            {
+
+                result =
+               _context.clothes.Include(x => x.gender)
+               .Where(x => x.Collection == collection.ToLower() &&
+               x.gender.GenderType == gender);
+            }
+            else if (category != null && collection == null && gender != null)
+            {
+                _context.clothes.Include(x => x.gender).Include(x => x.category)
+                .Where(x => x.category.CategoryName == category.ToLower() &&
+                x.gender.GenderType == gender);
+            }
+            else if (category != null && collection != null && gender == null)
+            {
+                _context.clothes.Include(x => x.category)
+                .Where(x => x.category.CategoryName == category.ToLower() &&
+                x.Collection == collection.ToLower() &&
+                x.gender.GenderType == gender);
+            }
+
+            else if (category == null && collection == null && gender != null)
+            {
+
+                _context.clothes.Include(x => x.gender)
+                   .Where(x =>
+                   x.gender.GenderType == gender);
+            }
+            else if (category != null && collection == null && gender == null)
+            {
+
+                _context.clothes.Include(x => x.category)
+                   .Where(x => x.category.CategoryName == category.ToLower()
+                 );
+            }
+            else if (category == null && collection != null && gender == null)
+            {
+
+                _context.clothes
+                   .Where(x =>
+                   x.Collection == collection.ToLower());
+            }
+
+            return result.Where(x => x.Price > minprice && x.Price < maxprice).Select(x => new AllClothesDto
+            {
+                ClothingId = x.ClothingId,
+                ClothingName = x.ClothingName,
+                Collection = x.Collection,
+                Category = x.category.CategoryName,
+                GenderId = x.GenderId,
+                Stock = x.Stock,
+                Color = x.Color,
+                Price = x.Price
+            });
+        }
     }
 }
