@@ -58,5 +58,4 @@ namespace NamonaProject_v3_.Model
             }
         }
     }
-
 }
