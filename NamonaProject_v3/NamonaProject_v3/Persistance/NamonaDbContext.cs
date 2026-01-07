@@ -75,6 +75,8 @@ namespace NamonaProject_v3_.Persistance
         [Required]
         public string Address { get; set; }
         public List<Cart> carts { get; set; }
+        public string Status { get; set; }
+        public DateTime CompletedAt { get; set; }
     }
 
     public class Category
