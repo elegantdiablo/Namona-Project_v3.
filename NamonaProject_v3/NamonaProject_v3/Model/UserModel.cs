@@ -36,6 +36,7 @@ namespace NamonaProject_v3_.Model
                 Role = x.Role
             }).First();
         }
+
         private string HashPassword(string password)
         {
             using var sha = SHA256.Create();
