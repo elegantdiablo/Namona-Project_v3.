@@ -23,7 +23,7 @@ namespace NamonaProject_v3_.Persistance
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ClothingId { get; set; }
-        public int ClothingName { get; set; }
+        public string ClothingName { get; set; }
         public string Collection { get; set; }
         public string Category { get; set; }
         public int GenderId { get; set; }
@@ -47,6 +47,7 @@ namespace NamonaProject_v3_.Persistance
         [Required]
         public int Amount { get; set; }
         public int PriceSum { get; set; }
+        public Clothes Clothes { get; set; }
     }
 
     public class Users

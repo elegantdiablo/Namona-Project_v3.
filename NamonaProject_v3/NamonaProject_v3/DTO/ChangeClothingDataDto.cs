@@ -3,7 +3,7 @@
     public class ChangeClothingDataDto
     {
         public int ClothingId { get; set; }
-        public int ClothingName { get; set; }
+        public string ClothingName { get; set; }
         public string Collection { get; set; }
         public string Category { get; set; }
         public string GenderType { get; set; }
