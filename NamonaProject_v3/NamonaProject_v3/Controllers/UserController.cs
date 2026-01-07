@@ -25,7 +25,7 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-                return Ok(/*????????????*/);
+                return Ok(_usermodel.ValidateUser);
             }
             catch (InvalidOperationException e)
             {
