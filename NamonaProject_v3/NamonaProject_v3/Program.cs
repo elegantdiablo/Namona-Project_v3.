@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Namona_v3.Model;
 using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
 
@@ -11,7 +10,6 @@ builder.Services.AddDbContextPool<NamonaDbContext>(options => options.UseNpgsql(
 builder.Services.AddTransient<CartModel>();
 builder.Services.AddTransient<ClothesModel>();
 builder.Services.AddTransient<UserModel>();
-builder.Services.AddTransient<GenderModel>();
 builder.Services.AddTransient<OrderModel>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -43,6 +41,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 //builder.Services.AddAuthentication();
 var app = builder.Build();
 
+builder.Services.AddScoped<OrderModel>();
 
 
 // Configure the HTTP request pipeline.

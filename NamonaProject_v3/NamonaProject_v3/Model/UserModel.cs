@@ -26,6 +26,7 @@ namespace NamonaProject_v3_.Model
             _context.SaveChanges();
             trx.Commit();
         }
+
         public UserDto ValidateUser(string username, string password)
         {
             var hash = HashPassword(password);
@@ -45,7 +46,7 @@ namespace NamonaProject_v3_.Model
             var hash = sha.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
-        // controller[Authorize(Roles = "Admin")]
+
         public IEnumerable<UserDto> ShowUsers()
         {
             return _context.users.OrderBy(x => x.UserName).Select(x => new UserDto
