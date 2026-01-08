@@ -46,5 +46,22 @@ namespace NamonaProject_v3_.Controllers
                 return NotFound();
             }
         }
+
+        [HttpGet("/FilterClothes")]
+        public ActionResult<NamonaDbContext> FilterClothes(
+            [FromQuery] string category,
+            [FromQuery] string collection,
+            [FromQuery] string gender)
+        {
+            try
+            {
+                return Ok(_clothesModel.FilterClothes2(category,collection,gender));
+            }
+            catch
+            {
+                return NoContent();
+            }
+
+        }
     }
 }
