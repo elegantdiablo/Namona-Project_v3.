@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Model;
 
@@ -28,6 +29,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult AddOrder([FromBody] OrderDto order)
         {
@@ -42,6 +44,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public IActionResult UpdateOrder(int id, [FromBody] OrderDto order)
         {
@@ -56,6 +59,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteOrder(int id)
         {
@@ -111,7 +115,7 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("clear")]
         public IActionResult ClearOrders()
         {

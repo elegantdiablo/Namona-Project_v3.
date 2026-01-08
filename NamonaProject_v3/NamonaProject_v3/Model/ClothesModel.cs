@@ -26,7 +26,7 @@ namespace NamonaProject_v3_.Model
                 GenderId = x.GenderId,
             });
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public void ChangeClothingData(int id, ChangeClothingDataDto dto)
         {
             int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
@@ -44,7 +44,7 @@ namespace NamonaProject_v3_.Model
                 trx.Commit();
             }
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public void DeleteClothes(int id)
         {
             using (var trx = _context.Database.BeginTransaction())
