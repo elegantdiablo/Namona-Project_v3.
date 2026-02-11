@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
@@ -30,9 +31,10 @@ namespace NamonaProject_v3_.Controllers
             }
         }
 
-        [HttpDelete("/api/houseworks/{id}")]
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("/api/remove/{id}")]
 
-        public ActionResult DeleteUser(int id)
+        public ActionResult DeleteClothes(int id)
         {
             try
             {
@@ -43,6 +45,23 @@ namespace NamonaProject_v3_.Controllers
             {
                 return NotFound();
             }
+        }
+
+        [HttpGet("/FilterClothes")]
+        public ActionResult<NamonaDbContext> FilterClothes(
+            [FromQuery] string category,
+            [FromQuery] string collection,
+            [FromQuery] string gender)
+        {
+            try
+            {
+                return Ok(_clothesModel.FilterClothes2(category,collection,gender));
+            }
+            catch
+            {
+                return NoContent();
+            }
+
         }
     }
 }
