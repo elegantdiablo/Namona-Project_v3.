@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.EntityFrameworkCore;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
@@ -27,7 +28,7 @@ namespace NamonaProject_v3_.Model
             });
         }
         //[Authorize(Roles = "Admin")]
-        public void ChangeClothingData(int id, ChangeClothingDataDto dto)
+        public async Task ChangeClothingData(int id, ChangeClothingDataDto dto)
         {
             int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
             using (var trx = _context.Database.BeginTransaction())
@@ -43,9 +44,10 @@ namespace NamonaProject_v3_.Model
                 _context.SaveChanges();
                 trx.Commit();
             }
+            await Task.CompletedTask;
         }
         //[Authorize(Roles = "Admin")]
-        public void DeleteClothes(int id)
+        public async Task DeleteClothes(int id)
         {
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -53,7 +55,31 @@ namespace NamonaProject_v3_.Model
                 _context.SaveChanges();
                 trx.Commit();
             }
+            await Task.CompletedTask;
         }
+
+        public async Task AddClothes(AddClothesDto dto)
+        {
+            using(var trx = _context.Database.BeginTransaction())
+            {
+                _context.clothes.Add(new Clothes
+                {
+                    ClothingId = dto.ClothingId,
+                    ClothingName = dto.ClothingName,
+                    Collection = dto.Collection,
+                    CategoryId = dto.CatgeroryId,
+                    GenderId = dto.GenderId,
+                    Stock = dto.Stock,
+                    Color = dto.Color,
+                    Price = dto.Price,
+                    
+                });
+                _context.SaveChanges();
+                trx.Commit();
+                await Task.CompletedTask;
+            }
+        }
+
         public IEnumerable<AllClothesDto> FilterClothes(
             string category,
             string collection,

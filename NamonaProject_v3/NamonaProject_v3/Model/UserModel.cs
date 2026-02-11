@@ -15,7 +15,7 @@ namespace NamonaProject_v3_.Model
             _context = context;
         }
 
-        public void Registration(string username, string password, string role = "User")
+        public async Task Registration(string username, string password, string role = "User")
         {
             if (_context.users.Any(x => x.UserName == username))
             {
@@ -25,6 +25,7 @@ namespace NamonaProject_v3_.Model
             _context.users.Add(new Users { UserName = username, Password = HashPassword(password), Role = role });
             _context.SaveChanges();
             trx.Commit();
+            await Task.CompletedTask;
         }
         public UserDto ValidateUser(string username, string password)
         {
@@ -70,7 +71,7 @@ namespace NamonaProject_v3_.Model
             };
         }
 
-        public void DeleteUser(int userId)
+        public async Task DeleteUser(int userId)
         {
             var user = _context.users.Find(userId);
             if (user == null)
@@ -81,8 +82,9 @@ namespace NamonaProject_v3_.Model
             _context.users.Remove(user);
             _context.SaveChanges();
             trx.Commit();
+            await Task.CompletedTask;
         }
-        public void UpdatePassword(int userId, string newPassword)
+        public async Task UpdatePassword(int userId, string newPassword)
         {
             var user = _context.users.Find(userId);
             if (user == null)
@@ -93,9 +95,10 @@ namespace NamonaProject_v3_.Model
             user.Password = HashPassword(newPassword);
             _context.SaveChanges();
             trx.Commit();
+            await Task.CompletedTask;
         }
 
-        public void PromoteToAdmin(int userId)
+        public async Task PromoteToAdmin(int userId)
         {
             var user = _context.users.Find(userId);
             if (user == null)
@@ -106,6 +109,7 @@ namespace NamonaProject_v3_.Model
             user.Role = "Admin";
             _context.SaveChanges();
             trx.Commit();
+            await Task.CompletedTask;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace NamonaProject_v3_.Model
             });
         }
 
-        public void DeleteOrder(int id)
+        public async Task DeleteOrder(int id)
         {
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -31,9 +31,10 @@ namespace NamonaProject_v3_.Model
                 _context.SaveChanges();
                 trx.Commit();
             }
+            await Task.CompletedTask;
         }
 
-        public void AddOrder(OrderDto order)
+        public async Task AddOrder(OrderDto order)
         {
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -45,9 +46,10 @@ namespace NamonaProject_v3_.Model
                 _context.SaveChanges();
                 trx.Commit();
             }
+            await Task.CompletedTask;
         }
 
-        public void UpdateOrder(int id, OrderDto order)
+        public async Task UpdateOrder(int id, OrderDto order)
         {
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -57,18 +59,10 @@ namespace NamonaProject_v3_.Model
                 _context.SaveChanges();
                 trx.Commit();
             }
+            await Task.CompletedTask;
         }
 
-        public void CancelOrder(int id)
-        {
-            using (var trx = _context.Database.BeginTransaction())
-            {
-                var order = _context.orders.Where(x => x.OrderId == id).First();
-                _context.orders.Remove(order);
-                _context.SaveChanges();
-                trx.Commit();
-            }
-        }
+
 
         public void CompleteOrder(int id)
         {
@@ -84,7 +78,7 @@ namespace NamonaProject_v3_.Model
         }
 
 
-        public void ClearOrders()
+        public async Task ClearOrders()
         {
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -92,16 +86,21 @@ namespace NamonaProject_v3_.Model
                 _context.SaveChanges();
                 trx.Commit();
             }
+            await Task.CompletedTask;
         }
 
-        public void UpdateOrderStatus(int id, string status)
+        public async Task UpdateOrderStatus(int id, string status)
         {
             var order = _context.orders.FirstOrDefault(x => x.OrderId == id);
             if (order == null)
                 throw new Exception("Order not found");
             order.Status = status;
             _context.SaveChanges();
+
+            await Task.CompletedTask;
         }
+
+        
 
     }
 }

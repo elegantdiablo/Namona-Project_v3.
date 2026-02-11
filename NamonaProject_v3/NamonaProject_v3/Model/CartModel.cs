@@ -37,7 +37,7 @@ namespace NamonaProject_v3_.Model
             });
         }
         
-        public void EditCart(int id, CartItemDto dto)
+        public async Task EditCart(int id, CartItemDto dto)
         {
             int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
             using (var trx = _context.Database.BeginTransaction())
@@ -46,9 +46,10 @@ namespace NamonaProject_v3_.Model
                 _context.SaveChanges();
                 trx.Commit();
             }
+            await Task.CompletedTask;
         }
 
-        public void DeleteClothes(int id)
+        public async Task DeleteClothes(int id)
         {
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -56,6 +57,8 @@ namespace NamonaProject_v3_.Model
                 _context.SaveChanges();
                 trx.Commit();
             }
+
+            await Task.CompletedTask;
         }
     }
 }
