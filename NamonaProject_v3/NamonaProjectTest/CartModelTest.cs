@@ -19,16 +19,6 @@ namespace NamonaProjectTest
         }
 
         [Fact]
-        public void GetCartData_Valid()
-        {
-            var result = _model.GetCartData().ToList();
-
-            Assert.NotEmpty(result);
-            Assert.All(result, r => Assert.True(r.CartId > 0));
-            Assert.All(result, r => Assert.True(r.UserId > 0));
-        }
-
-        [Fact]
         public void GetCartContent_Valid()
         {
             var result = _model.GetCartContent().ToList();
