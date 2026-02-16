@@ -79,7 +79,7 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-                _orderModel.CancelOrder(id);
+                _orderModel.DeleteOrder(id);
                 return Ok("Order cancelled");
             }
             catch (Exception ex)
