@@ -54,6 +54,8 @@ namespace NamonaProject_v3_.Model
             {
                 UserId = x.UserId,
                 UserName = x.UserName,
+                Email = x.Email,
+                Phone = x.PhoneNumber,
                 Role = x.Role
             });
         }
