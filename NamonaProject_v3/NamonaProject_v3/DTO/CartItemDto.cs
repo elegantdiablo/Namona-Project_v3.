@@ -1,6 +1,6 @@
 ﻿namespace NamonaProject_v3_.DTO
 {
-    public class CartItemDto
+    public class CartItemDto : CartDto
     {
         public int CartId { get; set; }
         public int ClothingId { get; set; }
