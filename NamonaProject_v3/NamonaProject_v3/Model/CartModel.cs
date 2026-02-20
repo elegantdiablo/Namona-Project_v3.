@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
+using System.Drawing;
 
 namespace NamonaProject_v3_.Model
 {
@@ -20,10 +21,26 @@ namespace NamonaProject_v3_.Model
                 UserId = x.UserId,
             });
         }
+
+        public async Task AddToCart(AddToCartDto dto)
+        {
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.cart.Add(new Cart
+                {
+                    ClothingId = dto.ClothingId,
+                    UserId = dto.UserId,
+                    Amount = dto.Amount
+                });
+                _context.SaveChanges();
+                trx.Commit();
+                await Task.CompletedTask;
+            }
+        }
         
         public IEnumerable<CartItemDto> GetCartContent()
         {
-            return _context.cart.Include(x=> x.Clothes) .Select(x => new CartItemDto
+            return _context.cart.Include(x=> x.Clothes).Select(x => new CartItemDto
             {
                 CartId = x.CartId,
                 ClothingId = x.ClothingId,
