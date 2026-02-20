@@ -21,6 +21,7 @@ namespace NamonaProjectTest
         [Fact]
         public void GetCartContent_Valid()
         {
+            var cart = _model.GetCartContent();
             var result = _model.GetCartContent().ToList();
 
             Assert.NotEmpty(result);
@@ -62,6 +63,14 @@ namespace NamonaProjectTest
                 .FirstOrDefault(x => x.ClothingId == clothingId);
 
             Assert.Null(deleted);
+        }
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public async Task DeleteClothes_RemovesItem0(int id)
+        {
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _model.DeleteClothes(id));
         }
     }
 }
