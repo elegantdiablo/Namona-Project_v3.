@@ -101,6 +101,25 @@ namespace NamonaProject_v3_.Persistance
 
             db.clothes.AddRange(clothes);
             db.SaveChanges();
+
+            var cart = new List<Cart>
+            {
+                new Cart
+                {
+                    CartId = 1,
+                    ClothingId = 1,
+                    Amount = 1,
+                    PriceSum = 12990
+                },
+
+                new Cart
+                {
+                    CartId = 2,
+                    ClothingId = 2,
+                    Amount = 1,
+                    PriceSum = 65000
+                }
+            };
         }
     }
 }
