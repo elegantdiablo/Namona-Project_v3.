@@ -103,7 +103,7 @@ namespace NamonaProjectTest
             };
 
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => _model.AddClothes(dto));
-            Assert.Contains("CategoryName nem lehet üres", ex.Message);
+            Assert.Contains("Kategória üres", ex.Message);
         }
     }
 }
