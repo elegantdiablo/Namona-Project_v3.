@@ -23,7 +23,7 @@ namespace NamonaProject_v3_.Model
         
         public IEnumerable<CartItemDto> GetCartContent()
         {
-            return _context.cart.Include(x=> x.Clothes) .Select(x => new CartItemDto
+            return _context.cart.Include(x=> x.Clothes).Select(x => new CartItemDto
             {
                 CartId = x.CartId,
                 ClothingId = x.ClothingId,
