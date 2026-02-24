@@ -49,7 +49,7 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-                _cartModel.DeleteClothes(id);
+                _cartModel.DeleteClothesFromCart(id);
                 return Ok();
             }
             catch

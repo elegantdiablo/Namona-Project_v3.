@@ -67,7 +67,7 @@ namespace NamonaProject_v3_.Model
             await Task.CompletedTask;
         }
 
-        public async Task DeleteClothes(int id)
+        public async Task DeleteClothesFromCart(int id)
         {
             using (var trx = _context.Database.BeginTransaction())
             {
