@@ -61,6 +61,7 @@ namespace NamonaProject_v3_.Model
             using (var trx = _context.Database.BeginTransaction())
                 {
                 _context.cart.Where(x => x.ClothingId == id).First().Amount = dto.Amount;               
+                _context.cart.Where(x => x.ClothingId == id).First().Amount = dto.Amount;               
                 _context.SaveChanges();
                 trx.Commit();
             }
