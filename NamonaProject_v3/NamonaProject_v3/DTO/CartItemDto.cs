@@ -2,7 +2,6 @@
 {
     public class CartItemDto : CartDto
     {
-        public int CartId { get; set; }
         public int ClothingId { get; set; }
         public string ClothingName { get; set; }
         public string Collection { get; set; }

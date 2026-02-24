@@ -31,7 +31,7 @@ namespace NamonaProject_v3_.Controllers
     
 
         [HttpPut("/EditCart/{id}")]
-        public ActionResult EditCart(int id, CartItemDto dto)
+        public ActionResult EditCart(int id, EditCartDto dto)
         {
             try
             {
