@@ -22,6 +22,21 @@ namespace NamonaProject_v3_.Model
             });
         }
 
+        public IEnumerable<CartItemDto> GetCartContent()
+        {
+            return _context.cart.Include(x => x.Clothes).Select(x => new CartItemDto
+            {
+                ClothingId = x.ClothingId,
+                ClothingName = x.Clothes.ClothingName,
+                Collection = x.Clothes.Collection,
+                Color = x.Clothes.Color,
+                Price = x.Clothes.Price,
+                Stock = x.Clothes.Stock,
+                Amount = x.Amount,
+                GenderId = x.Clothes.GenderId,
+            });
+        }
+
         public async Task AddToCart(AddToCartDto dto)
         {
             using (var trx = _context.Database.BeginTransaction())
@@ -38,27 +53,14 @@ namespace NamonaProject_v3_.Model
             }
         }
         
-        public IEnumerable<CartItemDto> GetCartContent()
-        {
-            return _context.cart.Include(x=> x.Clothes).Select(x => new CartItemDto
-            {
-                CartId = x.CartId,
-                ClothingId = x.ClothingId,
-                ClothingName = x.Clothes.ClothingName,
-                Collection = x.Clothes.Collection,
-                Color = x.Clothes.Color,
-                Price = x.Clothes.Price,
-                Stock = x.Clothes.Stock,
-                Amount = x.Amount,
-                GenderId = x.Clothes.GenderId,
-            });
-        }
         
-        public async Task EditCart(int id, CartItemDto dto)
+        
+        public async Task EditCart(int id, EditCartDto dto)
         {
             int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
             using (var trx = _context.Database.BeginTransaction())
                 {
+                _context.cart.Where(x => x.ClothingId == id).First().Amount = dto.Amount;               
                 _context.cart.Where(x => x.ClothingId == id).First().Amount = dto.Amount;               
                 _context.SaveChanges();
                 trx.Commit();
@@ -66,7 +68,7 @@ namespace NamonaProject_v3_.Model
             await Task.CompletedTask;
         }
 
-        public async Task DeleteClothes(int id)
+        public async Task DeleteClothesFromCart(int id)
         {
             using (var trx = _context.Database.BeginTransaction())
             {

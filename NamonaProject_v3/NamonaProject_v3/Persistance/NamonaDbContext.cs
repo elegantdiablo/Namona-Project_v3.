@@ -63,6 +63,8 @@ namespace NamonaProject_v3_.Persistance
         [Required]
         public int PhoneNumber { get; set; }
         public string Role { get; set; }
+        [Required]
+        public int CartId { get; set; } 
     }
 
     public class Orders

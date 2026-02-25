@@ -31,7 +31,7 @@ namespace NamonaProject_v3_.Controllers
     
 
         [HttpPut("/EditCart/{id}")]
-        public ActionResult EditCart(int id, CartItemDto dto)
+        public ActionResult EditCart([FromQuery]int id, [FromBody]EditCartDto dto)
         {
             try
             {
@@ -45,12 +45,12 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpDelete("/DeleteCartItem/{id}")]
-        public ActionResult DeleteCartItem(int id)
+        public async Task<ActionResult> DeleteCartItem([FromQuery]int id)
         {
             try
             {
-                _cartModel.DeleteClothes(id);
-                return Ok();
+                await _cartModel.DeleteClothesFromCart(id);
+                 return Ok();
             }
             catch
             {
