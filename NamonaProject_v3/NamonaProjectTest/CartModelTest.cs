@@ -37,7 +37,7 @@ namespace NamonaProjectTest
             var cartItem = _context.cart.First();
             var newAmount = cartItem.Amount + 1;
 
-            var dto = new CartItemDto
+            var dto = new EditCartDto
             {
                 ClothingId = cartItem.ClothingId,
                 Amount = newAmount
@@ -57,7 +57,7 @@ namespace NamonaProjectTest
             var clothes = _context.clothes.First();
             int clothingId = clothes.ClothingId;
 
-            await _model.DeleteClothes(clothingId);
+            await _model.DeleteClothesFromCart(clothingId);
 
             var deleted = _context.clothes
                 .FirstOrDefault(x => x.ClothingId == clothingId);
@@ -70,7 +70,7 @@ namespace NamonaProjectTest
         public async Task DeleteClothes_RemovesItem0(int id)
         {
 
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _model.DeleteClothes(id));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _model.DeleteClothesFromCart(id));
         }
     }
 }
