@@ -30,24 +30,9 @@ namespace NamonaProjectTest
             Assert.All(result, r => Assert.False(string.IsNullOrWhiteSpace(r.ClothingName)));
         }
         [Fact]
-        public async Task ModifyClothes()
+        public async Task ModifyClothesNotFound()
         {
-            /*   var cartItem = _context.cart.First();
-            var newAmount = cartItem.Amount + 1;
 
-            var dto = new EditCartDto
-            {
-                ClothingId = cartItem.ClothingId,
-                Amount = newAmount
-            };
-
-            await _model.EditCart(cartItem.ClothingId, dto);
-
-            var updatedItem = _context.cart
-                .First(x => x.ClothingId == cartItem.ClothingId);
-
-            Assert.Equal(newAmount, updatedItem.Amount);
-            */
             var dto = new ChangeClothingDataDto
             {
                 ClothingId = 999,
@@ -59,7 +44,34 @@ namespace NamonaProjectTest
                 Color = "Blue",
                 Price = 10000,
             };
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.ChangeClothingData(dto.ClothingId, dto));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _model.ChangeClothingData(dto));
+        }
+
+        [Fact]
+        public async Task ModifyClothesOK()
+        {
+            var cartItem = _context.cart.First();
+            var newAmount = cartItem.Amount + 1;
+
+            var dto = new ChangeClothingDataDto
+            {
+                ClothingId = 1,
+                ClothingName = "Test",
+                Collection = "asd",
+                Category = "Test",
+                GenderType = "Male",
+                Stock = 10,
+                Color = "Blue",
+                Price = 10000,
+            };
+
+            await _model.ChangeClothingData(dto);
+
+            var updatedItem = _context.clothes
+                .First(x => 1 == cartItem.ClothingId);
+
+            Assert.Equal("Test", updatedItem.ClothingName);
+
         }
         [Theory]
         [InlineData(null)]
@@ -89,7 +101,27 @@ namespace NamonaProjectTest
         {
             await Assert.ThrowsAsync<ArgumentNullException>(() => _model.AddClothes(null!));
         }
-        [Fact]
+        public async Task AddNewClothOK()
+        {
+            var amount = _context.clothes.Count();
+
+            var dto = new AddClothesDto
+            {
+
+                ClothingName = "Test",
+                Collection = "Winter 2025",
+                CategoryName = "Hoodie",
+                GenderName = "Male",
+                Stock = 10,
+                Color = "Blue",
+                Price = 10000,
+
+            }
+            await _model.AddClothes(dto);
+
+            Assert.Equal(_context.clothes.Count(), amount + 1);
+        }
+            [Fact]
         public async Task DeleteCloth_KeyNotFound()
         {
             await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.DeleteClothes(999999));

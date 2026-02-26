@@ -28,18 +28,18 @@ namespace NamonaProject_v3_.Model
             });
         }
         //[Authorize(Roles = "Admin")]
-        public async Task ChangeClothingData(int id, ChangeClothingDataDto dto)
+        public async Task ChangeClothingData(ChangeClothingDataDto dto)
         {
             int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
             using (var trx = _context.Database.BeginTransaction())
             {
-                _context.clothes.Where(x => x.ClothingId == id).First().ClothingName = dto.ClothingName;
-                _context.clothes.Where(x => x.ClothingId == id).First().Collection = dto.Collection;
-                _context.clothes.Include(x => x.Category).Where(x => x.ClothingId == id).First().Category.CategoryName = dto.Category;
-                _context.clothes.Where(x => x.ClothingId == id).First().Color = dto.Color;
-                _context.clothes.Where(x => x.ClothingId == id).First().Price = dto.Price;
-                _context.clothes.Where(x => x.ClothingId == id).First().GenderId = _context.genders.Where(x => x.GenderType == dto.GenderType).First().GenderId;
-                _context.clothes.Where(x => x.ClothingId == id).First().Stock = dto.Stock;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingName = dto.ClothingName;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Collection = dto.Collection;
+                _context.clothes.Include(x => x.Category).Where(x => x.ClothingId == dto.ClothingId).First().Category.CategoryName = dto.Category;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Color = dto.Color;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price = dto.Price;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().GenderId = _context.genders.Where(x => x.GenderType == dto.GenderType).First().GenderId;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Stock = dto.Stock;
 
                 _context.SaveChanges();
                 trx.Commit();
@@ -63,8 +63,7 @@ namespace NamonaProject_v3_.Model
             using(var trx = _context.Database.BeginTransaction())
             {
                 _context.clothes.Add(new Clothes
-                {
-                    ClothingId = dto.ClothingId,
+                { 
                     ClothingName = dto.ClothingName,
                     Collection = dto.Collection,
                     CategoryId = dto.CatgeroryId,
@@ -76,8 +75,9 @@ namespace NamonaProject_v3_.Model
                 });
                 _context.SaveChanges();
                 trx.Commit();
-                await Task.CompletedTask;
+               
             }
+            await Task.CompletedTask;
         }
 
         public IEnumerable<AllClothesDto> FilterClothes(

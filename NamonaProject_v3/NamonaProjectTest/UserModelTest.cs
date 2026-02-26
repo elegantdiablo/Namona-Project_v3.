@@ -55,7 +55,7 @@ namespace NamonaProjectTest
                 Assert.True(false, "No admin user found in the database.");
                 return;
             }
-            var result = _model.AdminLogin("admin", "admin123");
+            var result = _model.AdminLogin("admin@namona.hu", "admin123");
             Assert.NotNull(result);
             Assert.Equal(adminUser.UserName, result.UserName);
             Assert.Equal(adminUser.Role, result.Role);
