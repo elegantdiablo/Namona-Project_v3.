@@ -15,23 +15,23 @@ namespace NamonaProject_v3_.Model
             _context = context;
         }
 
-        public async Task Registration(string username, string password, string role = "User")
+        public async Task Registration(string email, string username, string password, string role = "User")
         {
-            if (_context.users.Any(x => x.UserName == username))
+            if (_context.users.Any(x => x.Email == email))
             {
                 throw new InvalidOperationException("already exists");
             }
             using var trx = _context.Database.BeginTransaction();
-            _context.users.Add(new Users { UserName = username, Password = HashPassword(password), Role = role });
+            _context.users.Add(new Users { Email = email, Password = HashPassword(password), Role = role, UserName = username });
             _context.SaveChanges();
             trx.Commit();
             await Task.CompletedTask;
         }
 
-        public UserDto ValidateUser(string username, string password)
+        public async Task<UserDto> ValidateUser(string email, string password)
         {
             var hash = HashPassword(password);
-            var user = _context.users.Where(x => x.UserName == username);
+            var user = _context.users.Where(x => x.Email == email);
             return user.Where(x => x.Password == hash).Select(x => new UserDto
             {
                 UserId = x.UserId,
@@ -55,15 +55,15 @@ namespace NamonaProject_v3_.Model
                 UserId = x.UserId,
                 UserName = x.UserName,
                 Email = x.Email,
-                Phone = x.PhoneNumber,
+                Phone = x.PhoneNumber != null ? x.PhoneNumber : "",
                 Role = x.Role
             });
         }
 
-        public UserDto? AdminLogin(string username, string password)
+        public UserDto? AdminLogin(string email, string password)
         {
             var hash = HashPassword(password);
-            var user = _context.users.FirstOrDefault(x => x.UserName.ToLower() == username.ToLower() && x.Role == "Admin");
+            var user = _context.users.FirstOrDefault(x => x.Email.ToLower() == email.ToLower() && x.Role == "Admin");
             if (user == null || user.Password != hash)
             return null;
             return new UserDto

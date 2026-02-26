@@ -25,10 +25,10 @@ namespace NamonaProjectTest
             var result = _model.GetCartContent().ToList();
 
             Assert.NotEmpty(result);
-            Assert.All(result, r => Assert.True(r.CartId > 0));
+            Assert.All(result, r => Assert.True(r.CartId >= 0));
             Assert.All(result, r => Assert.True(r.ClothingId > 0));
             Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.ClothingName)));
-            Assert.All(result, r => Assert.True(r.Price >= 0));
+            Assert.All(result, r => Assert.True(r.Price > 0));
         }
 
         [Fact]

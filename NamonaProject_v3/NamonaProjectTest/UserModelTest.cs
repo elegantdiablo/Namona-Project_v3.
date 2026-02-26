@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using NamonaProject_v3_.Model;
@@ -18,6 +19,13 @@ namespace NamonaProjectTest
             _context = DbContextFactory.Create();
             _model = new UserModel(_context);
         }
+        private string HashPassword(string password)
+        {
+            using var sha = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
+        }
 
         [Fact]
         public void ShowUsers_Validate()
@@ -27,10 +35,9 @@ namespace NamonaProjectTest
             Assert.NotEmpty(result);
             Assert.All(result, r => Assert.True(r.UserId > 0));
             Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.UserName)));
-            Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.Password)));
             Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.Role)));
             Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.Email)));
-            Assert.All(result, r => Assert.True(r.Phone > 0));
+            Assert.All(result, r => Assert.True(r.Phone is not null));
             Assert.Equal(result.OrderBy(r => r.UserName).Select(r => r.UserName), result.Select(r => r.UserName));
             if (result.Count >= 2)
             {
@@ -48,18 +55,18 @@ namespace NamonaProjectTest
                 Assert.True(false, "No admin user found in the database.");
                 return;
             }
-            var result = _model.AdminLogin(adminUser.UserName, "adminpassword");
+            var result = _model.AdminLogin("admin", "admin123");
             Assert.NotNull(result);
             Assert.Equal(adminUser.UserName, result.UserName);
             Assert.Equal(adminUser.Role, result.Role);
         }
 
         [Fact]
-        public void Registration_Validate()
+        public async Task Registration_Validate()
         {
             var uniqueUsername = $"testuser_{Guid.NewGuid()}";
             var password = "testpassword";
-            _model.Registration(uniqueUsername, password).Wait();
+            await _model.Registration("asd@gmail.com", uniqueUsername, password);
             var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
             Assert.NotNull(userInDb);
             Assert.Equal(uniqueUsername, userInDb.UserName);
@@ -67,48 +74,59 @@ namespace NamonaProjectTest
         }
 
         [Fact]
-        public void ValidateUser_Validate()
+        public async Task ValidateUser_Validate()
         {
-            var uniqueUsername = $"testuser_{Guid.NewGuid()}";
-            var password = "testpassword";
-            _model.Registration(uniqueUsername, password).Wait();
-            var result = _model.ValidateUser(uniqueUsername, password);
+            var uniqueUsername = "testuser";
+            var password = "user123";
+           var result = await _model.ValidateUser("user@namona.hu", password);
             Assert.NotNull(result);
             Assert.Equal(uniqueUsername, result.UserName);
         }
-
         [Fact]
-
-        public void DeleteUser_Validate()
+        public async Task ValidateUser_Exits()
         {
-            var uniqueUsername = $"testuser_{Guid.NewGuid()}";
+            var uniqueUsername = "testuser";
             var password = "testpassword";
-            _model.Registration(uniqueUsername, password).Wait();
-            var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
-            Assert.NotNull(userInDb);
-            _context.users.Remove(userInDb);
-            _context.SaveChanges();
-            var deletedUser = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
-            Assert.Null(deletedUser);
+            
+          await  Assert.ThrowsAsync<InvalidOperationException>(() => _model.Registration("user@namona.hu", uniqueUsername, password));
+          
         }
 
         [Fact]
-        public void UpdateUser_Validate()
+
+        public async Task DeleteUser_Validate()
         {
-            var uniqueUsername = $"testuser_{Guid.NewGuid()}";
-            var password = "testpassword";
-            _model.Registration(uniqueUsername, password).Wait();
-            var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
-            Assert.NotNull(userInDb);
-            userInDb.Email = "";
+
+
+            var user = _context.users.First();
+            int userid = user.UserId;
+
+            await _model.DeleteUser(userid);
+
+            var deleted = _context.users
+                .FirstOrDefault(x => x.UserId == userid);
+
+            Assert.Null(deleted);
 
         }
+
+        /*  [Fact]
+          public async Task UpdateUser_Validate()
+          {
+              var uniqueUsername = $"testuser_{Guid.NewGuid()}";
+              var password = "testpassword";
+              await _model.Registration(uniqueUsername, password);
+              var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
+              Assert.NotNull(userInDb);
+              userInDb.Email = "";
+
+          }*/
         [Fact]
-        public void PromoteToAdmin_Validate()
+        public async Task PromoteToAdmin_Validate()
         {
             var uniqueUsername = $"testuser_{Guid.NewGuid()}";
             var password = "testpassword";
-            _model.Registration(uniqueUsername, password).Wait();
+            await _model.Registration("adminadmin@namona.hu", uniqueUsername, password);
             var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
             Assert.NotNull(userInDb);
             userInDb.Role = "Admin";

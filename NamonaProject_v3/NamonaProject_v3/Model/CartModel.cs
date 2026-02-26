@@ -24,16 +24,18 @@ namespace NamonaProject_v3_.Model
 
         public IEnumerable<CartItemDto> GetCartContent()
         {
-            return _context.cart.Include(x => x.Clothes).Select(x => new CartItemDto
+            return _context.cart.Include(x => x.Clothing).Select(x => new CartItemDto
             {
                 ClothingId = x.ClothingId,
-                ClothingName = x.Clothes.ClothingName,
-                Collection = x.Clothes.Collection,
-                Color = x.Clothes.Color,
-                Price = x.Clothes.Price,
-                Stock = x.Clothes.Stock,
+                ClothingName = x.Clothing.ClothingName,
+                Collection = x.Clothing.Collection,
+                CategoryId = x.Clothing.CategoryId,
+                Color = x.Clothing.Color,
+                Price = x.Clothing.Price,
+                PriceSum = x.PriceSum,
+                Stock = x.Clothing.Stock,
                 Amount = x.Amount,
-                GenderId = x.Clothes.GenderId,
+                GenderId = x.Clothing.GenderId,
             });
         }
 

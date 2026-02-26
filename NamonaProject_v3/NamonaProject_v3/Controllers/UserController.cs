@@ -17,11 +17,12 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login(string username, string password)
+        public async Task<ActionResult> Login(string username, string password)
         {
             try
             {
-                return Ok(_userModel.ValidateUser(username, password));
+                await _userModel.ValidateUser(username, password);
+                return Ok();
             }
             catch (InvalidOperationException ex)
             {
@@ -34,7 +35,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("admin/login")]
-        public IActionResult AdminLogin(string username, string password)
+        public async Task<ActionResult> AdminLogin(string username, string password)
         {
             try
             {
@@ -51,11 +52,11 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(string username, string password)
+        public async Task<ActionResult> Register(RegistrationDto dto)
         {
             try
             {
-                _userModel.Registration(username, password);
+                await _userModel.Registration(dto.Email, dto.UserName, dto.Password);
                 return Ok("User successfully registered");
             }
             catch (InvalidOperationException ex)
@@ -70,7 +71,7 @@ namespace NamonaProject_v3_.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public IActionResult GetUsers()
+        public ActionResult<IEnumerable<UserDto>> GetUsers()
         {
             try
             {
@@ -84,11 +85,11 @@ namespace NamonaProject_v3_.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        public IActionResult DeleteUser(int id)
+        public async Task<ActionResult> DeleteUser(int id)
         {
             try
             {
-                _userModel.DeleteUser(id);
+                await _userModel.DeleteUser(id);
                 return Ok("User deleted");
             }
             catch (InvalidOperationException ex)
@@ -103,11 +104,11 @@ namespace NamonaProject_v3_.Controllers
 
         [Authorize]
         [HttpPut("{id}/password")]
-        public IActionResult UpdatePassword(int id, string newPassword)
+        public async Task<ActionResult> UpdatePassword(int id, string newPassword)
         {
             try
             {
-                _userModel.UpdatePassword(id, newPassword);
+                await _userModel.UpdatePassword(id, newPassword);
                 return Ok("Password updated");
             }
             catch (InvalidOperationException ex)
@@ -122,11 +123,11 @@ namespace NamonaProject_v3_.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}/promote")]
-        public IActionResult PromoteToAdmin(int id)
+        public async Task<ActionResult> PromoteToAdmin(int id)
         {
             try
             {
-                _userModel.PromoteToAdmin(id);
+               await _userModel.PromoteToAdmin(id);
                 return Ok("User promoted to admin");
             }
             catch (InvalidOperationException ex)

@@ -1,126 +1,149 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Security.Cryptography;
+using System.Text;
+using NamonaProject_v3_.Persistance;
 
-namespace NamonaProject_v3_.Persistance
+public static class DbSeeder
 {
-    public static class DbSeeder
+
+
+    public static void Seed(NamonaDbContext _db)
     {
-        public static void Seed(NamonaDbContext db)
+        // Ha már van adat, ne seedeljen újra
+        if (_db.users.Any())
+            return;
+
+        // ============================
+        // 1️⃣ Gender
+        // ============================
+        var male = new Gender { GenderType = "Male" };
+        var female = new Gender { GenderType = "Female" };
+        var unisex = new Gender { GenderType = "Unisex" };
+
+        _db.genders.AddRange(male, female, unisex);
+        _db.SaveChanges();
+
+        // ============================
+        // 2️⃣ Category
+        // ============================
+        var tshirt = new Category { CategoryName = "T-Shirt" };
+        var hoodie = new Category { CategoryName = "Hoodie" };
+        var pants = new Category { CategoryName = "Pants" };
+
+        _db.categories.AddRange(tshirt, hoodie, pants);
+        _db.SaveChanges();
+
+        // ============================
+        // 3️⃣ Clothes
+        // ============================
+        var tee = new Clothes
         {
-            if (db.categories.Any()) return;
+            ClothingName = "Namona Classic Tee",
+            Collection = "Summer 2025",
+            Gender = unisex,
+            Category = tshirt,
+            Stock = 100,
+            Color = "Black",
+            Price = 8990
+        };
 
-            var genders = new List<Gender>
-            {
-                new Gender { GenderId = 1, GenderType = "Férfi" },
-                new Gender { GenderId = 2, GenderType = "Női" },
-                new Gender { GenderId = 3, GenderType = "Unisex" }
-            };
+        var hoodieItem = new Clothes
+        {
+            ClothingName = "Namona Oversized Hoodie",
+            Collection = "Winter 2025",
+            Gender = male,
+            Category = hoodie,
+            Stock = 50,
+            Color = "Grey",
+            Price = 19990
+        };
 
-            db.genders.AddRange(genders);
-            db.SaveChanges();
+        var pantsItem = new Clothes
+        {
+            ClothingName = "Namona Slim Pants",
+            Collection = "Autumn 2025",
+            Gender = female,
+            Category = pants,
+            Stock = 40,
+            Color = "Beige",
+            Price = 14990
+        };
 
-            var categories = new List<Category>
-            {
-                new Category { CategoryId = 1, CategoryName = "Póló" },
-                new Category { CategoryId = 2, CategoryName = "Pulóver" },
-                new Category { CategoryId = 3, CategoryName = "Kabát" },
-                new Category { CategoryId = 4, CategoryName = "Nadrág" },
-                new Category { CategoryId = 5, CategoryName = "Kiegészítő" }
-            };
+        _db.clothes.AddRange(tee, hoodieItem, pantsItem);
+        _db.SaveChanges();
 
-            db.categories.AddRange(categories);
-            db.SaveChanges();
+        // ============================
+        // 4️⃣ Users
+        // ============================
+        var admin = new Users
+        {
+            UserName = "admin",
+            Password = HashPassword("admin123"),
+            Email = "admin@namona.hu",
+            PhoneNumber = "+36111111111",
+            Role = "Admin"
+        };
 
-            var users = new List<Users>
-            {
-                new Users
-                {
-                    UserName = "admin",
-                    Password = "admin123",
-                    Email = "admin@namona.hu",
-                    PhoneNumber = 123456789,
-                    Role = "Admin"
-                },
-                new Users
-                {
-                    UserName = "tesztuser",
-                    Password = "user123",
-                    Email = "user@namona.hu",
-                    PhoneNumber = 987654321,
-                    Role = "User"
-                }
-            };
+        var user = new Users
+        {
+            UserName = "testuser",
+            Password = HashPassword("user123"),
+            Email = "user@namona.hu",
+            PhoneNumber = "+36222222222",
+            Role = "User"
+        };
 
-            db.users.AddRange(users);
-            db.SaveChanges();
+        _db.users.AddRange(admin, user);
+        _db.SaveChanges();
 
-            var clothes = new List<Clothes>
-            {
-                new Clothes
-                {
-                    ClothingName = "Basic White T-Shirt",
-                    Collection = "Summer 2025",
-                    GenderId = 3,
-                    Stock = 50,
-                    Color = "Fehér",
-                    Price = 4990,
-                    CategoryId = 1
-                },
-                new Clothes
-                {
-                    ClothingName = "Black Hoodie",
-                    Collection = "Winter 2025",
-                    GenderId = 1,
-                    Stock = 30,
-                    Color = "Fekete",
-                    Price = 12990,
-                    CategoryId = 2
-                },
-                new Clothes
-                {
-                    ClothingName = "Blue Jeans",
-                    Collection = "Classic",
-                    GenderId = 2,
-                    Stock = 40,
-                    Color = "Kék",
-                    Price = 15990,
-                    CategoryId = 4
-                },
-                new Clothes
-                {
-                    ClothingName = "Leather Jacket",
-                    Collection = "Premium",
-                    GenderId = 1,
-                    Stock = 15,
-                    Color = "Barna",
-                    Price = 39990,
-                    CategoryId = 3
-                }
-            };
+        // ============================
+        // 5️⃣ Cart
+        // ============================
+        var cart1 = new Cart
+        {
+            Clothing = tee,
+            User = user,
+            Amount = 2,
+            PriceSum = tee.Price * 2
+        };
 
-            db.clothes.AddRange(clothes);
-            db.SaveChanges();
+        var cart2 = new Cart
+        {
+            Clothing = hoodieItem,
+            User = user,
+            Amount = 1,
+            PriceSum = hoodieItem.Price
+        };
 
-            var cart = new List<Cart>
-            {
-                new Cart
-                {
-                    CartId = 1,
-                    ClothingId = 1,
-                    UserId = 1,
-                    Amount = 1,
-                    PriceSum = 12990
-                },
-                new Cart
-                {
-                    CartId = 2,
-                    ClothingId = 2,
-                    UserId = 2,
-                    Amount = 1,
-                    PriceSum = 65000
-                }
-            };
-        }
+        _db.cart.AddRange(cart1, cart2);
+        _db.SaveChanges();
+
+        // ============================
+        // 6️⃣ Orders
+        // ============================
+        var order = new Orders
+        {
+            OrderDate = DateTimeOffset.Now,
+            Address = "Budapest, Fő utca 1.",
+            Status = "Completed",
+            CompletedAt = DateTime.Now,
+            Carts = new System.Collections.Generic.List<Cart> { cart1, cart2 }
+        };
+
+        _db.orders.Add(order);
+        _db.SaveChanges();
+
+        // Frissítjük a Cart elemek Order-jét
+        cart1.Order = order;
+        cart2.Order = order;
+        _db.cart.UpdateRange(cart1, cart2);
+        _db.SaveChanges();
     }
+    private static string HashPassword(string password)
+    {
+        using var sha = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha.ComputeHash(bytes);
+        return Convert.ToBase64String(hash);
+    }
+
 }

@@ -35,7 +35,7 @@ namespace NamonaProject_v3_.Model
             {
                 _context.clothes.Where(x => x.ClothingId == id).First().ClothingName = dto.ClothingName;
                 _context.clothes.Where(x => x.ClothingId == id).First().Collection = dto.Collection;
-                _context.clothes.Include(x => x.category).Where(x => x.ClothingId == id).First().category.CategoryName = dto.Category;
+                _context.clothes.Include(x => x.Category).Where(x => x.ClothingId == id).First().Category.CategoryName = dto.Category;
                 _context.clothes.Where(x => x.ClothingId == id).First().Color = dto.Color;
                 _context.clothes.Where(x => x.ClothingId == id).First().Price = dto.Price;
                 _context.clothes.Where(x => x.ClothingId == id).First().GenderId = _context.genders.Where(x => x.GenderType == dto.GenderType).First().GenderId;
@@ -88,14 +88,14 @@ namespace NamonaProject_v3_.Model
             int maxprice = 99999999)
         {
             var query = _context.clothes
-                .Include(x => x.category)
-                .Include(x => x.gender)
+                .Include(x => x.Category)
+                .Include(x => x.Gender)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(category))
             {
                 query = query.Where(x =>
-                    x.category.CategoryName.ToLower() == category.ToLower());
+                    x.Category.CategoryName.ToLower() == category.ToLower());
             }
 
             if (!string.IsNullOrWhiteSpace(collection))
@@ -107,7 +107,7 @@ namespace NamonaProject_v3_.Model
             if (!string.IsNullOrWhiteSpace(gender))
             {
                 query = query.Where(x =>
-                    x.gender.GenderType.ToLower() == gender.ToLower());
+                    x.Gender.GenderType.ToLower() == gender.ToLower());
             }
 
             query = query.Where(x =>
@@ -118,7 +118,7 @@ namespace NamonaProject_v3_.Model
                 ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
-                Category = x.category.CategoryName,
+                Category = x.Category.CategoryName,
                 GenderId = x.GenderId,
                 Stock = x.Stock,
                 Color = x.Color,
@@ -134,45 +134,45 @@ namespace NamonaProject_v3_.Model
             if (category != null && collection != null && gender != null)
             {
                 result =
-                _context.clothes.Include(x => x.gender).Include(x => x.category)
-                .Where(x => x.category.CategoryName == category.ToLower() &&
+                _context.clothes.Include(x => x.Gender).Include(x => x.Category)
+                .Where(x => x.Category.CategoryName == category.ToLower() &&
                 x.Collection == collection.ToLower() &&
-                x.gender.GenderType == gender);
+                x.Gender.GenderType == gender);
             }
             else if (category == null && collection != null && gender != null)
             {
 
                 result =
-               _context.clothes.Include(x => x.gender)
+               _context.clothes.Include(x => x.Gender)
                .Where(x => x.Collection == collection.ToLower() &&
-               x.gender.GenderType == gender);
+               x.Gender.GenderType == gender);
             }
             else if (category != null && collection == null && gender != null)
             {
-                _context.clothes.Include(x => x.gender).Include(x => x.category)
-                .Where(x => x.category.CategoryName == category.ToLower() &&
-                x.gender.GenderType == gender);
+                _context.clothes.Include(x => x.Gender).Include(x => x.Category)
+                .Where(x => x.Category.CategoryName == category.ToLower() &&
+                x.Gender.GenderType == gender);
             }
             else if (category != null && collection != null && gender == null)
             {
-                _context.clothes.Include(x => x.category)
-                .Where(x => x.category.CategoryName == category.ToLower() &&
+                _context.clothes.Include(x => x.Category)
+                .Where(x => x.Category.CategoryName == category.ToLower() &&
                 x.Collection == collection.ToLower() &&
-                x.gender.GenderType == gender);
+                x.Gender.GenderType == gender);
             }
 
             else if (category == null && collection == null && gender != null)
             {
 
-                _context.clothes.Include(x => x.gender)
+                _context.clothes.Include(x => x.Gender)
                    .Where(x =>
-                   x.gender.GenderType == gender);
+                   x.Gender.GenderType == gender);
             }
             else if (category != null && collection == null && gender == null)
             {
 
-                _context.clothes.Include(x => x.category)
-                   .Where(x => x.category.CategoryName == category.ToLower()
+                _context.clothes.Include(x => x.Category)
+                   .Where(x => x.Category.CategoryName == category.ToLower()
                  );
             }
             else if (category == null && collection != null && gender == null)
@@ -188,7 +188,7 @@ namespace NamonaProject_v3_.Model
                 ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
-                Category = x.category.CategoryName,
+                Category = x.Category.CategoryName,
                 GenderId = x.GenderId,
                 Stock = x.Stock,
                 Color = x.Color,

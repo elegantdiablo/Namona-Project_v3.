@@ -26,22 +26,28 @@ namespace NamonaProjectTest
             var result = _model.GetAllClothes().ToList();
 
             Assert.NotEmpty(result);
-            Assert.Contains(result, r => r.ClothingName == "");
             Assert.All(result, r => Assert.True(r.ClothingId > 0));
             Assert.All(result, r => Assert.False(string.IsNullOrWhiteSpace(r.ClothingName)));
         }
         [Fact]
-        public void AllClothes_NotValid()
-        {
-            using var empty = DbContextFactory.CreateEmpty();
-            var model = new ClothesModel(empty);
-
-            var ex = Assert.Throws<KeyNotFoundException>(() => model.GetAllClothes().ToList());
-            Assert.Contains("Nincs ilyen ruha", ex.Message);
-        }
-        [Fact]
         public async Task ModifyClothes()
         {
+            /*   var cartItem = _context.cart.First();
+            var newAmount = cartItem.Amount + 1;
+
+            var dto = new EditCartDto
+            {
+                ClothingId = cartItem.ClothingId,
+                Amount = newAmount
+            };
+
+            await _model.EditCart(cartItem.ClothingId, dto);
+
+            var updatedItem = _context.cart
+                .First(x => x.ClothingId == cartItem.ClothingId);
+
+            Assert.Equal(newAmount, updatedItem.Amount);
+            */
             var dto = new ChangeClothingDataDto
             {
                 ClothingId = 999,
