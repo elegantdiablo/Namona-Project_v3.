@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NamonaProject_v3.", "NamonaProject_v3\NamonaProject_v3..csproj", "{96C2AD3D-A665-4A2D-9E96-69F5A7DB2711}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NamonaProjectTest", "NamonaProjectTest\NamonaProjectTest.csproj", "{C084A3A2-5220-4DC3-9CF8-0AD735944B85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NamonaIntegrationTest", "NamonaIntegrationTest\NamonaIntegrationTest.csproj", "{C27A0917-1F77-48A6-A2F5-35F3F26B022B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C084A3A2-5220-4DC3-9CF8-0AD735944B85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C084A3A2-5220-4DC3-9CF8-0AD735944B85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C084A3A2-5220-4DC3-9CF8-0AD735944B85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C27A0917-1F77-48A6-A2F5-35F3F26B022B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C27A0917-1F77-48A6-A2F5-35F3F26B022B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C27A0917-1F77-48A6-A2F5-35F3F26B022B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C27A0917-1F77-48A6-A2F5-35F3F26B022B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
