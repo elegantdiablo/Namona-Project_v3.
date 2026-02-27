@@ -16,12 +16,12 @@ namespace NamonaProject_v3_.Controllers
             _cartModel = cartModel;
         }
 
-        [HttpGet("/CartContent")]
-        public ActionResult<CartDto> GetCartContent()
+        [HttpGet("CartContent")]
+        public ActionResult<CartDto> GetCartContent([FromQuery]int userid)
         {
             try
             {
-                return Ok(_cartModel.GetCartContent());
+                return Ok(_cartModel.GetCartContent(userid));
             }
             catch
             {
@@ -30,21 +30,51 @@ namespace NamonaProject_v3_.Controllers
         }
     
 
-        [HttpPut("/EditCart/{id}")]
-        public ActionResult EditCart([FromQuery]int id, [FromBody]EditCartDto dto)
+        [HttpPut("EditCart")]
+        public async Task<ActionResult> EditCart([FromBody]EditCartDto dto)
         {
             try
             {
-                _cartModel.EditCart(id, dto);
+                await _cartModel.EditCart(dto);
                 return Ok();
             }
-            catch
+            catch(KeyNotFoundException)
             {
                 return NotFound();
             }
+            catch(InvalidDataException)
+            {
+                return StatusCode(406);
+            }
+            catch(Exception ex) 
+            {
+                return BadRequest();
+            }
         }
 
-        [HttpDelete("/DeleteCartItem/{id}")]
+        [HttpPut("addCart")]
+        public async Task<ActionResult> AddCart([FromBody] AddToCartDto dto)
+        {
+            try
+            {
+                await _cartModel.AddToCart(dto);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (InvalidDataException)
+            {
+                return StatusCode(406);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete("DeleteCartItem")]
         public async Task<ActionResult> DeleteCartItem([FromQuery]int id)
         {
             try
@@ -52,9 +82,13 @@ namespace NamonaProject_v3_.Controllers
                 await _cartModel.DeleteClothesFromCart(id);
                  return Ok();
             }
-            catch
+            catch (KeyNotFoundException)
             {
                 return NotFound();
+            }
+            catch(Exception)
+            {
+                return BadRequest();
             }
         }
     }

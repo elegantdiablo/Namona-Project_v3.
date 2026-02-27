@@ -23,8 +23,8 @@ namespace NamonaProject_v3_.Model
             }
             using var trx = _context.Database.BeginTransaction();
             _context.users.Add(new Users { Email = email, Password = HashPassword(password), Role = role, UserName = username });
-            _context.SaveChanges();
-            trx.Commit();
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
             await Task.CompletedTask;
         }
 
@@ -83,8 +83,8 @@ namespace NamonaProject_v3_.Model
             }
             using var trx = _context.Database.BeginTransaction();
             _context.users.Remove(user);
-            _context.SaveChanges();
-            trx.Commit();
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
             await Task.CompletedTask;
         }
         public async Task UpdatePassword(int userId, string newPassword)
@@ -96,8 +96,8 @@ namespace NamonaProject_v3_.Model
             }
             using var trx = _context.Database.BeginTransaction();
             user.Password = HashPassword(newPassword);
-            _context.SaveChanges();
-            trx.Commit();
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
             await Task.CompletedTask;
         }
 
@@ -110,8 +110,8 @@ namespace NamonaProject_v3_.Model
             }
             using var trx = _context.Database.BeginTransaction();
             user.Role = "Admin";
-            _context.SaveChanges();
-            trx.Commit();
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
             await Task.CompletedTask;
         }
     }

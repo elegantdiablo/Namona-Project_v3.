@@ -2,6 +2,7 @@
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace NamonaProject_v3_.Model
 {
@@ -28,8 +29,8 @@ namespace NamonaProject_v3_.Model
             using (var trx = _context.Database.BeginTransaction())
             {
                 _context.orders.Remove(_context.orders.Where(x => x.OrderId == id).First());
-                _context.SaveChanges();
-                trx.Commit();
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
             }
             await Task.CompletedTask;
         }
@@ -43,8 +44,8 @@ namespace NamonaProject_v3_.Model
                     OrderDate = order.OrderDate,
                     Address = order.Address
                 });
-                _context.SaveChanges();
-                trx.Commit();
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
             }
             await Task.CompletedTask;
         }
@@ -56,15 +57,15 @@ namespace NamonaProject_v3_.Model
                 var existingOrder = _context.orders.Where(x => x.OrderId == id).First();
                 existingOrder.OrderDate = order.OrderDate;
                 existingOrder.Address = order.Address;
-                _context.SaveChanges();
-                trx.Commit();
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
             }
             await Task.CompletedTask;
         }
 
 
 
-        public void CompleteOrder(int id)
+        public async Task CompleteOrder(int id)
         {
             var order = _context.orders.FirstOrDefault(x => x.OrderId == id);
 
@@ -74,7 +75,8 @@ namespace NamonaProject_v3_.Model
             order.Status = "Completed";
             order.CompletedAt = DateTime.UtcNow;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+          //  await trx.CommitAsync();
         }
 
 
@@ -83,8 +85,8 @@ namespace NamonaProject_v3_.Model
             using (var trx = _context.Database.BeginTransaction())
             {
                 _context.orders.RemoveRange(_context.orders);
-                _context.SaveChanges();
-                trx.Commit();
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
             }
             await Task.CompletedTask;
         }
@@ -95,7 +97,8 @@ namespace NamonaProject_v3_.Model
             if (order == null)
                 throw new Exception("Order not found");
             order.Status = status;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+            //await trx.CommitAsync();
 
             await Task.CompletedTask;
         }

@@ -12,7 +12,7 @@ namespace NamonaProject_v3_.Model
         {
             _context = context;
         }
-
+        /*
         public IEnumerable<CartDto> GetCartData()
         {
             return _context.cart.Select(x => new CartDto
@@ -21,10 +21,13 @@ namespace NamonaProject_v3_.Model
                 UserId = x.UserId,
             });
         }
-
-        public IEnumerable<CartItemDto> GetCartContent()
+        */
+        public IEnumerable<CartItemDto> GetCartContent(int userid)
         {
-            return _context.cart.Include(x => x.Clothing).Select(x => new CartItemDto
+            return _context.cart.Include(x => x.Clothing).ThenInclude(c => c.Category)
+                .Include(x => x.Clothing).ThenInclude(c => c.Gender)
+                .Where(x=> x.UserId == userid)
+                .Select(x => new CartItemDto
             {
                 ClothingId = x.ClothingId,
                 ClothingName = x.Clothing.ClothingName,
@@ -36,47 +39,75 @@ namespace NamonaProject_v3_.Model
                 Stock = x.Clothing.Stock,
                 Amount = x.Amount,
                 GenderId = x.Clothing.GenderId,
+                CategoryName = x.Clothing.Category.CategoryName,
+                GenderName = x.Clothing.Gender.GenderType
             });
         }
 
         public async Task AddToCart(AddToCartDto dto)
         {
+            if (!_context.cart.Any(x => x.ClothingId == dto.ClothingId))
+            {
+                throw new KeyNotFoundException("nincs ilyen ruha");
+            }
+            if (dto.Amount < 0 && dto.Amount > _context.clothes.Where(x => x.ClothingId == dto.ClothingId).Max(x => x.Stock))
+            {
+                throw new InvalidDataException();
+            }
+            int price = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price * dto.Amount;
             using (var trx = _context.Database.BeginTransaction())
             {
                 _context.cart.Add(new Cart
                 {
                     ClothingId = dto.ClothingId,
                     UserId = dto.UserId,
-                    Amount = dto.Amount
+                    Amount = dto.Amount,
+                    PriceSum = price
                 });
-                _context.SaveChanges();
-                trx.Commit();
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
                 await Task.CompletedTask;
             }
         }
         
         
         
-        public async Task EditCart(int id, EditCartDto dto)
+        public async Task EditCart( EditCartDto dto)
         {
+            if (!_context.cart.Any(x => x.ClothingId == dto.ClothingId))
+            {
+                throw new KeyNotFoundException("nincs ilyen ruha");
+            }
+            if (dto.Amount < 0 && dto.Amount > _context.clothes.Where(x=> x.ClothingId == dto.ClothingId).Max(x=> x.Stock))
+            {
+                throw new InvalidDataException();
+            }
+
             int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
+            int price = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price * dto.Amount;
+
             using (var trx = _context.Database.BeginTransaction())
                 {
-                _context.cart.Where(x => x.ClothingId == id).First().Amount = dto.Amount;               
-                _context.cart.Where(x => x.ClothingId == id).First().Amount = dto.Amount;               
-                _context.SaveChanges();
-                trx.Commit();
+                _context.cart.Where(x => x.ClothingId == Id).First().Amount = dto.Amount; 
+                _context.cart.Where(x => x.ClothingId == Id).First().PriceSum = price ; 
+                
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
             }
             await Task.CompletedTask;
         }
 
         public async Task DeleteClothesFromCart(int id)
         {
+            if (!_context.cart.Any(x => x.ClothingId == id))
+            {
+                throw new KeyNotFoundException("nincs ilyen ruha");
+            }
             using (var trx = _context.Database.BeginTransaction())
             {
                 _context.clothes.Remove(_context.clothes.Where(x => x.ClothingId == id).First());
-                _context.SaveChanges();
-                trx.Commit();
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
             }
 
             await Task.CompletedTask;
