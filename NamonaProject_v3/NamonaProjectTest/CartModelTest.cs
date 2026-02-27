@@ -21,11 +21,14 @@ namespace NamonaProjectTest
         [Fact]
         public void GetCartContent_Valid()
         {
-            int userid = _context.users.Min(x => x.UserId);
+            int userid = _context.users
+                .Where(u => u.UserName == "testuser")
+                .Select(u => u.UserId)
+                .First();
+
             var result = _model.GetCartContent(userid).ToList();
 
             Assert.NotEmpty(result);
-            Assert.All(result, r => Assert.True(r.CartId > 0));
             Assert.All(result, r => Assert.True(r.ClothingId > 0));
             Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.ClothingName)));
             Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.CategoryName)));

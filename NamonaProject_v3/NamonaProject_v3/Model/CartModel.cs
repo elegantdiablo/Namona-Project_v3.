@@ -29,6 +29,7 @@ namespace NamonaProject_v3_.Model
                 .Where(x=> x.UserId == userid)
                 .Select(x => new CartItemDto
             {
+                CartId = x.CartId,
                 ClothingId = x.ClothingId,
                 ClothingName = x.Clothing.ClothingName,
                 Collection = x.Clothing.Collection,
