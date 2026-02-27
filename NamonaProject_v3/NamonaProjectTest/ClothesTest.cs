@@ -1,4 +1,5 @@
-﻿using NamonaProject_v3_.DTO;
+﻿using Microsoft.VisualStudio.CodeCoverage;
+using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
 using System;
@@ -36,9 +37,9 @@ namespace NamonaProjectTest
             var dto = new ChangeClothingDataDto
             {
                 ClothingId = 999,
-                ClothingName = "Test",
-                Collection = "asd",
-                Category = "Test",
+                ClothingName = "Namona Classic Tee",
+                Collection = "Summer 2025",
+                Category = "T-Shirt",
                 GenderType = "Male",
                 Stock = 10,
                 Color = "Blue",
@@ -56,9 +57,9 @@ namespace NamonaProjectTest
             var dto = new ChangeClothingDataDto
             {
                 ClothingId = 1,
-                ClothingName = "Test",
-                Collection = "asd",
-                Category = "Test",
+                ClothingName = "Namona Classic Tee",
+                Collection = "Summer 2025",
+                Category = "T-Shirt",
                 GenderType = "Male",
                 Stock = 10,
                 Color = "Blue",
@@ -70,7 +71,7 @@ namespace NamonaProjectTest
             var updatedItem = _context.clothes
                 .First(x => 1 == cartItem.ClothingId);
 
-            Assert.Equal("Test", updatedItem.ClothingName);
+            Assert.Equal("Namona Classic Tee", updatedItem.ClothingName);
 
         }
         [Theory]
@@ -83,7 +84,7 @@ namespace NamonaProjectTest
         public async Task DeleteClothes_ExistingId()
         {
             var id = _context.clothes
-                .Where(r => r.ClothingName == "Hoodie")
+                .Where(r => r.ClothingName == "Namona Oversized Hoodie")
                 .Select(r => r.ClothingId)
                 .First();
 
@@ -99,8 +100,9 @@ namespace NamonaProjectTest
         [InlineData]
         public async Task AddNewCloth_ArgumentNull()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _model.AddClothes(null!));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _model.AddClothes(null!));
         }
+        [Fact]
         public async Task AddNewClothOK()
         {
             var amount = _context.clothes.Count();
@@ -110,7 +112,7 @@ namespace NamonaProjectTest
 
                 ClothingName = "Test",
                 Collection = "Winter 2025",
-                CategoryName = "Hoodie",
+                CategoryName = "T-Shirt",
                 GenderName = "Male",
                 Stock = 10,
                 Color = "Blue",

@@ -21,13 +21,14 @@ namespace NamonaProjectTest
         [Fact]
         public void GetCartContent_Valid()
         {
-            var cart = _model.GetCartContent();
-            var result = _model.GetCartContent().ToList();
+            int userid = _context.users.Min(x => x.UserId);
+            var result = _model.GetCartContent(userid).ToList();
 
             Assert.NotEmpty(result);
-            Assert.All(result, r => Assert.True(r.CartId >= 0));
+            Assert.All(result, r => Assert.True(r.CartId > 0));
             Assert.All(result, r => Assert.True(r.ClothingId > 0));
             Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.ClothingName)));
+            Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.CategoryName)));
             Assert.All(result, r => Assert.True(r.Price > 0));
         }
 
@@ -43,7 +44,7 @@ namespace NamonaProjectTest
                 Amount = newAmount
             };
 
-            await _model.EditCart(cartItem.ClothingId, dto);
+            await _model.EditCart(dto);
 
             var updatedItem = _context.cart
                 .First(x => x.ClothingId == cartItem.ClothingId);
@@ -70,7 +71,7 @@ namespace NamonaProjectTest
         public async Task DeleteClothes_RemovesItem0(int id)
         {
 
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _model.DeleteClothesFromCart(id));
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.DeleteClothesFromCart(id));
         }
     }
 }
