@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Model;
@@ -16,6 +17,7 @@ namespace NamonaProject_v3_.Controllers
             _cartModel = cartModel;
         }
 
+        [Authorize(Roles = "User")]
         [HttpGet("CartContent")]
         public ActionResult<CartDto> GetCartContent([FromQuery]int userid)
         {
@@ -28,8 +30,8 @@ namespace NamonaProject_v3_.Controllers
                 return NoContent();
             }
         }
-    
 
+        [Authorize(Roles = "User")]
         [HttpPut("EditCart")]
         public async Task<ActionResult> EditCart([FromBody]EditCartDto dto)
         {
@@ -51,7 +53,7 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize(Roles = "User")]
         [HttpPut("addCart")]
         public async Task<ActionResult> AddCart([FromBody] AddToCartDto dto)
         {
@@ -73,7 +75,7 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize(Roles = "User")]
         [HttpDelete("DeleteCartItem")]
         public async Task<ActionResult> DeleteCartItem([FromQuery]int id)
         {
