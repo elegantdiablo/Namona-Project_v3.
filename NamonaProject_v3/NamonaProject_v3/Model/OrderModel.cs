@@ -3,6 +3,7 @@ using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization.Metadata;
 
 namespace NamonaProject_v3_.Model
 {
@@ -20,7 +21,7 @@ namespace NamonaProject_v3_.Model
                 throw new KeyNotFoundException("nincs ilyen ruha");
             }
             var carts = _context.cart
-                    .Where(c => c.UserId == userid ) // csak aktív kosár
+                    .Where(c => c.UserId == userid) // csak aktív kosár
                     .Include(c => c.Clothing).ThenInclude(cl => cl.Category)
                     .Include(c => c.Clothing).ThenInclude(cl => cl.Gender)
                      .Select(c => new CartItemDto
@@ -152,7 +153,23 @@ namespace NamonaProject_v3_.Model
             await Task.CompletedTask;
         }
 
+        /* A stock adatbol kivonunk annyit ahány darab ruhát megrendelt a felhasználó */
+        public async Task ModifyStock(int orderid)
+        {
+            Orders rendeles = _context.orders.Where(x => x.OrderId == orderid).First();
 
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                List<Clothes> clothes2 = new();
+                foreach (Cart item in rendeles.Carts)
+                {
+
+                    _context.clothes.Where(x => item.ClothingId == x.ClothingId).First().Stock -= item.Amount;
+
+
+                }
+            }
+        }
 
     }
 }

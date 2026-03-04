@@ -29,14 +29,6 @@ namespace NamonaProject_v3_.Model
                 CategoryName   = x.Category.CategoryName
             });
         }
-        public IEnumerable<GenderDto> GetGenders()
-        {
-            return _context.genders.Select(x => new GenderDto
-            {
-                Genderid = x.GenderId,
-                Gendertype = x.GenderType
-            });
-        }
 
         public IEnumerable<CategoryDto> GetCategories()
         {
