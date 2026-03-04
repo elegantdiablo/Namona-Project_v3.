@@ -20,10 +20,10 @@
                     <ComboBoxItem Content="clothes"/>
                     <ComboBoxItem Content="user"/>
                 </ComboBox>
-                <ComboBox Grid.Column="1" Width="90" HorizontalAlignment="Right" SelectedIndex="0">
-                    <ComboBoxItem Content="add"/>
-                    <ComboBoxItem Content="update"/>
-                    <ComboBoxItem Content="delete"/>
+                <ComboBox Grid.Column="1" Width="90" HorizontalAlignment="Right" SelectedItem="{Binding SelectedAction}">
+                <ComboBoxItem Content="add"/>
+                <ComboBoxItem Content="update"/>
+                <ComboBoxItem Content="delete"/>
                 </ComboBox>
 
             </Grid>
