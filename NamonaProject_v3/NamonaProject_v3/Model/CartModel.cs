@@ -73,7 +73,7 @@ namespace NamonaProject_v3_.Model
         
         
         
-        public async Task EditCart( EditCartDto dto)
+        public async Task EditCart(EditCartDto dto)
         {
             if (!_context.cart.Any(x => x.ClothingId == dto.ClothingId))
             {
