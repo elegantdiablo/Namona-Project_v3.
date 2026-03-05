@@ -55,5 +55,17 @@ namespace NamonaProject_v3_.Model
             await Task.CompletedTask;
         }
 
+        public async Task DeleteGender(int id)
+        {
+            using(var trx = _context.Database.BeginTransaction())
+            {
+                _context.genders.Remove(_context.genders.Where(x => x.GenderId == id).First());
+
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
+            }
+            await Task.CompletedTask;
+        }
+
     }
 }
