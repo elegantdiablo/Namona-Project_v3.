@@ -29,6 +29,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
         [Authorize(Roles = "User")]
+        [HttpGet("mycart")]
         public ActionResult<MyCartDto> GetOrders([FromQuery]int userid)
         {
             try

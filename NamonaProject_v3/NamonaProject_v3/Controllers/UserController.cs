@@ -52,7 +52,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register(RegistrationDto dto)
+        public async Task<ActionResult> Register([FromBody] RegistrationDto dto)
         {
             try
             {
