@@ -35,7 +35,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("admin/login")]
-        public async Task<ActionResult> AdminLogin(string username, string password)
+        public async Task<ActionResult<UserDto>> AdminLogin(string username, string password)
         {
             try
             {
