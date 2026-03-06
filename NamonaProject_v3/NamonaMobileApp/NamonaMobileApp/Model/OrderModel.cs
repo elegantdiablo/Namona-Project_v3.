@@ -38,10 +38,20 @@ namespace NamonaMobileApp.Model
             var res = await session.Client.PutAsJsonAsync<ChangeClothingDataDto>("api/Order/UpdateOrder", dto);
 
         }
+        public async Task UpdateOrdeStatus(OrderDto dto)
+        {
+            var res = await session.Client.PutAsJsonAsync($"api/Order/UpdateOrder", dto);
+
+        }
+        public async Task CompleteOrder(OrderDto dto)
+        {
+            var res = await session.Client.PutAsJsonAsync($"api/Order/UpdateOrder", dto);
+
+        }
 
         public async Task DeleteOrder(int id)
         {
-            var res = await session.Client.DeleteFromJsonAsync($"api/Order/DeleteOrder?id={id}", null);
+            var res = await session.Client.DeleteFromJsonAsync($"api/Order/cancel?id={id}", null);
         }
     }
 }
