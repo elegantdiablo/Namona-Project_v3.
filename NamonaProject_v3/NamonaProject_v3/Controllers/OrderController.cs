@@ -16,7 +16,7 @@ namespace NamonaProject_v3_.Controllers
             _orderModel = orderModel;
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet]
+        [HttpGet("AllOrders")]
         public ActionResult GetAllOrders()
         {
             try
@@ -29,6 +29,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
         [Authorize(Roles = "User")]
+        [HttpGet("Orders")]
         public ActionResult<MyCartDto> GetOrders([FromQuery]int userid)
         {
             try
@@ -45,7 +46,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
         [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost("AddOrder")]
         public async Task<ActionResult> AddOrder([FromBody] AddOrderDto order)
         {
             try
