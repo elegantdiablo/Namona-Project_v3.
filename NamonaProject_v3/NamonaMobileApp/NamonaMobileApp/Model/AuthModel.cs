@@ -9,7 +9,7 @@ using NamonaProject_v3_.DTO;
 
 namespace NamonaMobileApp.Model
 {
-    internal class AuthModel
+    public class AuthModel
     {
 
         public readonly ApiSession _session;
@@ -44,8 +44,6 @@ namespace NamonaMobileApp.Model
             _session.Username = "";
             _session.Role = "";
 
-        }
-
-       
+        }       
     }
 }

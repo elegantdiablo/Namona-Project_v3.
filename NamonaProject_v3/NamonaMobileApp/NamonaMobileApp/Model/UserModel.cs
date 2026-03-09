@@ -8,7 +8,7 @@ using NamonaProject_v3_.DTO;
 
 namespace NamonaMobileApp.Model
 {
-    internal class UserModel
+    public class UserModel
     {
         public ApiSession session { get; set; }
         public UserModel(ApiSession _session)
@@ -33,4 +33,4 @@ namespace NamonaMobileApp.Model
         }
     }
 }
-}
+

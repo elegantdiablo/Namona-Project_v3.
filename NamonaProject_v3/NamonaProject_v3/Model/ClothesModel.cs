@@ -22,6 +22,7 @@ namespace NamonaProject_v3_.Model
                 ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
+                Size = x.Size,
                 Color = x.Color,
                 Price = x.Price,
                 Stock = x.Stock,
