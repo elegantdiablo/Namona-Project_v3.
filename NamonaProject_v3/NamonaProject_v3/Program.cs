@@ -41,7 +41,16 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 //builder.Services.AddAuthentication();
 var app = builder.Build();
 
-builder.Services.AddScoped<OrderModel>();
+/*using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<NamonaDbContext>();
+    var database = db.Database.EnsureCreated();
+    if (database)
+    {
+        DbSeeder.Seed(db);
+    }
+}*/
+
 
 
 // Configure the HTTP request pipeline.

@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:NamonaAvalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="640"
+             x:Class="NamonaAvalonia.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+   <Grid Margin="20">
+        <StackPanel Spacing="15">
+            <Grid ColumnDefinitions="*,*">
+                <ComboBox Grid.Column="0" Width="90" HorizontalAlignment="Left" SelectedIndex="0">
+                    <ComboBoxItem Content="cart"/>
+                    <ComboBoxItem Content="clothes"/>
+                    <ComboBoxItem Content="user"/>
+                </ComboBox>
+                <ComboBox Grid.Column="1" Width="90" HorizontalAlignment="Right" SelectedItem="{Binding SelectedAction}">
+                <ComboBoxItem Content="add"/>
+                <ComboBoxItem Content="update"/>
+                <ComboBoxItem Content="delete"/>
+                </ComboBox>
+
+            </Grid>
+
+            <TextBlock Text="ID" FontSize="16"/>
+            <TextBox Height="35"/>
+            <TextBlock Text="Name" FontSize="16"/>
+            <TextBox Height="35"/>
+            <TextBlock Text="Type" FontSize="16"/>
+            <TextBox Height="35"/>
+            <TextBlock Text="Gender" FontSize="16"/>
+            <TextBox Height="35"/>
+            <Button Content="Execute" Width="120" Height="45" HorizontalAlignment="Center" Margin="0,30,0,0" Background="Gray" Foreground="White"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

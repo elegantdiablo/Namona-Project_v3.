@@ -25,13 +25,14 @@ namespace NamonaProject_v3_.Persistance
         public int ClothingId { get; set; }
         public string ClothingName { get; set; }
         public string Collection { get; set; }
+        public string Size { get; set; }
         public int GenderId { get; set; }
         public int Stock { get; set; }
         public string Color { get; set; }
         public int Price { get; set; }
         public int CategoryId { get; set; }
-        public Category category { get; set; }
-        public Gender gender { get; set; }
+        public Category? Category { get; set; }
+        public Gender? Gender { get; set; }
 
     }
 
@@ -45,10 +46,13 @@ namespace NamonaProject_v3_.Persistance
         public int UserId { get; set; }
         [Required]
         public int Amount { get; set; }
-        public int PriceSum { get; set; }
-        public Clothes Clothes { get; set; }
+        public int? PriceSum { get; set; }
+        public Clothes Clothing { get; set; }
+        public Users? User { get; set; }
+        public int? OrderId { get; set; }
+        public Orders? Order { get; set; }
     }
-
+    [Index(nameof(Email), IsUnique =true)]
     public class Users
     {
         [Key]
@@ -59,10 +63,10 @@ namespace NamonaProject_v3_.Persistance
         [Required]
         public string Password { get; set; }
         [Required]
-        public string Email { get; set; }
-        [Required]
-        public int PhoneNumber { get; set; }
+        public string Email { get; set; }    
+        public string? PhoneNumber { get; set; }
         public string Role { get; set; }
+        public List<Cart>? Carts { get; set; }
     }
 
     public class Orders
@@ -70,15 +74,14 @@ namespace NamonaProject_v3_.Persistance
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderId { get; set; }
-        public int CartId { get; set; }
-        public DateTimeOffset OrderDate { get; set; }
+        public DateTimeOffset? OrderDate { get; set; }
         [Required]
         public string Address { get; set; }
-        public List<Cart> carts { get; set; }
-        public string Status { get; set; }
-        public DateTime CompletedAt { get; set; }
+        public List<Cart> Carts { get; set; }
+        public string Status { get; set; } = "InProgress"; // InProgress, Delivery, Done
+        public DateTime? CompletedAt { get; set; }
     }
-
+    [Index(nameof(CategoryName), IsUnique = true)]
     public class Category
     {
         [Key]
@@ -86,14 +89,15 @@ namespace NamonaProject_v3_.Persistance
         public int CategoryId { get; set; }
         [Required]
         public string CategoryName { get; set; }
-        public List<Clothes> clothes { get; set; }
+        public List<Clothes>? Clothes { get; set; }
     }
-
+    [Index(nameof(GenderType), IsUnique = true)]
     public class Gender
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GenderId { get; set; }
         public string GenderType { get; set; }
+        public List<Clothes>? Clothes { get; set; }
     }
 }

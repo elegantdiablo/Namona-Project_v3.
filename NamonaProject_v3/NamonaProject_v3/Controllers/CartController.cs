@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Model;
@@ -16,45 +17,80 @@ namespace NamonaProject_v3_.Controllers
             _cartModel = cartModel;
         }
 
-        [HttpGet("/CartContent")]
-        public ActionResult<CartDto> GetCartContent()
+        [Authorize(Roles = "User")]
+        [HttpGet("CartContent")]
+        public ActionResult<CartDto> GetCartContent([FromQuery]int userid)
         {
             try
             {
-                return Ok(_cartModel.GetCartContent());
+                return Ok(_cartModel.GetCartContent(userid));
             }
             catch
             {
                 return NoContent();
             }
         }
-    
 
-        [HttpPut("/EditCart/{id}")]
-        public ActionResult EditCart(int id, CartItemDto dto)
+        [Authorize(Roles = "User")]
+        [HttpPut("EditCart")]
+        public async Task<ActionResult> EditCart([FromBody]EditCartDto dto)
         {
             try
             {
-                _cartModel.EditCart(id, dto);
+                await _cartModel.EditCart(dto);
                 return Ok();
             }
-            catch
+            catch(KeyNotFoundException)
             {
                 return NotFound();
+            }
+            catch(InvalidDataException)
+            {
+                return StatusCode(406);
+            }
+            catch(Exception ex) 
+            {
+                return BadRequest();
             }
         }
-
-        [HttpDelete("/DeleteCartItem/{id}")]
-        public ActionResult DeleteCartItem(int id)
+        [Authorize(Roles = "User")]
+        [HttpPut("addCart")]
+        public async Task<ActionResult> AddCart([FromBody] AddToCartDto dto)
         {
             try
             {
-                _cartModel.DeleteClothes(id);
+                await _cartModel.AddToCart(dto);
                 return Ok();
             }
-            catch
+            catch (KeyNotFoundException)
             {
                 return NotFound();
+            }
+            catch (InvalidDataException)
+            {
+                return StatusCode(406);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+        [Authorize(Roles = "User")]
+        [HttpDelete("DeleteCartItem")]
+        public async Task<ActionResult> DeleteCartItem([FromQuery]int id)
+        {
+            try
+            {
+                await _cartModel.DeleteClothesFromCart(id);
+                 return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch(Exception)
+            {
+                return BadRequest();
             }
         }
     }

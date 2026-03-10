@@ -1,13 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace NamonaProject_v3_.DTO
+﻿namespace NamonaProject_v3_.DTO
 {
-    public class OrderDto
+    public class OrderDto : AddOrderDto
     {
         public int OrderId { get; set; }
-        public DateTimeOffset OrderDate { get; set; }
-        public string Address { get; set; }
-        public string Status { get; set; }
-        public DateTime CompletedAt { get; set; }
     }
 }

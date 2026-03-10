@@ -15,22 +15,23 @@ namespace NamonaProject_v3_.Model
             _context = context;
         }
 
-        public void Registration(string username, string password, string role = "User")
+        public async Task Registration(string email, string username, string password, string role = "User")
         {
-            if (_context.users.Any(x => x.UserName == username))
+            if (_context.users.Any(x => x.Email == email))
             {
                 throw new InvalidOperationException("already exists");
             }
             using var trx = _context.Database.BeginTransaction();
-            _context.users.Add(new Users { UserName = username, Password = HashPassword(password), Role = role });
-            _context.SaveChanges();
-            trx.Commit();
+            _context.users.Add(new Users { Email = email, Password = HashPassword(password), Role = role, UserName = username });
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
+            await Task.CompletedTask;
         }
 
-        public UserDto ValidateUser(string username, string password)
+        public async Task<UserDto> ValidateUser(string email, string password)
         {
             var hash = HashPassword(password);
-            var user = _context.users.Where(x => x.UserName == username);
+            var user = _context.users.Where(x => x.Email == email);
             return user.Where(x => x.Password == hash).Select(x => new UserDto
             {
                 UserId = x.UserId,
@@ -53,14 +54,16 @@ namespace NamonaProject_v3_.Model
             {
                 UserId = x.UserId,
                 UserName = x.UserName,
+                Email = x.Email,
+                Phone = x.PhoneNumber != null ? x.PhoneNumber : "",
                 Role = x.Role
             });
         }
 
-        public UserDto? AdminLogin(string username, string password)
+        public UserDto? AdminLogin(string email, string password)
         {
             var hash = HashPassword(password);
-            var user = _context.users.FirstOrDefault(x => x.UserName.ToLower() == username.ToLower() && x.Role == "Admin");
+            var user = _context.users.FirstOrDefault(x => x.Email.ToLower() == email.ToLower() && x.Role == "Admin");
             if (user == null || user.Password != hash)
             return null;
             return new UserDto
@@ -71,7 +74,7 @@ namespace NamonaProject_v3_.Model
             };
         }
 
-        public void DeleteUser(int userId)
+        public async Task DeleteUser(int userId)
         {
             var user = _context.users.Find(userId);
             if (user == null)
@@ -80,10 +83,11 @@ namespace NamonaProject_v3_.Model
             }
             using var trx = _context.Database.BeginTransaction();
             _context.users.Remove(user);
-            _context.SaveChanges();
-            trx.Commit();
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
+            await Task.CompletedTask;
         }
-        public void UpdatePassword(int userId, string newPassword)
+        public async Task UpdatePassword(int userId, string newPassword)
         {
             var user = _context.users.Find(userId);
             if (user == null)
@@ -92,11 +96,12 @@ namespace NamonaProject_v3_.Model
             }
             using var trx = _context.Database.BeginTransaction();
             user.Password = HashPassword(newPassword);
-            _context.SaveChanges();
-            trx.Commit();
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
+            await Task.CompletedTask;
         }
 
-        public void PromoteToAdmin(int userId)
+        public async Task PromoteToAdmin(int userId)
         {
             var user = _context.users.Find(userId);
             if (user == null)
@@ -105,8 +110,9 @@ namespace NamonaProject_v3_.Model
             }
             using var trx = _context.Database.BeginTransaction();
             user.Role = "Admin";
-            _context.SaveChanges();
-            trx.Commit();
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
+            await Task.CompletedTask;
         }
     }
 }
