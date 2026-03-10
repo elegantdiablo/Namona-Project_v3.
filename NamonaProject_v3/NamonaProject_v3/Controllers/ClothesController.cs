@@ -44,19 +44,7 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest();
             }
         }
-        [HttpGet("AllGenders")]
-        public ActionResult<NamonaDbContext> GetAllGenders()
-        {
-            try
-            {
-                return Ok(_clothesModel.GetGenders());
-            }
-
-            catch (Exception ex)
-            {
-                return BadRequest();
-            }
-        }
+       
         [Authorize(Roles = "Admin")]
         [HttpPost("add")]
 

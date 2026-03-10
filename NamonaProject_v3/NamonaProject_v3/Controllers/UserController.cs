@@ -17,11 +17,11 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login(string username, string password)
+        public async Task<ActionResult> Login([FromBody] LoginDto dto)
         {
             try
             {
-                await _userModel.ValidateUser(username, password);
+                await _userModel.ValidateUser(dto.UserName, dto.Password);
                 return Ok();
             }
             catch (InvalidOperationException ex)
@@ -35,7 +35,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("admin/login")]
-        public async Task<ActionResult> AdminLogin(string username, string password)
+        public async Task<ActionResult<UserDto>> AdminLogin(string username, string password)
         {
             try
             {

@@ -51,6 +51,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Create a scope from the built app to initialize the database
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<NamonaDbContext>();
+
+    dbContext.Database.EnsureCreated();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
