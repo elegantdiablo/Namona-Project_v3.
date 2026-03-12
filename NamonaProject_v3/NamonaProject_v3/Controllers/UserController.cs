@@ -157,19 +157,27 @@ namespace NamonaProject_v3_.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet("me")]
-        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        public async Task<IActionResult> Me()
         {
-            var email = User.Identity?.Name;
-            if (string.IsNullOrEmpty(email))
+            if (!User.Identity.IsAuthenticated)
                 return Unauthorized();
 
+            var email = User.Identity.Name;
+
             var user = await _userModel.GetByEmail(email);
+
             if (user == null)
-                return NotFound();
+                return Unauthorized();
 
             return Ok(user);
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return Ok();
         }
     }
 }
