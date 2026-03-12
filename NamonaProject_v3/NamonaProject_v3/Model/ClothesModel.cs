@@ -107,9 +107,18 @@ namespace NamonaProject_v3_.Model
             await Task.CompletedTask;
         }
 
-        
+        public IEnumerable<CategoryDto> GetCategories()
+        {
+            return _context.categories.Select(x => new CategoryDto
+            {
+                Id = x.CategoryId,
+                CategoryName = x.CategoryName
+            });
+        }
+
+
         /*
-        public IEnumerable<AllClothesDto> FilterClothes(
+        public IEnumerable<AllClothesDto> FilterClothes(    
             string category,
             string collection,
             string gender,

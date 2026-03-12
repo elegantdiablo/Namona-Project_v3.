@@ -38,7 +38,7 @@ namespace NamonaMobileApp.Model
 
         public async Task RemoveClothes(int id)
         {
-            var res = await session.Client.DeleteAsync($"api/Clothes/remove?id={id}";
+            var res = await session.Client.DeleteAsync($"api/Clothes/remove?id={id}");
             res.EnsureSuccessStatusCode();
         }
     }
