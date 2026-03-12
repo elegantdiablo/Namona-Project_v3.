@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Model;
@@ -30,8 +31,9 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("AddGender")]
+
         public async Task<ActionResult> AddGender(AddGenderDto dto)
         {
             try
@@ -49,7 +51,7 @@ namespace NamonaProject_v3_.Controllers
 
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("ModifyGender")]
         public async Task<ActionResult> ModifyGender(EditGenderDto dto)
         {
@@ -68,7 +70,7 @@ namespace NamonaProject_v3_.Controllers
 
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteGender")]
         public async Task<ActionResult> DeleteGender(int id)
         {

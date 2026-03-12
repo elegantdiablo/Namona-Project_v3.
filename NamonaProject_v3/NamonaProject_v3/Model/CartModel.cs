@@ -12,16 +12,6 @@ namespace NamonaProject_v3_.Model
         {
             _context = context;
         }
-        /*
-        public IEnumerable<CartDto> GetCartData()
-        {
-            return _context.cart.Select(x => new CartDto
-            {
-                CartId = x.CartId,
-                UserId = x.UserId,
-            });
-        }
-        */
         public IEnumerable<CartItemDto> GetCartContent(int userid)
         {
             return _context.cart.Include(x => x.Clothing).ThenInclude(c => c.Category)
@@ -39,6 +29,7 @@ namespace NamonaProject_v3_.Model
                 PriceSum = x.PriceSum,
                 Stock = x.Clothing.Stock,
                 Amount = x.Amount,
+                Size = x.Clothing.Size,
                 GenderId = x.Clothing.GenderId,
                 CategoryName = x.Clothing.Category.CategoryName,
                 GenderName = x.Clothing.Gender.GenderType
@@ -90,7 +81,7 @@ namespace NamonaProject_v3_.Model
             using (var trx = _context.Database.BeginTransaction())
                 {
                 _context.cart.Where(x => x.ClothingId == Id).First().Amount = dto.Amount; 
-                _context.cart.Where(x => x.ClothingId == Id).First().PriceSum = price ; 
+                _context.cart.Where(x => x.ClothingId == Id).First().PriceSum = price ;
                 
                 await _context.SaveChangesAsync();
                 await trx.CommitAsync();

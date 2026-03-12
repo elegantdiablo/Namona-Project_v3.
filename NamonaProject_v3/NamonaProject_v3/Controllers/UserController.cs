@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Model;
+using System.Security.Claims;
 
 namespace NamonaProject_v3_.Controllers
 {
@@ -17,60 +21,73 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] LoginDto dto)
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto dto)
         {
             try
             {
-                await _userModel.ValidateUser(dto.UserName, dto.Password);
-                return Ok();
+                var user = await _userModel.ValidateUser(dto.UserName, dto.Password);
+
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Email),
+            new Claim(ClaimTypes.Role, user.Role)
+        };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identity)
+                );
+                return Ok(user);
             }
             catch (InvalidOperationException ex)
             {
-                return Unauthorized(ex.Message);
+                return Unauthorized(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
         [HttpPost("admin/login")]
-        public async Task<ActionResult<UserDto>> AdminLogin(string username, string password)
+        public ActionResult<UserDto> AdminLogin([FromBody] LoginDto dto)
         {
             try
             {
-                var user = _userModel.AdminLogin(username, password);
+                var user = _userModel.AdminLogin(dto.UserName, dto.Password);
+
                 if (user == null)
-                    return Unauthorized("Invalid admin credentials");
+                    return Unauthorized(new { message = "Invalid admin credentials" });
 
                 return Ok(user);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] RegistrationDto dto)
+        public async Task<IActionResult> Register([FromBody] RegistrationDto dto)
         {
             try
             {
-                await _userModel.Registration(dto.Email, dto.UserName, dto.Password);
-                return Ok("User successfully registered");
+                await _userModel.Register(dto);
+                return Ok(new { message = "User created successfully" });
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(ex.Message);
+                return Conflict(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpGet]
+        [HttpGet("ShowUsers")]
         public ActionResult<IEnumerable<UserDto>> GetUsers()
         {
             try
@@ -79,7 +96,7 @@ namespace NamonaProject_v3_.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
@@ -90,34 +107,34 @@ namespace NamonaProject_v3_.Controllers
             try
             {
                 await _userModel.DeleteUser(id);
-                return Ok("User deleted");
+                return Ok(new { message = "User deleted" });
             }
             catch (InvalidOperationException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
         [Authorize]
         [HttpPut("{id}/password")]
-        public async Task<ActionResult> UpdatePassword(int id, string newPassword)
+        public async Task<ActionResult> UpdatePassword(int id, [FromBody] string newPassword)
         {
             try
             {
                 await _userModel.UpdatePassword(id, newPassword);
-                return Ok("Password updated");
+                return Ok(new { message = "Password updated" });
             }
             catch (InvalidOperationException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
@@ -127,17 +144,32 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-               await _userModel.PromoteToAdmin(id);
-                return Ok("User promoted to admin");
+                await _userModel.PromoteToAdmin(id);
+                return Ok(new { message = "User promoted to admin" });
             }
             catch (InvalidOperationException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        {
+            var email = User.Identity?.Name;
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized();
+
+            var user = await _userModel.GetByEmail(email);
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
         }
     }
 }

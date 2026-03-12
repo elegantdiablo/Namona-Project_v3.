@@ -19,7 +19,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpGet("AllClothes")]
-        public ActionResult<NamonaDbContext> GetAllClothes()
+        public ActionResult<IEnumerable<AllClothesDto>> GetAllClothes()
         {
             try
             {
@@ -32,7 +32,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
         [HttpGet("AllCategories")]
-        public ActionResult<NamonaDbContext> GetAllCategories()
+        public ActionResult<IEnumerable<CategoryDto>> GetAllCategories()
         {
             try
             {
@@ -107,7 +107,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpGet("FilterClothes")]
-        public ActionResult<NamonaDbContext> FilterClothes(
+        public ActionResult<IEnumerable<AllClothesDto>> FilterClothes(
             [FromBody]FilterClothesDto dto)
         {
             try
@@ -121,7 +121,7 @@ namespace NamonaProject_v3_.Controllers
 
         }
         [HttpGet("SearchClothes")]
-        public ActionResult<NamonaDbContext> SearchClothes([FromQuery]string text)
+        public ActionResult<IEnumerable<AllClothesDto>> SearchClothes([FromQuery]string text)
         {
             try
             {

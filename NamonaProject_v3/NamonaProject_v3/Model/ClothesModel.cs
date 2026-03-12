@@ -22,6 +22,7 @@ namespace NamonaProject_v3_.Model
                 ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
+                Size = x.Size,
                 Color = x.Color,
                 Price = x.Price,
                 Stock = x.Stock,
@@ -30,15 +31,6 @@ namespace NamonaProject_v3_.Model
             });
         }
 
-        public IEnumerable<CategoryDto> GetCategories()
-        {
-            return _context.categories.Select(x => new CategoryDto
-            {
-                Id = x.CategoryId,
-                CategoryName = x.CategoryName
-            });
-        }
-        //[Authorize(Roles = "Admin")]
         public async Task ChangeClothingData(ChangeClothingDataDto dto)
         {
             int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
@@ -58,6 +50,7 @@ namespace NamonaProject_v3_.Model
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Collection = dto.Collection;     
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Color = dto.Color;
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price = dto.Price;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Size = dto.Size;
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().GenderId = Genderid;
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().CategoryId = CategId;
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Stock = dto.Stock;
@@ -67,22 +60,6 @@ namespace NamonaProject_v3_.Model
             }
             await Task.CompletedTask;
         }
-        //[Authorize(Roles = "Admin")]
-        public async Task DeleteClothes(int id)
-        {
-            if(!_context.clothes.Any(x => x.ClothingId == id))
-            {
-                throw new KeyNotFoundException();   
-            }
-            using (var trx = _context.Database.BeginTransaction())
-            {
-                _context.clothes.Remove(_context.clothes.Where(x => x.ClothingId == id).First());
-                await _context.SaveChangesAsync();
-                await trx.CommitAsync();
-            }
-            await Task.CompletedTask;
-        }
-
         public async Task AddClothes(AddClothesDto dto)
         {
             if (!_context.categories.Any(x => x.CategoryName == dto.CategoryName))
@@ -98,15 +75,16 @@ namespace NamonaProject_v3_.Model
             using (var trx = _context.Database.BeginTransaction())
             {
                 _context.clothes.Add(new Clothes
-                { 
+                {
                     ClothingName = dto.ClothingName,
                     Collection = dto.Collection,
                     CategoryId = CategId,
                     GenderId = Genderid,
+                    Size = dto.Size,
                     Stock = dto.Stock,
                     Color = dto.Color,
                     Price = dto.Price,
-                    
+
                 });
                 await _context.SaveChangesAsync();
                 await trx.CommitAsync();
@@ -114,8 +92,33 @@ namespace NamonaProject_v3_.Model
             }
             await Task.CompletedTask;
         }
+        public async Task DeleteClothes(int id)
+        {
+            if(!_context.clothes.Any(x => x.ClothingId == id))
+            {
+                throw new KeyNotFoundException();   
+            }
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.clothes.Remove(_context.clothes.Where(x => x.ClothingId == id).First());
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
+            }
+            await Task.CompletedTask;
+        }
+
+        public IEnumerable<CategoryDto> GetCategories()
+        {
+            return _context.categories.Select(x => new CategoryDto
+            {
+                Id = x.CategoryId,
+                CategoryName = x.CategoryName
+            });
+        }
+
+
         /*
-        public IEnumerable<AllClothesDto> FilterClothes(
+        public IEnumerable<AllClothesDto> FilterClothes(    
             string category,
             string collection,
             string gender,

@@ -34,6 +34,7 @@ namespace NamonaProject_v3_.Model
                          Color = c.Clothing.Color,
                          Price = c.Clothing.Price,
                          PriceSum = c.PriceSum,
+                         Size = c.Clothing.Size,
                          Stock = c.Clothing.Stock,
                          Amount = c.Amount,
                          GenderId = c.Clothing.GenderId,

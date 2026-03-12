@@ -5,22 +5,32 @@ using NamonaProject_v3_.Persistance;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContextPool<NamonaDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Connect")));
+// DATABASE
+builder.Services.AddDbContextPool<NamonaDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Connect"))
+);
+
+// SERVICES
 builder.Services.AddTransient<CartModel>();
 builder.Services.AddTransient<ClothesModel>();
 builder.Services.AddTransient<UserModel>();
 builder.Services.AddTransient<OrderModel>();
+
+// CONTROLLERS
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// SWAGGER
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+// AUTHENTICATION
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/api/User/login";
         options.LogoutPath = "/api/User/logout";
+
         options.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = ctx =>
@@ -28,52 +38,48 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 ctx.Response.StatusCode = 401;
                 return Task.CompletedTask;
             },
-            OnRedirectToLogout = ctx =>
+            OnRedirectToAccessDenied = ctx =>
             {
                 ctx.Response.StatusCode = 403;
                 return Task.CompletedTask;
             }
         };
-    }
-);
+    });
 
+// CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://127.0.0.1:5500", "http://localhost:5500")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins(
+                "http://127.0.0.1:5500",
+                "http://localhost:5500"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
 });
 
 var app = builder.Build();
 
-// Create a scope from the built app to initialize the database
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<NamonaDbContext>();
-
-    dbContext.Database.EnsureCreated();
-}
-
-// Configure the HTTP request pipeline.
+// SWAGGER
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else
-{
-    app.UseHttpsRedirection();
-}
 
+// app.UseHttpsRedirection();
+
+// CORS
+app.UseCors("FrontendPolicy");
+
+// AUTH
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowFrontend");
 
+// CONTROLLERS
 app.MapControllers();
 
 app.Run();

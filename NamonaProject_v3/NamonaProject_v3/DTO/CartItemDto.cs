@@ -9,6 +9,7 @@
         public string CategoryName { get; set; }
         public int GenderId { get; set; }
         public string GenderName { get; set; }
+        public string Size { get; set; }
         public int Stock { get; set; }
         public int Amount { get; set; }
         public string Color { get; set; }
