@@ -30,6 +30,9 @@ builder.Services
     {
         options.LoginPath = "/api/User/login";
         options.LogoutPath = "/api/User/logout";
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.HttpOnly = true;
 
         options.Events = new CookieAuthenticationEvents
         {
@@ -52,8 +55,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy.WithOrigins(
+                "http://localhost:5500",
                 "http://127.0.0.1:5500",
-                "http://localhost:5500"
+                "https://localhost:5500",
+                "https://127.0.0.1:5500"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()

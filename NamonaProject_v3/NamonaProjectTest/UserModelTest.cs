@@ -66,7 +66,7 @@ namespace NamonaProjectTest
         {
             var uniqueUsername = $"testuser_{Guid.NewGuid()}";
             var password = "testpassword";
-            await _model.Registration("asd@gmail.com", uniqueUsername, password);
+            await _model.Register(new NamonaProject_v3_.DTO.RegistrationDto { Email = "asd@gmail.com", UserName = uniqueUsername, Password = password });
             var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
             Assert.NotNull(userInDb);
             Assert.Equal(uniqueUsername, userInDb.UserName);
@@ -88,7 +88,7 @@ namespace NamonaProjectTest
             var uniqueUsername = "testuser";
             var password = "testpassword";
             
-          await  Assert.ThrowsAsync<InvalidOperationException>(() => _model.Registration("user@namona.hu", uniqueUsername, password));
+          await  Assert.ThrowsAsync<InvalidOperationException>(() => _model.Register(new NamonaProject_v3_.DTO.RegistrationDto { Email = "user@namona.hu", UserName = uniqueUsername, Password = password }));
           
         }
 
@@ -126,7 +126,7 @@ namespace NamonaProjectTest
         {
             var uniqueUsername = $"testuser_{Guid.NewGuid()}";
             var password = "testpassword";
-            await _model.Registration("adminadmin@namona.hu", uniqueUsername, password);
+            await _model.Register(new NamonaProject_v3_.DTO.RegistrationDto { Email = "adminadmin@namona.hu", UserName = uniqueUsername, Password = password });
             var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
             Assert.NotNull(userInDb);
             userInDb.Role = "Admin";
