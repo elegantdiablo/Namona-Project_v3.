@@ -1,8 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-ios</TargetFramework>
-    <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+    <TargetFramework>net8.0-ios17.0</TargetFramework>
+    <TargetPlatformVersion>17.0</TargetPlatformVersion>
+    <SupportedOSPlatformVersion>17.0</SupportedOSPlatformVersion>
+    <CheckEolWorkloads>false</CheckEolWorkloads>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

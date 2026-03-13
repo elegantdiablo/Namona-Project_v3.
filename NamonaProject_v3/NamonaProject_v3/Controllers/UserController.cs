@@ -25,7 +25,7 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-                var user = await _userModel.ValidateUser(dto.UserName, dto.Password);
+                var user = await _userModel.ValidateUser(dto.Email, dto.Password);
 
                 var claims = new List<Claim>
         {
@@ -55,7 +55,7 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-                var user = _userModel.AdminLogin(dto.UserName, dto.Password);
+                var user = _userModel.AdminLogin(dto.Email, dto.Password);
 
                 if (user == null)
                     return Unauthorized(new { message = "Invalid admin credentials" });
