@@ -51,11 +51,11 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("admin/login")]
-        public ActionResult<UserDto> AdminLogin([FromBody] LoginDto dto)
+        public ActionResult<UserDto> AdminLogin([FromBody] LoginAdminDTO dto)
         {
             try
             {
-                var user = _userModel.AdminLogin(dto.Email, dto.Password);
+                var user = _userModel.AdminLogin(dto.UserName, dto.Password);
 
                 if (user == null)
                     return Unauthorized(new { message = "Invalid admin credentials" });

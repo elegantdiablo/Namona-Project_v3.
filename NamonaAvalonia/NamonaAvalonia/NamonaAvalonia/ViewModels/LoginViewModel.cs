@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using NamonaAvalonia.Model;
+using NamonaAvalonia.DTO;
 
 namespace NamonaAvalonia.ViewModels
 {
@@ -15,7 +16,7 @@ namespace NamonaAvalonia.ViewModels
     {
         private readonly ClientModel _userService;
 
-        private string _email;
+        private string _username;
         private string _password;
         private string _errorMessage;
 
@@ -27,13 +28,17 @@ namespace NamonaAvalonia.ViewModels
             LoginCommand = new RelayCommand(async () => await Login());
         }
 
-        public string Email
+        public string Username
         {
-            get => _email;
+            get => _username;
             set
             {
-                _email = value;
-                OnPropertyChanged();
+                if (_username != value) 
+                {
+                    _username = value;
+                    OnPropertyChanged();
+                }
+                
             }
         }
 
@@ -63,20 +68,18 @@ namespace NamonaAvalonia.ViewModels
         {
             try
             {
-                var dto = new LoginDto
-                {
-                    UserName = Email,
-                    Password = Password
-                };
-
-                var user = await _userService.LogIn(dto);
-
-                if (user == null)
+                if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
                 {
                     ErrorMessage = "Hibás email vagy jelszó";
                     return;
                 }
+                var dto = new LoginAdminDTO
+                {
+                    UserName = Username,
+                    Password = Password
+                };
 
+                await _userService.LogIn(dto);
                 ErrorMessage = "";
                 // sikeres login kezelés
             }

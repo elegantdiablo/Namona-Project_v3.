@@ -20,10 +20,10 @@ namespace NamonaAvalonia.Model
                 BaseAddress = new Uri(port)
             };
         }
-        public async Task<UserDto> LogIn(LoginDto dto)
+        public async Task LogIn(LoginAdminDTO dto)
         {
             var response = await _client.PostAsJsonAsync("api/user/admin/login", dto);
-            return await response.Content.ReadFromJsonAsync<UserDto>();
+            response.EnsureSuccessStatusCode();
         }
         public async Task<List<AllClothesDto>> GetAllClothes()
         {
