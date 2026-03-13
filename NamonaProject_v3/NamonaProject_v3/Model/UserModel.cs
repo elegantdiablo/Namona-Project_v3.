@@ -20,8 +20,7 @@ namespace NamonaProject_v3_.Model
             var existingUser = await _context.users
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-            if (existingUser != null)
-                throw new InvalidOperationException("User with this email already exists");
+            if (existingUser != null) throw new InvalidOperationException("User with this email already exists");
             var user = new Users
             {
                 Email = dto.Email,
@@ -76,12 +75,12 @@ namespace NamonaProject_v3_.Model
                 });
         }
 
-        public UserDto? AdminLogin(string email, string password)
+        public async Task<UserDto?> AdminLogin(string username, string password)
         {
             var hash = HashPassword(password);
 
             var user = _context.users
-                .FirstOrDefault(x => x.Email.ToLower() == email.ToLower() && x.Role == "Admin");
+                .FirstOrDefault(x => x.UserName.ToLower() == username.ToLower() && x.Role == "Admin");
 
             if (user == null || user.Password != hash)
                 return null;

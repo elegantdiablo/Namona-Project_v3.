@@ -9,10 +9,13 @@ using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using NamonaAvalonia.Model;
 using NamonaAvalonia.DTO;
+using CommunityToolkit.Mvvm.Messaging;
+using NamonaAvalonia.Messages;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace NamonaAvalonia.ViewModels
 {
-    internal class LoginViewModel : ViewModelBase
+    public partial class LoginViewModel : ViewModelBase, IRecipient<NavigateToAdminPanelMessage>
     {
         private readonly ClientModel _userService;
 
@@ -25,7 +28,9 @@ namespace NamonaAvalonia.ViewModels
         public LoginViewModel(ClientModel userService)
         {
             _userService = userService;
+            WeakReferenceMessenger.Default.RegisterAll(this);
             LoginCommand = new RelayCommand(async () => await Login());
+            
         }
 
         public string Username
@@ -73,6 +78,7 @@ namespace NamonaAvalonia.ViewModels
                     ErrorMessage = "Hibás email vagy jelszó";
                     return;
                 }
+                
                 var dto = new LoginAdminDTO
                 {
                     UserName = Username,
@@ -80,8 +86,9 @@ namespace NamonaAvalonia.ViewModels
                 };
 
                 await _userService.LogIn(dto);
-                ErrorMessage = "";
+                ErrorMessage = "Logged in";
                 // sikeres login kezelés
+                WeakReferenceMessenger.Default.Send(new NavigateToAdminPanelMessage());
             }
             catch
             {
@@ -89,6 +96,8 @@ namespace NamonaAvalonia.ViewModels
             }
         }
 
+        [ObservableProperty] private ViewModelBase? _mainPage;
+        public void Receive(NavigateToAdminPanelMessage message) => MainPage = new AdminPanelVM();
 
     }
 }

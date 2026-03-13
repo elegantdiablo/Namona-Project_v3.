@@ -33,9 +33,11 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
+            ClientModel _model = new ClientModel("http://localhost:5222/");
+            LoginViewModel viewmodel = new LoginViewModel(_model);
             singleViewPlatform.MainView = new MainView
             {
-                DataContext = new MainViewModel()
+                DataContext = viewmodel
             };
         }
 

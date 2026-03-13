@@ -1,16 +1,48 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:NamonaAvalonia.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="NamonaAvalonia.Views.MainView"
-             x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:views="using:NamonaAvalonia"
+			 xmlns:vm="using:NamonaAvalonia.ViewModels"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:Class="NamonaAvalonia.Views.MainView"
+			 x:DataType="vm:LoginViewModel">
+	<Design.DataContext>
+		<vm:LoginViewModel/>
+	</Design.DataContext>
+	<UserControl.DataTemplates>
+		<DataTemplate DataType="vm:AdminPanelVM">
+			<views:AdminPanel />
+		</DataTemplate>
+	</UserControl.DataTemplates>
+	<Grid IsHitTestVisible="{Binding MainPage, Converter={x:Static ObjectConverters.IsNull}}">
+		<StackPanel Spacing="10"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					Width="300"
+					IsVisible="{Binding MainPage, Converter={x:Static ObjectConverters.IsNull}}">
+			<TextBlock Text="Admin Panel"
+					   FontSize="24"
+					   HorizontalAlignment="Center"/>
 
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			<TextBox Watermark="Username"
+					 Text="{Binding Username}" />
+
+			<TextBox Watermark="Password"
+					 PasswordChar="*"
+					 Text="{Binding Password}" />
+
+			<Button Content="Login"
+					Command="{Binding LoginCommand}" />
+
+			<TextBlock Text="{Binding ErrorMessage}"
+					   Foreground="Red"
+					   TextWrapping="Wrap"
+					   HorizontalAlignment="Center"/>
+		</StackPanel>
+		<TransitioningContentControl Content="{Binding MainPage}" ZIndex="5" />
+
+	</Grid>
+
+
 </UserControl>
