@@ -54,7 +54,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
         [Authorize(Roles = "User")]
-        [HttpPut("addCart")]
+        [HttpPost("addCart")]
         public async Task<ActionResult> AddCart([FromBody] AddToCartDto dto)
         {
             try
