@@ -7,6 +7,33 @@
              x:Class="NamonaAvalonia.AdminPanel"
              x:DataType="viewmodels:AdminPanelVM">
   
-		<Label Content="you in"/>
+		<Grid>
+           <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="*"/>
+               <ColumnDefinition Width="*"/>
+           </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Admin Panel"
+                       FontSize="24"
+                       HorizontalAlignment="Center"
+                       Grid.ColumnSpan="2"/>
+            <Button Grid.Column="0" Grid.Row="1" Content="Users" Padding="50" Grid.RowSpan="2" HorizontalAlignment="Center" Command="{Binding}"/>
+            <Button Grid.Column="0" Grid.Row="3" Content="Clothes" Padding="50" Grid.RowSpan="2" HorizontalAlignment="Center" Command="{Binding}"/>
+            <Button Grid.Column="0" Grid.Row="5" Content="Carts" Padding="50" Grid.RowSpan="2" HorizontalAlignment="Center" Command="{Binding}"/>
+            <Button Grid.Column="1" Grid.Row="1" Content="Orders" Padding="50" Grid.RowSpan="2" HorizontalAlignment="Center" Command="{Binding}"/>
+            <Button Grid.Column="1" Grid.Row="3" Content="Categories" Padding="50" Grid.RowSpan="2" HorizontalAlignment="Center" Command="{Binding}"/>
+            <Button Grid.Column="1" Grid.Row="5" Content="Genders" Padding="50" Grid.RowSpan="2" HorizontalAlignment="Center" Command="{Binding}"/>
+
+        </Grid>
+
+    
     
 </UserControl>
