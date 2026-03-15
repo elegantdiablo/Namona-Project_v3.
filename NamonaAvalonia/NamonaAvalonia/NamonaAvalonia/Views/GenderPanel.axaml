@@ -1,8 +1,179 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="NamonaAvalonia.GenderPanel">
-  Welcome to Avalonia!
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
+			 mc:Ignorable="d"
+			 >
+
+	<Grid Background="#0f172a">
+
+		<ScrollViewer>
+
+			<StackPanel Margin="30" Spacing="25">
+
+				<!-- TITLE -->
+
+				<TextBlock Text="Gender Management"
+						   FontSize="28"
+						   FontWeight="Bold"
+						   Foreground="White"/>
+
+				<!-- GRID OF PANELS -->
+
+				<Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+					  ColumnSpacing="20"
+					  RowSpacing="20">
+
+					<!-- CREATE GENDER -->
+
+					<Border Classes="panel">
+
+						<StackPanel Spacing="10">
+
+							<TextBlock Text="Create Gender"
+									   Classes="panelTitle"/>
+
+							<TextBox Watermark="Gender name"
+									 Text="{Binding}"/>
+
+							<Button Content="Create"
+									Command="{Binding }"
+									Classes="actionButton"/>
+
+						</StackPanel>
+
+					</Border>
+
+
+					<!-- EDIT GENDER -->
+
+					<Border Classes="panel" Grid.Column="1">
+
+						<StackPanel Spacing="10">
+
+							<TextBlock Text="Edit Gender"
+									   Classes="panelTitle"/>
+
+							<ComboBox Items="{Binding }"
+									  SelectedItem="{Binding }"
+									  DisplayMemberBinding="{Binding }"/>
+
+							<TextBox Watermark="New name"
+									 Text="{Binding }"/>
+
+							<Button Content="Update"
+									Command="{Binding }"
+									Classes="actionButton"/>
+
+						</StackPanel>
+
+					</Border>
+
+
+					<!-- DELETE GENDER -->
+
+					<Border Classes="panel" Grid.Row="1">
+
+						<StackPanel Spacing="10">
+
+							<TextBlock Text="Delete Gender"
+									   Classes="panelTitle"/>
+
+							<ComboBox Items="{Binding }"
+									  SelectedItem="{Binding }"
+									  DisplayMemberBinding="{Binding }"/>
+
+							<Button Content="Delete"
+									Command="{Binding }"
+									Classes="dangerButton"/>
+
+						</StackPanel>
+
+					</Border>
+
+
+					<!-- LIST / MANAGE GENDERS -->
+
+					<Border Classes="panel"
+							Grid.Row="1"
+							Grid.Column="1">
+
+						
+
+					</Border>
+
+				</Grid>
+
+			</StackPanel>
+
+		</ScrollViewer>
+
+	</Grid>
+
+
+	<!-- STYLES -->
+
+	<UserControl.Styles>
+
+		<!-- Panel style -->
+
+		<Style Selector="Border.panel">
+
+			<Setter Property="Background" Value="#1e293b"/>
+			<Setter Property="Padding" Value="20"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="BoxShadow" Value="0 4 15 0 #00000066"/>
+
+		</Style>
+
+
+		<!-- Title -->
+
+		<Style Selector="TextBlock.panelTitle">
+
+			<Setter Property="FontSize" Value="18"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Foreground" Value="White"/>
+
+		</Style>
+
+
+		<!-- Action button -->
+
+		<Style Selector="Button.actionButton">
+
+			<Setter Property="Background" Value="#3b82f6"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="10"/>
+
+		</Style>
+
+		<Style Selector="Button.actionButton:pointerover">
+
+			<Setter Property="Background" Value="#2563eb"/>
+
+		</Style>
+
+
+		<!-- Danger button -->
+
+		<Style Selector="Button.dangerButton">
+
+			<Setter Property="Background" Value="#ef4444"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="10"/>
+
+		</Style>
+
+		<Style Selector="Button.dangerButton:pointerover">
+
+			<Setter Property="Background" Value="#dc2626"/>
+
+		</Style>
+
+	</UserControl.Styles>
+
 </UserControl>
