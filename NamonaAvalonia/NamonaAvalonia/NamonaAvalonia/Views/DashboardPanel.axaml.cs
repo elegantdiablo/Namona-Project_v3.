@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace NamonaAvalonia;
 
-public partial class GenderPanel : UserControl
+public partial class DashboardPanel : UserControl
 {
-    public GenderPanel()
+    public DashboardPanel()
     {
         InitializeComponent();
     }

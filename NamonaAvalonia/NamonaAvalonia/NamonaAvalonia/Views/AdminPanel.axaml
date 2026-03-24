@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:NamonaAvalonia"
 			 xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
 			 x:Class="NamonaAvalonia.AdminPanel"
 			 x:DataType="viewmodels:AdminPanelVM">
@@ -29,13 +30,12 @@
 
 				<Separator Margin="0 10"/>
 
-				<Button Classes="nav" Content="🏠 Dashboard" Command="{Binding}"/>
-				<Button Classes="nav" Content="👤 Users" Command="{Binding}"/>
-				<Button Classes="nav" Content="🛒 Orders" Command="{Binding}"/>
-				<Button Classes="nav" Content="👕 Clothes" Command="{Binding}"/>
-				<Button Classes="nav" Content="📦 Categories" Command="{Binding}"/>
-				<Button Classes="nav" Content="⚧ Genders" Command="{Binding}"/>
-				<Button Classes="nav" Content="🛍 Carts" Command="{Binding}"/>
+				<Button Classes="nav" Content="🏠 Dashboard" Command="{Binding ToDashboardCommand}"/>
+				<Button Classes="nav" Content="👤 Users" Command="{Binding ToUserCommand}"/>
+				<Button Classes="nav" Content="🛒 Orders" Command="{Binding ToOrdersCommand}"/>
+				<Button Classes="nav" Content="👕 Clothes" Command="{Binding ToClothesCommand}"/>
+				<Button Classes="nav" Content="📦 Categories" Command="{Binding ToCategoriesCommand}"/>
+				<Button Classes="nav" Content="🛍 Carts" Command="{Binding ToCartCommand}"/>
 
 			</StackPanel>
 
@@ -52,17 +52,17 @@
 
 				<Grid ColumnDefinitions="*,Auto,Auto">
 
-					
+
 
 					<Border Grid.Column="2"
 							Background="#1e293b"
 							CornerRadius="20">
 
 						<TextBlock Grid.Column="1"
-							   Text="❌"
-							   FontSize="18"
-							   Margin="20 0"
-							   VerticalAlignment="Center"/>
+								   Text="❌"
+								   FontSize="18"
+								   Margin="20 0"
+								   VerticalAlignment="Center"/>
 
 					</Border>
 
@@ -72,77 +72,28 @@
 
 
 			<!-- DASHBOARD CONTENT -->
-			<ScrollViewer Grid.Row="1">
-
-				<StackPanel Margin="30" Spacing="25">
-
-					<TextBlock Text="Dashboard"
-							   FontSize="28"
-							   FontWeight="Bold"
-							   Foreground="White"/>
-
-
-					<!-- STAT CARDS -->
-					<WrapPanel>
-
-						<Border Classes="statCard">
-							<StackPanel>
-								<TextBlock Text="Users"
-										   Classes="cardTitle"/>
-								<TextBlock Text="{Binding}"
-										   Classes="cardValue"/>
-							</StackPanel>
-						</Border>
-
-						<Border Classes="statCard">
-							<StackPanel>
-								<TextBlock Text="Orders"
-										   Classes="cardTitle"/>
-								<TextBlock Text="{Binding}"
-										   Classes="cardValue"/>
-							</StackPanel>
-						</Border>
-
-						<Border Classes="statCard">
-							<StackPanel>
-								<TextBlock Text="Revenue"
-										   Classes="cardTitle"/>
-								<TextBlock Text="{Binding}"
-										   Classes="cardValue"/>
-							</StackPanel>
-						</Border>
-
-						<Border Classes="statCard">
-							<StackPanel>
-								<TextBlock Text="Products"
-										   Classes="cardTitle"/>
-								<TextBlock Text="{Binding}"
-										   Classes="cardValue"/>
-							</StackPanel>
-						</Border>
-
-					</WrapPanel>
-
-
-					<!-- TABLE / CONTENT AREA -->
-					<Border Classes="panel">
-
-						<StackPanel>
-
-							<TextBlock Text="Recent Orders"
-									   FontSize="18"
-									   FontWeight="Bold"
-									   Margin="0 0 0 10"/>
-
-
-
-						</StackPanel>
-
-					</Border>
-
-				</StackPanel>
-
-			</ScrollViewer>
+			<ContentControl Content="{Binding CurrentPage}">
+				<ContentControl.DataTemplates>
+					<DataTemplate DataType="viewmodels:AdminPanelVM">
+						<local:DashboardPanel />
+					</DataTemplate>
+					<DataTemplate DataType="viewmodels:UserPanelViewModel">
+						<local:UserPanel />
+					</DataTemplate>
+					<DataTemplate DataType="viewmodels:CartPanelViewModel">
+						<local:CartPanel />
+					</DataTemplate>
+					<DataTemplate DataType="viewmodels:OrderPanelViewModel">
+						<local:OrderPanel />
+					</DataTemplate>
+					<DataTemplate DataType="viewmodels:CategoryPanelViewModel">
+						<local:CategoryPanel />
+					</DataTemplate>
+					<DataTemplate DataType="viewmodels:ClothesPanelViewModel">
+						<local:ClothesPanel />
+					</DataTemplate>
+				</ContentControl.DataTemplates>
+			</ContentControl>
 
 		</Grid>
 

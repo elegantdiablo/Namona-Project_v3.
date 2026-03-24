@@ -71,6 +71,9 @@ namespace NamonaAvalonia.ViewModels
 
         private async Task Login()
         {
+            //EZ CSAK TEST
+            SuccessLogin.Invoke(this, EventArgs.Empty);
+
             try
             {
                 if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
@@ -88,7 +91,7 @@ namespace NamonaAvalonia.ViewModels
                 await _userService.LogIn(dto);
                 ErrorMessage = "Logged in";
                 // sikeres login kezelés
-                WeakReferenceMessenger.Default.Send(new NavigateToAdminPanelMessage());
+                //SuccessLogin.Invoke(this, EventArgs.Empty);
             }
             catch
             {
