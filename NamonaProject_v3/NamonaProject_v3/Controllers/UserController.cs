@@ -28,10 +28,10 @@ namespace NamonaProject_v3_.Controllers
                 var user = await _userModel.ValidateUser(dto.Email, dto.Password);
 
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
-        };
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role)
+                };
 
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.SignInAsync(
@@ -51,14 +51,24 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("admin/login")]
-        public ActionResult<UserDto> AdminLogin([FromBody] LoginDto dto)
+        public async Task<ActionResult<UserDto>> AdminLogin([FromBody] LoginAdminDTO dto)
         {
             try
             {
-                var user = _userModel.AdminLogin(dto.Email, dto.Password);
+                var user = await _userModel.AdminLogin(dto.UserName, dto.Password);
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Role, user.Role)
+                };
 
-                if (user == null)
-                    return Unauthorized(new { message = "Invalid admin credentials" });
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identity)
+                );
+
+                if (user == null) return Unauthorized(new { message = "Invalid admin credentials" });
 
                 return Ok(user);
             }

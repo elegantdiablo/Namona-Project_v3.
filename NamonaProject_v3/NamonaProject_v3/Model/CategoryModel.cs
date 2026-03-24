@@ -28,7 +28,6 @@ namespace NamonaProject_v3_.Model
             {
                 _context.categories.Add(new Category
                 {
-                    CategoryId = dto.CategoryId,
                     CategoryName = dto.CategoryName
                 });
                 await _context.SaveChangesAsync();

@@ -32,7 +32,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
         [HttpGet("AllCategories")]
-        public ActionResult<IEnumerable<CategoryDto>> GetAllCategories()
+        public ActionResult<IEnumerable<AllCategoryDto>> GetAllCategories()
         {
             try
             {
