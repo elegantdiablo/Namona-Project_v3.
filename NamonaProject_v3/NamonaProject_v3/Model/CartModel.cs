@@ -12,97 +12,134 @@ namespace NamonaProject_v3_.Model
         {
             _context = context;
         }
-        public IEnumerable<CartItemDto> GetCartContent(int userid)
+        public MyCartDto GetCartContent(int userid)
         {
-            return _context.cart.Include(x => x.Clothing).ThenInclude(c => c.Category)
+            var carts = _context.cart.Include(x => x.Clothing).ThenInclude(c => c.Category)
                 .Include(x => x.Clothing).ThenInclude(c => c.Gender)
-                .Where(x=> x.UserId == userid)
+                .Where(x => x.UserId == userid && x.OrderId == null)
                 .Select(x => new CartItemDto
+                {
+                    CartId = x.CartId,
+                    UserId = x.UserId,
+                    ClothingId = x.ClothingId,
+                    ClothingName = x.Clothing.ClothingName,
+                    Collection = x.Clothing.Collection,
+                    CategoryId = x.Clothing.CategoryId,
+                    Color = x.Clothing.Color,
+                    Price = x.Clothing.Price,
+                    PriceSum = x.PriceSum,
+                    Stock = x.Clothing.Stock,
+                    Amount = x.Amount,
+                    Size = x.Clothing.Size,
+                    GenderId = x.Clothing.GenderId,
+                    CategoryName = x.Clothing.Category.CategoryName,
+                    GenderName = x.Clothing.Gender.GenderType
+                })
+                .ToList();
+
+            return new MyCartDto
             {
-                CartId = x.CartId,
-                ClothingId = x.ClothingId,
-                ClothingName = x.Clothing.ClothingName,
-                Collection = x.Clothing.Collection,
-                CategoryId = x.Clothing.CategoryId,
-                Color = x.Clothing.Color,
-                Price = x.Clothing.Price,
-                PriceSum = x.PriceSum,
-                Stock = x.Clothing.Stock,
-                Amount = x.Amount,
-                Size = x.Clothing.Size,
-                GenderId = x.Clothing.GenderId,
-                CategoryName = x.Clothing.Category.CategoryName,
-                GenderName = x.Clothing.Gender.GenderType
-            });
+                UserId = userid,
+                Carts = carts
+            };
         }
 
         public async Task AddToCart(AddToCartDto dto)
         {
-            if (!_context.cart.Any(x => x.ClothingId == dto.ClothingId))
+            var clothing = await _context.clothes.FirstOrDefaultAsync(x => x.ClothingId == dto.ClothingId);
+            if (clothing == null)
             {
                 throw new KeyNotFoundException("nincs ilyen ruha");
             }
-            if (dto.Amount < 0 && dto.Amount > _context.clothes.Where(x => x.ClothingId == dto.ClothingId).Max(x => x.Stock))
+
+            if (dto.Amount < 1 || dto.Amount > clothing.Stock)
             {
                 throw new InvalidDataException();
             }
-            int price = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price * dto.Amount;
-            using (var trx = _context.Database.BeginTransaction())
+
+            var existingCartItem = await _context.cart.FirstOrDefaultAsync(x =>
+                x.ClothingId == dto.ClothingId &&
+                x.UserId == dto.UserId &&
+                x.OrderId == null);
+
+            using (var trx = await _context.Database.BeginTransactionAsync())
             {
-                _context.cart.Add(new Cart
+                if (existingCartItem != null)
                 {
-                    ClothingId = dto.ClothingId,
-                    UserId = dto.UserId,
-                    Amount = dto.Amount,
-                    PriceSum = price
-                });
+                    var updatedAmount = existingCartItem.Amount + dto.Amount;
+                    if (updatedAmount > clothing.Stock)
+                    {
+                        throw new InvalidDataException();
+                    }
+
+                    existingCartItem.Amount = updatedAmount;
+                    existingCartItem.PriceSum = clothing.Price * updatedAmount;
+                }
+                else
+                {
+                    _context.cart.Add(new Cart
+                    {
+                        ClothingId = dto.ClothingId,
+                        UserId = dto.UserId,
+                        Amount = dto.Amount,
+                        PriceSum = clothing.Price * dto.Amount
+                    });
+                }
+
                 await _context.SaveChangesAsync();
                 await trx.CommitAsync();
-                await Task.CompletedTask;
             }
         }
         
         
         
-        public async Task EditCart(EditCartDto dto)
+        public async Task EditCart(int userId, EditCartDto dto)
         {
-            if (!_context.cart.Any(x => x.ClothingId == dto.ClothingId))
+            var cartItem = await _context.cart
+                .Include(x => x.Clothing)
+                .FirstOrDefaultAsync(x =>
+                    x.ClothingId == dto.ClothingId &&
+                    x.UserId == userId &&
+                    x.OrderId == null);
+
+            if (cartItem == null)
             {
                 throw new KeyNotFoundException("nincs ilyen ruha");
             }
-            if (dto.Amount < 0 && dto.Amount > _context.clothes.Where(x=> x.ClothingId == dto.ClothingId).Max(x=> x.Stock))
+
+            if (dto.Amount < 1 || dto.Amount > cartItem.Clothing.Stock)
             {
                 throw new InvalidDataException();
             }
 
-            int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
-            int price = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price * dto.Amount;
+            using (var trx = await _context.Database.BeginTransactionAsync())
+            {
+                cartItem.Amount = dto.Amount;
+                cartItem.PriceSum = cartItem.Clothing.Price * dto.Amount;
 
-            using (var trx = _context.Database.BeginTransaction())
-                {
-                _context.cart.Where(x => x.ClothingId == Id).First().Amount = dto.Amount; 
-                _context.cart.Where(x => x.ClothingId == Id).First().PriceSum = price ;
-                
                 await _context.SaveChangesAsync();
                 await trx.CommitAsync();
             }
-            await Task.CompletedTask;
         }
 
-        public async Task DeleteClothesFromCart(int id)
+        public async Task DeleteClothesFromCart(int userId, int clothingId)
         {
-            if (!_context.cart.Any(x => x.ClothingId == id))
+            var cartItem = await _context.cart.FirstOrDefaultAsync(x =>
+                x.ClothingId == clothingId &&
+                x.UserId == userId &&
+                x.OrderId == null);
+
+            if (cartItem == null)
             {
                 throw new KeyNotFoundException("nincs ilyen ruha");
             }
-            using (var trx = _context.Database.BeginTransaction())
+
+            using (var trx = await _context.Database.BeginTransactionAsync())
             {
-                _context.clothes.Remove(_context.clothes.Where(x => x.ClothingId == id).First());
+                _context.cart.Remove(cartItem);
                 await _context.SaveChangesAsync();
                 await trx.CommitAsync();
             }
-
-            await Task.CompletedTask;
         }
     }
 }

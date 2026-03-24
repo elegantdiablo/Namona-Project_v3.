@@ -10,10 +10,29 @@ namespace NamonaProject_v3_.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly OrderModel _orderModel;
+        private readonly UserModel _userModel;
 
-        public OrdersController(OrderModel orderModel)
+        public OrdersController(OrderModel orderModel, UserModel userModel)
         {
             _orderModel = orderModel;
+            _userModel = userModel;
+        }
+
+        private async Task<int?> GetAuthenticatedUserId()
+        {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return null;
+            }
+
+            var email = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return null;
+            }
+
+            var user = await _userModel.GetByEmail(email);
+            return user?.UserId;
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("AllOrders")]
@@ -30,11 +49,17 @@ namespace NamonaProject_v3_.Controllers
         }
         [Authorize(Roles = "User")]
         [HttpGet("Orders")]
-        public ActionResult<MyCartDto> GetOrders([FromQuery]int userid)
+        public async Task<ActionResult<IEnumerable<OrderHistoryDto>>> GetOrders([FromQuery]int userid)
         {
             try
             {
-                return Ok(_orderModel.MyCart(userid));
+                var currentUserId = await GetAuthenticatedUserId();
+                if (!currentUserId.HasValue)
+                {
+                    return Unauthorized();
+                }
+
+                return Ok(_orderModel.GetOrdersForUser(currentUserId.Value));
             }
             catch (KeyNotFoundException)
             {
@@ -43,6 +68,34 @@ namespace NamonaProject_v3_.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+        [Authorize(Roles = "User")]
+        [HttpPost("Checkout")]
+        public async Task<ActionResult> Checkout([FromBody] CheckoutOrderDto dto)
+        {
+            try
+            {
+                var currentUserId = await GetAuthenticatedUserId();
+                if (!currentUserId.HasValue)
+                {
+                    return Unauthorized();
+                }
+
+                var orderId = await _orderModel.CheckoutOrder(currentUserId.Value, dto);
+                return Ok(new { orderId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidDataException)
+            {
+                return StatusCode(406);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Admin")]
