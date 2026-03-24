@@ -11,19 +11,44 @@ namespace NamonaProject_v3_.Controllers
     public class CartController : ControllerBase
     {
         private readonly CartModel _cartModel;
+        private readonly UserModel _userModel;
 
-        public CartController(CartModel cartModel)
+        public CartController(CartModel cartModel, UserModel userModel)
         {
             _cartModel = cartModel;
+            _userModel = userModel;
+        }
+
+        private async Task<int?> GetAuthenticatedUserId()
+        {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return null;
+            }
+
+            var email = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return null;
+            }
+
+            var user = await _userModel.GetByEmail(email);
+            return user?.UserId;
         }
 
         [Authorize(Roles = "User")]
         [HttpGet("CartContent")]
-        public ActionResult<CartDto> GetCartContent([FromQuery]int userid)
+        public async Task<ActionResult<MyCartDto>> GetCartContent([FromQuery] int userid)
         {
             try
             {
-                return Ok(_cartModel.GetCartContent(userid));
+                var currentUserId = await GetAuthenticatedUserId();
+                if (!currentUserId.HasValue)
+                {
+                    return Unauthorized();
+                }
+
+                return Ok(_cartModel.GetCartContent(currentUserId.Value));
             }
             catch
             {
@@ -37,7 +62,13 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-                await _cartModel.EditCart(dto);
+                var currentUserId = await GetAuthenticatedUserId();
+                if (!currentUserId.HasValue)
+                {
+                    return Unauthorized();
+                }
+
+                await _cartModel.EditCart(currentUserId.Value, dto);
                 return Ok();
             }
             catch(KeyNotFoundException)
@@ -59,6 +90,13 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
+                var currentUserId = await GetAuthenticatedUserId();
+                if (!currentUserId.HasValue)
+                {
+                    return Unauthorized();
+                }
+
+                dto.UserId = currentUserId.Value;
                 await _cartModel.AddToCart(dto);
                 return Ok();
             }
@@ -81,7 +119,13 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-                await _cartModel.DeleteClothesFromCart(id);
+                var currentUserId = await GetAuthenticatedUserId();
+                if (!currentUserId.HasValue)
+                {
+                    return Unauthorized();
+                }
+
+                await _cartModel.DeleteClothesFromCart(currentUserId.Value, id);
                  return Ok();
             }
             catch (KeyNotFoundException)
