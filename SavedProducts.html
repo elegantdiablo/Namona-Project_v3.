@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="Namonacart.css">
+    <link rel="stylesheet" href="SavedProducts.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Products</title>
+</head>
+<body>
+    <header>
+    <button id="menuButton" class="menu-icon">☰</button>
+    <img class="midlogo" src="namonalogo.jpg" alt="Namona">
+
+    <div class="profile-container">
+    <button class="profile-btn">
+        <div class="Profile-pic-wrapper">
+            <img src="profpic.jpg" class="Profile-pic" alt="Profile Picture">
+        </div>
+    </button>
+</div>
+
+<div id="profileMenu" class="profile-menu">
+    <a href="NamonaRegister.html">📝 Register</a>
+    <a href="NamonaLogin.html">🔐 Login</a>
+    <a href="SavedProducts.html">💾 Saved products</a>
+    <a href="MyOrders.html">📦 My orders</a>
+    <a href="AboutUs.html">ℹ️ About us</a>
+</div>
+
+<button id="cartButton" class="cart-icon"><img src="carticon-removebg-preview.png" alt="Cart"></button>
+
+</header>
+<nav id="sideMenu">
+    <a href="Namona.html">Main Page</a>
+    <a href="Tshirts.html">T-shirts</a>
+    <a href="Hoodies.html">Hoodies</a>
+    <a href="Pants.html">Pants</a>
+</nav>
+
+    <h1>Saved Products</h1>
+
+    <div id="savedContainer">
+        <p id="savedMessage" class="saved-message"></p>
+        <div id="savedItems"></div>
+    </div>
+
+<script src="Script.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", loadSavedProducts);
+
+    function loadSavedProducts() {
+        var savedItems = document.getElementById("savedItems");
+        var savedMessage = document.getElementById("savedMessage");
+        var products = getSavedProducts();
+
+        if (!products || products.length === 0) {
+            savedMessage.textContent = "No saved products yet.";
+            return;
+        }
+
+        savedMessage.textContent = "";
+        savedItems.innerHTML = "";
+
+        for (var i = 0; i < products.length; i++) {
+            var item = products[i];
+
+            var row = document.createElement("div");
+            row.className = "saved-item";
+            row.id = "saved-item-" + item.id;
+
+            var imgDiv = document.createElement("div");
+            imgDiv.className = "saved-item-image";
+            var img = document.createElement("img");
+            img.src = item.image;
+            img.alt = item.name;
+            imgDiv.appendChild(img);
+
+            var infoDiv = document.createElement("div");
+            infoDiv.className = "saved-item-info";
+            var h3 = document.createElement("h3");
+            h3.textContent = item.name;
+            var pPrice = document.createElement("p");
+            pPrice.className = "saved-item-price";
+            pPrice.textContent = item.price;
+            infoDiv.appendChild(h3);
+            infoDiv.appendChild(pPrice);
+
+            var actionsDiv = document.createElement("div");
+            actionsDiv.className = "saved-item-actions";
+
+            var viewLink = document.createElement("a");
+            viewLink.href = item.page;
+            viewLink.className = "view-product-btn";
+            viewLink.textContent = "View Product";
+
+            var removeBtn = document.createElement("button");
+            removeBtn.className = "remove-saved-btn";
+            removeBtn.textContent = "\uD83D\uDDD1 Remove";
+            removeBtn.setAttribute("data-id", item.id);
+            removeBtn.onclick = function () {
+                removeSavedItem(parseInt(this.getAttribute("data-id")));
+            };
+
+            actionsDiv.appendChild(viewLink);
+            actionsDiv.appendChild(removeBtn);
+
+            row.appendChild(imgDiv);
+            row.appendChild(infoDiv);
+            row.appendChild(actionsDiv);
+            savedItems.appendChild(row);
+        }
+    }
+
+    function removeSavedItem(id) {
+        var saved = getSavedProducts();
+        var newList = [];
+        for (var i = 0; i < saved.length; i++) {
+            if (saved[i].id !== id) {
+                newList.push(saved[i]);
+            }
+        }
+        localStorage.setItem("savedProducts", JSON.stringify(newList));
+
+        var row = document.getElementById("saved-item-" + id);
+        if (row) row.remove();
+
+        var savedItems = document.getElementById("savedItems");
+        if (savedItems.children.length === 0) {
+            document.getElementById("savedMessage").textContent = "No saved products yet.";
+        }
+    }
+</script>
+</body>
+</html>

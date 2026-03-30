@@ -1,0 +1,123 @@
+.orders-message {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+#ordersContainer {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.order-card {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    color: white;
+}
+
+.order-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.order-header h2 {
+    margin: 0;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 22px;
+}
+
+.order-date {
+    color: #aaa;
+    font-size: 14px;
+}
+
+.order-status {
+    margin-left: auto;
+    padding: 4px 12px;
+    background: #FFC700;
+    color: black;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.order-item:last-of-type {
+    border-bottom: none;
+}
+
+.order-item-info {
+    flex: 2;
+}
+
+.order-item-info h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+}
+
+.order-item-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #ccc;
+}
+
+.order-item-qty {
+    flex: 0 0 auto;
+    font-size: 16px;
+    color: #ccc;
+}
+
+.order-item-price {
+    flex: 0 0 auto;
+    font-size: 18px;
+    color: #FFC700;
+    font-weight: bold;
+    min-width: 80px;
+    text-align: right;
+}
+
+.order-total {
+    text-align: right;
+    font-size: 20px;
+    color: white;
+    padding-top: 12px;
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .order-item {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .order-item-info {
+        flex: 1 1 100%;
+    }
+
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .order-status {
+        margin-left: 0;
+    }
+}
