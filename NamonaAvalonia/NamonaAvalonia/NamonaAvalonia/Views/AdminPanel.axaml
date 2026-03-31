@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:NamonaAvalonia"
 			 xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
 			 x:Class="NamonaAvalonia.AdminPanel"
 			 x:DataType="viewmodels:AdminPanelVM">
@@ -52,97 +53,36 @@
 
 				<Grid ColumnDefinitions="*,Auto,Auto">
 
-					
+
 
 					<Border Grid.Column="2"
 							Background="#1e293b"
 							CornerRadius="20">
 
 						<TextBlock Grid.Column="1"
-							   Text="❌"
-							   FontSize="18"
-							   Margin="20 0"
-							   VerticalAlignment="Center"/>
+								   Text="❌"
+								   FontSize="18"
+								   Margin="20 0"
+								   VerticalAlignment="Center"/>
 
 					</Border>
 
 				</Grid>
 
 			</Border>
-
+			<ContentControl Content="{Binding CurrentContent}">
+				<ContentControl.DataTemplates>
+					<DataTemplate DataType="viewmodels:DashboardViewModel">
+						<local:DashboardPanel />
+					</DataTemplate>
+					<!--<DataTemplate DataType="vm:SettingsViewModel">
+						<local:Dashboard />
+					</DataTemplate>-->
+				</ContentControl.DataTemplates>
+			</ContentControl>
 
 			<!-- DASHBOARD CONTENT -->
-			<ScrollViewer Grid.Row="1">
-
-				<StackPanel Margin="30" Spacing="25">
-
-					<TextBlock Text="Dashboard"
-							   FontSize="28"
-							   FontWeight="Bold"
-							   Foreground="White"/>
-
-
-					<!-- STAT CARDS -->
-					<WrapPanel>
-
-						<Border Classes="statCard">
-							<StackPanel>
-								<TextBlock Text="Users"
-										   Classes="cardTitle"/>
-								<TextBlock Text="{Binding}"
-										   Classes="cardValue"/>
-							</StackPanel>
-						</Border>
-
-						<Border Classes="statCard">
-							<StackPanel>
-								<TextBlock Text="Orders"
-										   Classes="cardTitle"/>
-								<TextBlock Text="{Binding}"
-										   Classes="cardValue"/>
-							</StackPanel>
-						</Border>
-
-						<Border Classes="statCard">
-							<StackPanel>
-								<TextBlock Text="Revenue"
-										   Classes="cardTitle"/>
-								<TextBlock Text="{Binding}"
-										   Classes="cardValue"/>
-							</StackPanel>
-						</Border>
-
-						<Border Classes="statCard">
-							<StackPanel>
-								<TextBlock Text="Products"
-										   Classes="cardTitle"/>
-								<TextBlock Text="{Binding}"
-										   Classes="cardValue"/>
-							</StackPanel>
-						</Border>
-
-					</WrapPanel>
-
-
-					<!-- TABLE / CONTENT AREA -->
-					<Border Classes="panel">
-
-						<StackPanel>
-
-							<TextBlock Text="Recent Orders"
-									   FontSize="18"
-									   FontWeight="Bold"
-									   Margin="0 0 0 10"/>
-
-
-
-						</StackPanel>
-
-					</Border>
-
-				</StackPanel>
-
-			</ScrollViewer>
+			
 
 		</Grid>
 

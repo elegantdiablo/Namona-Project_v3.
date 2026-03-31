@@ -39,6 +39,13 @@ public partial class App : Application
             {
                 DataContext = viewmodel
             };
+            viewmodel.SuccessLogin += (s,e) =>
+            {
+                singleViewPlatform.MainView = new AdminPanel
+                {
+                    DataContext = new AdminPanelVM()
+                };
+            };
         }
 
         base.OnFrameworkInitializationCompleted();
