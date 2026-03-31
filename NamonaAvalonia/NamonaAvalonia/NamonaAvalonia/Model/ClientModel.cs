@@ -83,44 +83,44 @@ namespace NamonaAvalonia.Model
         }
         public async Task<List<OrderDto>> GetAllOrder()
         {
-            var res = await _client.GetFromJsonAsync<List<OrderDto>>("api/Order/AllOrders");
+            var res = await _client.GetFromJsonAsync<List<OrderDto>>("api/Orders/AllOrders");
             return res;
 
         }
         public async Task<List<OrderDto>> GetAllOrdersFromUser(int id)
         {
-            var res = await _client.GetFromJsonAsync<List<OrderDto>>($"api/Order/AllOrders?id={id}");
+            var res = await _client.GetFromJsonAsync<List<OrderDto>>($"api/Orders/AllOrders?id={id}");
             return res;
 
         }
         public async Task AddOrder(OrderDto dto)
         {
-            var res = await _client.PostAsJsonAsync<OrderDto>("api/Order/AddOrder", dto);
+            var res = await _client.PostAsJsonAsync<OrderDto>("api/Orders/AddOrder", dto);
             res.EnsureSuccessStatusCode();
         }
 
         public async Task UpdateOrder(ChangeClothingDataDto dto)
         {
-            var res = await _client.PutAsJsonAsync<ChangeClothingDataDto>("api/Order/UpdateOrder", dto);
+            var res = await _client.PutAsJsonAsync<ChangeClothingDataDto>("api/Orders/UpdateOrder", dto);
             res.EnsureSuccessStatusCode();
 
         }
         public async Task UpdateOrdeStatus(OrderDto dto)
         {
-            var res = await _client.PutAsJsonAsync($"api/Order/UpdateOrder", dto);
+            var res = await _client.PutAsJsonAsync($"api/Orders/UpdateOrder", dto);
             res.EnsureSuccessStatusCode();
 
         }
         public async Task CompleteOrder(OrderDto dto)
         {
-            var res = await _client.PutAsJsonAsync($"api/Order/UpdateOrder", dto);
+            var res = await _client.PutAsJsonAsync($"api/Orders/UpdateOrder", dto);
             res.EnsureSuccessStatusCode();
 
         }
 
         public async Task DeleteOrder(int id)
         {
-            var res = await _client.DeleteAsync($"api/Order/cancel?id={id}");
+            var res = await _client.DeleteAsync($"api/Orders/cancel?id={id}");
             res.EnsureSuccessStatusCode();
         }
         public async Task<List<AllCategoryDto>> GetAllCategories()

@@ -34,7 +34,7 @@ public partial class App : Application
             {
                 desktop.MainWindow.Content = new AdminPanel
                 {
-                    DataContext = new AdminPanelVM()
+                    DataContext = new AdminPanelVM(_model)
                 };
             };
         }
@@ -50,7 +50,7 @@ public partial class App : Application
             {
                 singleViewPlatform.MainView = new AdminPanel
                 {
-                    DataContext = new AdminPanelVM()
+                    DataContext = new AdminPanelVM(_model)
                 };
             };
         }

@@ -4,24 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using NamonaAvalonia.Model;
 
 namespace NamonaAvalonia.ViewModels
 {
     public partial class AdminPanelVM : ViewModelBase
     {
-        public AdminPanelVM() 
+        public ClientModel _model;
+
+        private DashboardViewModel _dashboard;
+
+        public AdminPanelVM(ClientModel model) 
         {
-            CurrentPage = new DashboardViewModel();
+            _model = model;
+            _dashboard = new DashboardViewModel(_model);    
+            CurrentPage = _dashboard;
+            ToDashboardCommand.Execute(null);
+
         }
 
         public ViewModelBase CurrentPage { get; set; }
 
-        public RelayCommand ToDashboardCommand => new RelayCommand(() => CurrentPage = new DashboardViewModel());
-        public RelayCommand ToUserCommand => new RelayCommand(() => CurrentPage = new UserPanelViewModel());
-        public RelayCommand ToOrdersCommand => new RelayCommand(() => CurrentPage = new OrderPanelViewModel());
-        public RelayCommand ToClothesCommand => new RelayCommand(() => CurrentPage = new ClothesPanelViewModel());
-        public RelayCommand ToCategoriesCommand => new RelayCommand(() => CurrentPage = new CategoryPanelViewModel());
-        public RelayCommand ToCartCommand => new RelayCommand(() => CurrentPage = new CartPanelViewModel());
+        public RelayCommand ToDashboardCommand => new RelayCommand(async () => { CurrentPage = _dashboard; await _dashboard.GetAllOrder() ; OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToUserCommand => new RelayCommand(() => { CurrentPage = new UserPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToOrdersCommand => new RelayCommand(() => { CurrentPage = new OrderPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToClothesCommand => new RelayCommand(() => { CurrentPage = new ClothesPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToCategoriesCommand => new RelayCommand(() => { CurrentPage = new CategoryPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToCartCommand => new RelayCommand(() => { CurrentPage = new CartPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
 
 
 
