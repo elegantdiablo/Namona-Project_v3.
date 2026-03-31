@@ -15,7 +15,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace NamonaAvalonia.ViewModels
 {
-    public partial class LoginViewModel : ViewModelBase, IRecipient<NavigateToAdminPanelMessage>
+    public partial class LoginViewModel : ViewModelBase
     {
         private readonly ClientModel _userService;
 
@@ -71,6 +71,9 @@ namespace NamonaAvalonia.ViewModels
 
         private async Task Login()
         {
+            //EZ CSAK TEST
+            //SuccessLogin.Invoke(this, EventArgs.Empty);
+
             try
             {
                 if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
@@ -88,7 +91,7 @@ namespace NamonaAvalonia.ViewModels
                 await _userService.LogIn(dto);
                 ErrorMessage = "Logged in";
                 // sikeres login kezelés
-                WeakReferenceMessenger.Default.Send(new NavigateToAdminPanelMessage());
+                SuccessLogin.Invoke(this, EventArgs.Empty);
             }
             catch
             {
@@ -97,7 +100,7 @@ namespace NamonaAvalonia.ViewModels
         }
 
         [ObservableProperty] private ViewModelBase? _mainPage;
-        public void Receive(NavigateToAdminPanelMessage message) => MainPage = new AdminPanelVM();
+       // public void Receive(NavigateToAdminPanelMessage message) => MainPage = new AdminPanelVM(_model);
 
     }
 }

@@ -2,79 +2,91 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 x:Class="NamonaAvalonia.DashboardPanel">
-	<Grid>
-		<ScrollViewer Grid.Row="1">
+			 x:Class="NamonaAvalonia.DashboardPanel" x:DataType="viewmodels:DashboardViewModel">
+	<Grid>	<ScrollViewer>
 
-			<StackPanel Margin="30" Spacing="25">
+		<StackPanel Margin="30" Spacing="25">
 
-				<TextBlock Text="Dashboard"
-						   FontSize="28"
-						   FontWeight="Bold"
-						   Foreground="White"/>
-
-
-				<!-- STAT CARDS -->
-				<WrapPanel>
-
-					<Border Classes="statCard">
-						<StackPanel>
-							<TextBlock Text="Users"
-									   Classes="cardTitle"/>
-							<TextBlock Text="{Binding}"
-									   Classes="cardValue"/>
-						</StackPanel>
-					</Border>
-
-					<Border Classes="statCard">
-						<StackPanel>
-							<TextBlock Text="Orders"
-									   Classes="cardTitle"/>
-							<TextBlock Text="{Binding}"
-									   Classes="cardValue"/>
-						</StackPanel>
-					</Border>
-
-					<Border Classes="statCard">
-						<StackPanel>
-							<TextBlock Text="Revenue"
-									   Classes="cardTitle"/>
-							<TextBlock Text="{Binding}"
-									   Classes="cardValue"/>
-						</StackPanel>
-					</Border>
-
-					<Border Classes="statCard">
-						<StackPanel>
-							<TextBlock Text="Products"
-									   Classes="cardTitle"/>
-							<TextBlock Text="{Binding}"
-									   Classes="cardValue"/>
-						</StackPanel>
-					</Border>
-
-				</WrapPanel>
+			<TextBlock Text="Dashboard"
+					   FontSize="28"
+					   FontWeight="Bold"
+					   Foreground="White"/>
 
 
-				<!-- TABLE / CONTENT AREA -->
-				<Border Classes="panel">
+			<!-- STAT CARDS -->
+			<WrapPanel>
 
+				<Border Classes="statCard">
 					<StackPanel>
-
-						<TextBlock Text="Recent Orders"
-								   FontSize="18"
-								   FontWeight="Bold"
-								   Margin="0 0 0 10"/>
-
-
-
+						<TextBlock Text="Users"
+								   Classes="cardTitle"/>
+						<TextBlock Text=""
+								   Classes="cardValue"/>
 					</StackPanel>
-
 				</Border>
 
-			</StackPanel>
+				<Border Classes="statCard">
+					<StackPanel>
+						<TextBlock Text="Orders"
+								   Classes="cardTitle"/>
+						<TextBlock Text="{Binding OrderCount}"
+								   Classes="cardValue"/>
+					</StackPanel>
+				</Border>
 
-		</ScrollViewer>
+				<Border Classes="statCard">
+					<StackPanel>
+						<TextBlock Text="Revenue"
+								   Classes="cardTitle"/>
+						<TextBlock Text=""
+								   Classes="cardValue"/>
+					</StackPanel>
+				</Border>
+
+				<Border Classes="statCard">
+					<StackPanel>
+						<TextBlock Text="Products"
+								   Classes="cardTitle"/>
+						<TextBlock Text=""
+								   Classes="cardValue"/>
+					</StackPanel>
+				</Border>
+
+			</WrapPanel>
+
+
+			<!-- TABLE / CONTENT AREA -->
+			<Border Classes="panel">
+
+				<StackPanel>
+
+					
+					<TextBlock Text="Recent Orders"
+							   FontSize="18"
+							   FontWeight="Bold"
+							   Margin="0 0 0 10"/>
+				<ScrollViewer>
+				<StackPanel>
+					<ItemsControl ItemsSource="{Binding OrderList}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Label Content="{Binding Address}"></Label>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+			</ScrollViewer>
+			
+
+				</StackPanel>
+
+			</Border>
+
+		</StackPanel>
+
+	</ScrollViewer>
 	</Grid>
+
 </UserControl>

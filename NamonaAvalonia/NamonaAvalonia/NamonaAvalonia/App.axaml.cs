@@ -30,6 +30,13 @@ public partial class App : Application
             {
                 DataContext = viewmodel
             };
+            viewmodel.SuccessLogin += (sender, args) =>
+            {
+                desktop.MainWindow.Content = new AdminPanel
+                {
+                    DataContext = new AdminPanelVM(_model)
+                };
+            };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
@@ -39,11 +46,11 @@ public partial class App : Application
             {
                 DataContext = viewmodel
             };
-            viewmodel.SuccessLogin += (s,e) =>
+            viewmodel.SuccessLogin += (sender, args) =>
             {
                 singleViewPlatform.MainView = new AdminPanel
                 {
-                    DataContext = new AdminPanelVM()
+                    DataContext = new AdminPanelVM(_model)
                 };
             };
         }
