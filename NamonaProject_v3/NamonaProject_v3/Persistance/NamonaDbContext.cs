@@ -77,9 +77,10 @@ namespace NamonaProject_v3_.Persistance
         public DateTimeOffset? OrderDate { get; set; }
         [Required]
         public string Address { get; set; }
-        public List<Cart> Carts { get; set; }
+        
         public string Status { get; set; } = "InProgress"; // InProgress, Delivery, Done
         public DateTime? CompletedAt { get; set; }
+        public List<Cart> Carts { get; set; }
     }
     [Index(nameof(CategoryName), IsUnique = true)]
     public class Category

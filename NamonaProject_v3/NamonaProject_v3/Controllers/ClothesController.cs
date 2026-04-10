@@ -18,7 +18,7 @@ namespace NamonaProject_v3_.Controllers
             _clothesModel = clothesModel;
         }
 
-        [HttpGet("AllClothes")]
+        [HttpGet("GetAllClothes")]
         public ActionResult<IEnumerable<AllClothesDto>> GetAllClothes()
         {
             try
@@ -31,31 +31,22 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest();
             }
         }
-        [HttpGet("AllCategories")]
-        public ActionResult<IEnumerable<AllCategoryDto>> GetAllCategories()
-        {
-            try
-            {
-                return Ok(_clothesModel.GetCategories());
-            }
-
-            catch (Exception ex)
-            {
-                return BadRequest();
-            }
-        }
-       
+ 
         [Authorize(Roles = "Admin")]
-        [HttpPost("add")]
+        [HttpPost("AddClothes")]
 
         public async Task<ActionResult> AddClothes([FromBody] AddClothesDto dto)
         {
             try
             {
                 await _clothesModel.AddClothes(dto);
-                return Ok();
+                return StatusCode(StatusCodes.Status201Created);
             }
-            catch (KeyNotFoundException)
+            catch (InvalidOperationException)
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable);
+            }
+            catch(KeyNotFoundException)
             {
                 return NotFound();
             }
@@ -79,10 +70,13 @@ namespace NamonaProject_v3_.Controllers
             {
                 return NotFound();
             }
-            catch (Exception)
+            catch (InvalidOperationException)
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable);
+            }
+            catch 
             {
                 return BadRequest();
-
             }
         }
         [Authorize(Roles = "Admin")]
@@ -99,7 +93,7 @@ namespace NamonaProject_v3_.Controllers
             {
                 return NotFound();
             }
-            catch(Exception) 
+            catch
             {
                 return BadRequest();
                 
@@ -107,8 +101,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpGet("FilterClothes")]
-        public ActionResult<IEnumerable<AllClothesDto>> FilterClothes(
-            [FromBody]FilterClothesDto dto)
+        public ActionResult<IEnumerable<AllClothesDto>> FilterClothes([FromBody]FilterClothesDto dto)
         {
             try
             {
@@ -116,7 +109,7 @@ namespace NamonaProject_v3_.Controllers
             }
             catch
             {
-                return NoContent();
+                return BadRequest();
             }
 
         }
@@ -129,7 +122,7 @@ namespace NamonaProject_v3_.Controllers
             }
             catch
             {
-                return NoContent();
+                return BadRequest();
             }
 
         }

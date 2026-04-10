@@ -170,5 +170,11 @@ namespace NamonaAvalonia.Model
             res.EnsureSuccessStatusCode();
         }
 
+        public async Task<List<UserDto>> GetAllUsers()
+        {
+            var res = await _client.GetFromJsonAsync<List<UserDto>>("api/User/ShowUsers");
+            return res;
+        }
+
     }
 }

@@ -19,7 +19,7 @@ namespace NamonaProject_v3_.Model
         {
             return _context.clothes.Include(x => x.Category).Include(x => x.Gender).Select(x => new AllClothesDto
             {
-                ClothingId = x.ClothingId,
+
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
                 Size = x.Size,
@@ -31,55 +31,29 @@ namespace NamonaProject_v3_.Model
             });
         }
 
-        public async Task ChangeClothingData(ChangeClothingDataDto dto)
-        {
-            int Id = _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingId;
-            if (!_context.categories.Any(x => x.CategoryName == dto.Category))
-            {
-                throw new KeyNotFoundException("nincs ilyen kategória");
-            }
-            if (!_context.genders.Any(x => x.GenderType == dto.GenderType))
-            {
-                throw new KeyNotFoundException("nincs ilyen nem");
-            }
-            int CategId = _context.categories.Where(x => x.CategoryName == dto.Category).First().CategoryId;
-            int Genderid = _context.genders.Where(x => x.GenderType == dto.GenderType).First().GenderId;
-            using (var trx = _context.Database.BeginTransaction())
-            {
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingName = dto.ClothingName;
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Collection = dto.Collection;     
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Color = dto.Color;
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price = dto.Price;
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Size = dto.Size;
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().GenderId = Genderid;
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().CategoryId = CategId;
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Stock = dto.Stock;
-
-                await _context.SaveChangesAsync();
-                await trx.CommitAsync();
-            }
-            await Task.CompletedTask;
-        }
+        
         public async Task AddClothes(AddClothesDto dto)
         {
             if (!_context.categories.Any(x => x.CategoryName == dto.CategoryName))
             {
-                throw new KeyNotFoundException("nincs ilyen kategória");
+                throw new KeyNotFoundException();
             }
             if (!_context.genders.Any(x => x.GenderType == dto.GenderName))
             {
-                throw new KeyNotFoundException("nincs ilyen nem");
+                throw new KeyNotFoundException();
             }
-            int CategId = _context.categories.Where(x => x.CategoryName == dto.CategoryName).First().CategoryId;
-            int Genderid = _context.genders.Where(x => x.GenderType == dto.GenderName).First().GenderId;
+            if(dto.ClothingName == null || dto.Collection == null || dto.Color == null || dto.Price <= 0 || dto.Stock < 0 || dto.Size == null)
+            {
+                throw new InvalidDataException();
+            }
             using (var trx = _context.Database.BeginTransaction())
             {
                 _context.clothes.Add(new Clothes
                 {
                     ClothingName = dto.ClothingName,
                     Collection = dto.Collection,
-                    CategoryId = CategId,
-                    GenderId = Genderid,
+                    CategoryId = dto.CategoryId,
+                    GenderId = dto.GenderId,
                     Size = dto.Size,
                     Stock = dto.Stock,
                     Color = dto.Color,
@@ -89,6 +63,42 @@ namespace NamonaProject_v3_.Model
                 await _context.SaveChangesAsync();
                 await trx.CommitAsync();
 
+            }
+            await Task.CompletedTask;
+        }
+
+        public async Task ChangeClothingData(ChangeClothingDataDto dto)
+        {
+            
+            if (!_context.categories.Any(x => x.CategoryName == dto.Category))
+            {
+                throw new KeyNotFoundException();
+            }
+            if (!_context.genders.Any(x => x.GenderType == dto.GenderType))
+            {
+                throw new KeyNotFoundException();
+            }
+            if(!_context.clothes.Any(x => x.ClothingId == dto.ClothingId))
+            {
+                throw new KeyNotFoundException();
+            }
+            if (dto.ClothingName == null || dto.Collection == null || dto.Color == null || dto.Price <= 0 || dto.Stock < 0 || dto.Size == null)
+            {
+                throw new InvalidDataException();
+            }
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().ClothingName = dto.ClothingName;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Collection = dto.Collection;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Color = dto.Color;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price = dto.Price;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Size = dto.Size;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().GenderId = dto.GenderId; //???
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().CategoryId = dto.CategoryId; //???
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Stock = dto.Stock;
+
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
             }
             await Task.CompletedTask;
         }
@@ -107,14 +117,6 @@ namespace NamonaProject_v3_.Model
             await Task.CompletedTask;
         }
 
-        public IEnumerable<AllCategoryDto> GetCategories()
-        {
-            return _context.categories.Select(x => new AllCategoryDto
-            {
-                Id = x.CategoryId,
-                CategoryName = x.CategoryName
-            });
-        }
 
 
         /*
@@ -233,7 +235,6 @@ namespace NamonaProject_v3_.Model
                 .Where(x => x.Price > dto.Minprice && x.Price < dto.Maxprice)
                 .Select(x => new AllClothesDto
             {
-                ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
                 CategoryName = x.Category.CategoryName,
@@ -253,7 +254,6 @@ namespace NamonaProject_v3_.Model
                 x.Collection.ToLower().Contains(text.ToLower()))
                 .Select(x => new AllClothesDto
                 {
-                    ClothingId = x.ClothingId,
                     ClothingName = x.ClothingName,
                     Collection = x.Collection,
                     CategoryName = x.Category.CategoryName,

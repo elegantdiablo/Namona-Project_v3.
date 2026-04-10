@@ -23,6 +23,10 @@ namespace NamonaProject_v3_.Model
         }
         public async Task AddGender(AddGenderDto dto)
         {
+            if(dto.Type == null)
+            {
+                throw new InvalidDataException();
+            }
             using(var trx = _context.Database.BeginTransaction())
             {
                 _context.genders.Add(new Gender
@@ -42,6 +46,10 @@ namespace NamonaProject_v3_.Model
             {
                 throw new KeyNotFoundException("nincs ilyen ruha");
             }
+            if (dto.Type == null)
+            {
+                throw new InvalidDataException();
+            }
 
             int Id = _context.genders.Where(x => x.GenderId == dto.Id).First().GenderId;
             using (var trx = _context.Database.BeginTransaction())
@@ -57,6 +65,10 @@ namespace NamonaProject_v3_.Model
 
         public async Task DeleteGender(int id)
         {
+            if(!_context.genders.Any(x => x.GenderId == id))
+            {
+                throw new KeyNotFoundException();
+            }
             using(var trx = _context.Database.BeginTransaction())
             {
                 _context.genders.Remove(_context.genders.Where(x => x.GenderId == id).First());

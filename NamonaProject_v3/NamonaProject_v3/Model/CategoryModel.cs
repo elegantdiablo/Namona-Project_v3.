@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.EntityFrameworkCore;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
 
@@ -24,6 +25,10 @@ namespace NamonaProject_v3_.Model
 
         public async Task AddCategory(AddCategoryDto dto)
         {
+            if(dto.CategoryName == null)
+            {
+                throw new InvalidDataException();
+            }
             using (var trx = _context.Database.BeginTransaction())
             {
                 _context.categories.Add(new Category
@@ -38,7 +43,11 @@ namespace NamonaProject_v3_.Model
        
         public async Task EditCategory(EditCategoryDto dto)
         {
-            using(var trx = _context.Database.BeginTransaction())
+            if(dto.CategoryName == null)
+            {
+                throw new InvalidDataException();
+            }
+            using (var trx = _context.Database.BeginTransaction())
             {
                 _context.categories.Where(x => x.CategoryId == dto.Id).First().CategoryName = dto.CategoryName;
                 await _context.SaveChangesAsync();
@@ -49,7 +58,11 @@ namespace NamonaProject_v3_.Model
 
         public async Task DeleteCategory(int id)
         {
-            using(var trx = _context.Database.BeginTransaction())
+            if(!_context.categories.Any(x => x.CategoryId == id))
+            {
+                throw new KeyNotFoundException();
+            }
+            using (var trx = _context.Database.BeginTransaction())
             {
                 var categid = _context.categories.Where(x => x.CategoryId == id).First();
                 _context.categories.Remove(categid);

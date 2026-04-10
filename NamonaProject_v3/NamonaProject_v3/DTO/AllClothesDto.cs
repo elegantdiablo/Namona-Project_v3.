@@ -2,7 +2,6 @@
 {
     public class AllClothesDto
     {
-        public int ClothingId { get; set; }
         public string ClothingName { get; set; }
         public string Collection { get; set; }
         public string Size { get; set; }

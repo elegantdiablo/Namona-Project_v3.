@@ -70,7 +70,8 @@ namespace NamonaProject_v3_.Model
                     UserId = x.UserId,
                     UserName = x.UserName,
                     Email = x.Email,
-                    Phone = x.PhoneNumber ?? "",
+                    //Phone = x.PhoneNumber ?? "",
+                    Phone = x.PhoneNumber,
                     Role = x.Role
                 });
         }
@@ -83,7 +84,10 @@ namespace NamonaProject_v3_.Model
                 .FirstOrDefault(x => x.UserName.ToLower() == username.ToLower() && x.Role == "Admin");
 
             if (user == null || user.Password != hash)
-                return null;
+            {
+                throw new KeyNotFoundException();
+            }
+                
 
             return new UserDto
             {

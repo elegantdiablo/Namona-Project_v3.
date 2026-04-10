@@ -105,7 +105,7 @@ namespace NamonaProject_v3_.Controllers
             try
             {
                 await _orderModel.AddOrder(order);
-                return Ok("Order successfully added");
+                return StatusCode(201, "Order successfully added");
             }
             catch (Exception ex)
             {

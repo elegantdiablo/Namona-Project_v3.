@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:local="using:NamonaAvalonia"
+             xmlns:local="using:NamonaAvalonia"
 			 xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
 			 x:Class="NamonaAvalonia.AdminPanel"
 			 x:DataType="viewmodels:AdminPanelVM">
@@ -71,16 +71,7 @@
 				</Grid>
 
 			</Border>
-			<ContentControl Content="{Binding CurrentContent}">
-				<ContentControl.DataTemplates>
-					<DataTemplate DataType="viewmodels:DashboardViewModel">
-						<local:DashboardPanel />
-					</DataTemplate>
-					<!--<DataTemplate DataType="vm:SettingsViewModel">
-						<local:Dashboard />
-					</DataTemplate>-->
-				</ContentControl.DataTemplates>
-			</ContentControl>
+
 
 			<!-- DASHBOARD CONTENT -->
 			<ContentControl Content="{Binding CurrentPage}" Grid.Row="1">
@@ -165,5 +156,4 @@
 		</Style>
 
 	</UserControl.Styles>
-
 </UserControl>

@@ -17,21 +17,32 @@ namespace NamonaAvalonia.ViewModels
         {
             _model = model;
             OrderList = new ObservableCollection<OrderDto>();
+            UserList = new ObservableCollection<UserDto>();
 
         }
 
         private int _orderCount;
+        private int _usercount;
         public ObservableCollection<OrderDto> OrderList { get; set; }
+        public ObservableCollection<UserDto> UserList { get; set; }
         public int OrderCount { get { return _orderCount; } }
+        public int UserCount { get { return _usercount; } }
 
         public async Task GetAllOrder()
         {
-            List<OrderDto> a = (await _model.GetAllOrder());
+            List<OrderDto> a = await _model.GetAllOrder();
             a.OrderBy(x => x.OrderDate).Take(5).ToList().ForEach((x => OrderList.Add(x)));
             _orderCount = a.Count();
            OnPropertyChanged(nameof(OrderList));
            OnPropertyChanged(nameof(OrderCount));
         }
-        
+
+        public async Task GetAllUsers()
+        {
+            List<UserDto> b = await _model.GetAllUsers();
+            _usercount = b.Count();
+            OnPropertyChanged(nameof(UserCount));
+            OnPropertyChanged(nameof(UserList));
+        }     
     }
 }

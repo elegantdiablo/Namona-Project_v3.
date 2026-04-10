@@ -98,7 +98,7 @@ namespace NamonaProject_v3_.Controllers
 
                 dto.UserId = currentUserId.Value;
                 await _cartModel.AddToCart(dto);
-                return Ok();
+                return StatusCode(StatusCodes.Status201Created); ();
             }
             catch (KeyNotFoundException)
             {

@@ -37,11 +37,11 @@ namespace NamonaProject_v3_.Controllers
             try
             {
                 await _model.AddCategory(dto);
-                return Ok();
+                return StatusCode(StatusCodes.Status201Created);
             }
-            catch (KeyNotFoundException)
+            catch (InvalidDataException)
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status406NotAcceptable);
             }
             catch (Exception ex)
             {
@@ -57,9 +57,9 @@ namespace NamonaProject_v3_.Controllers
                 await _model.EditCategory(dto);
                 return Ok();
             }
-            catch (KeyNotFoundException)
+            catch (InvalidDataException)
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status406NotAcceptable);
             }
             catch (Exception ex)
             {

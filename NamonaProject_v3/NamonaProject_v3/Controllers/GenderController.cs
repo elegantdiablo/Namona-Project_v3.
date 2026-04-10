@@ -39,11 +39,11 @@ namespace NamonaProject_v3_.Controllers
             try
             {
                 await _model.AddGender(dto);
-                return Ok();    
+                return StatusCode(StatusCodes.Status201Created);
             }
-            catch (KeyNotFoundException)
+            catch (InvalidDataException)
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status406NotAcceptable);
             }
             catch (Exception)
             {
@@ -64,7 +64,11 @@ namespace NamonaProject_v3_.Controllers
             {
                 return NotFound();
             }
-            catch (Exception)
+            catch (InvalidDataException)
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable);
+            }
+            catch
             {
                 return BadRequest();
 
@@ -83,7 +87,7 @@ namespace NamonaProject_v3_.Controllers
             {
                 return NotFound();
             }
-            catch (Exception)
+            catch
             {
                 return BadRequest();
 

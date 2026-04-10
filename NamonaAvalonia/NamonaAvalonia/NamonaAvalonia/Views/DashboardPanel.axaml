@@ -22,7 +22,7 @@
 					<StackPanel>
 						<TextBlock Text="Users"
 								   Classes="cardTitle"/>
-						<TextBlock Text=""
+						<TextBlock Text="{Binding UserCount}"
 								   Classes="cardValue"/>
 					</StackPanel>
 				</Border>

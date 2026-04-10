@@ -30,7 +30,7 @@ namespace NamonaAvalonia.ViewModels
             _userService = userService;
             WeakReferenceMessenger.Default.RegisterAll(this);
             LoginCommand = new RelayCommand(async () => await Login());
-            
+
         }
 
         public string Username
@@ -38,12 +38,12 @@ namespace NamonaAvalonia.ViewModels
             get => _username;
             set
             {
-                if (_username != value) 
+                if (_username != value)
                 {
                     _username = value;
                     OnPropertyChanged();
                 }
-                
+
             }
         }
 
@@ -81,7 +81,7 @@ namespace NamonaAvalonia.ViewModels
                     ErrorMessage = "Hibás email vagy jelszó";
                     return;
                 }
-                
+
                 var dto = new LoginAdminDTO
                 {
                     UserName = Username,
@@ -100,7 +100,7 @@ namespace NamonaAvalonia.ViewModels
         }
 
         [ObservableProperty] private ViewModelBase? _mainPage;
-       // public void Receive(NavigateToAdminPanelMessage message) => MainPage = new AdminPanelVM(_model);
+        // public void Receive(NavigateToAdminPanelMessage message) => MainPage = new AdminPanelVM(_model);
 
     }
 }

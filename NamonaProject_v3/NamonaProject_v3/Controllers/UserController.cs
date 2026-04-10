@@ -72,9 +72,13 @@ namespace NamonaProject_v3_.Controllers
 
                 return Ok(user);
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException)
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound();
+            }
+            catch
+            {
+                return BadRequest();
             }
         }
 
@@ -84,7 +88,7 @@ namespace NamonaProject_v3_.Controllers
             try
             {
                 await _userModel.Register(dto);
-                return Ok(new { message = "User created successfully" });
+                return StatusCode(StatusCodes.Status201Created);
             }
             catch (InvalidOperationException ex)
             {
@@ -96,17 +100,17 @@ namespace NamonaProject_v3_.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet("ShowUsers")]
-        public ActionResult<IEnumerable<UserDto>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
             try
             {
                 return Ok(_userModel.ShowUsers());
             }
-            catch (Exception ex)
+            catch 
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest();
             }
         }
 
