@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NamonaAvalonia.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,13 @@ namespace NamonaAvalonia.ViewModels
 {
     public class UserPanelViewModel : ViewModelBase
     {
+        private ClientModel _model;
+
+        public UserPanelViewModel(ClientModel model)
+        {
+            _model = model;
+        }
+
+
     }
 }

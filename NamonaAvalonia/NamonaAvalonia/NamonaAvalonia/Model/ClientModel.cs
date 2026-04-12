@@ -28,7 +28,7 @@ namespace NamonaAvalonia.Model
         }
         public async Task<List<AllClothesDto>> GetAllClothes()
         {
-            var res = await _client.GetFromJsonAsync<List<AllClothesDto>>("api/Clothes/AllClothes");
+            var res = await _client.GetFromJsonAsync<List<AllClothesDto>>("api/Clothes/GetAllClothes");
             return res;
 
         }
@@ -142,7 +142,7 @@ namespace NamonaAvalonia.Model
         }
         public async Task DeleteCategory(int id)
         {
-            var res = await _client.DeleteAsync($"api/Cart/DeleteCategory?id={id}");
+            var res = await _client.DeleteAsync($"api/Category/DeleteCategory?id={id}");
             res.EnsureSuccessStatusCode();
         }
         public async Task<List<AllGendersDto>> GetAllGenders()

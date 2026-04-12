@@ -2,12 +2,70 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 x:Class="NamonaAvalonia.CategoryPanel">
+			 x:Class="NamonaAvalonia.CategoryPanel" x:DataType="viewmodels:CategoryPanelViewModel">
 	<Grid>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="*"/>
-		</Grid.ColumnDefinitions>
+		<ScrollViewer>
+
+		<Border Classes="panel">
+
+				<StackPanel>
+
+					
+					<TextBlock Text="Categories"
+							   FontSize="18"
+							   FontWeight="Bold"
+							   Margin="0 0 0 10"/>
+				<ScrollViewer>
+				<StackPanel>
+
+					<TextBox Text="{Binding NewCategory}"/>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition/>
+							<ColumnDefinition/>
+						</Grid.ColumnDefinitions>
+					<Button Content="Add Category" Command="{Binding AddCategoryCommand}" Grid.Column="0"/>
+					<Button Content="Edit Category" Command="{Binding EditCategoryCommand}" Grid.Column="1"/>
+					<Button Content="Delete Category" Command="{Binding DeleteCategoryCommand}" Grid.Column="2"/>
+						</Grid>
+					<ListBox SelectedItem="{Binding SelectedCategory}">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal" Spacing="10">
+									<Label Content="{Binding Id}"/>
+									<Label Content="{Binding CategoryName}"/>		
+								</StackPanel>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+						<ListBox.ItemsSource>
+							<Binding Path="CategoryOC"/>
+						</ListBox.ItemsSource>
+						
+					</ListBox>
+
+
+					
+					<!--<ItemsControl ItemsSource="{Binding CategoryOC}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Label Content="{Binding Id}"></Label>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+					<ItemsControl ItemsSource="{Binding CategoryOC}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Label Content="{Binding CategoryName}"></Label>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>-->
+				</StackPanel>
+			</ScrollViewer>
+		</StackPanel>
+		</Border>
+		</ScrollViewer>
 	</Grid>
 </UserControl>

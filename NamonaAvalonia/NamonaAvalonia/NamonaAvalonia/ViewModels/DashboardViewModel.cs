@@ -18,20 +18,25 @@ namespace NamonaAvalonia.ViewModels
             _model = model;
             OrderList = new ObservableCollection<OrderDto>();
             UserList = new ObservableCollection<UserDto>();
+            ProductList = new ObservableCollection<AllClothesDto>();
 
         }
 
         private int _orderCount;
         private int _usercount;
+        private int _productcount;
         public ObservableCollection<OrderDto> OrderList { get; set; }
         public ObservableCollection<UserDto> UserList { get; set; }
+        public ObservableCollection<AllClothesDto> ProductList { get; set; }
         public int OrderCount { get { return _orderCount; } }
         public int UserCount { get { return _usercount; } }
+        public int ProductCount { get { return _productcount; } }
+
 
         public async Task GetAllOrder()
         {
             List<OrderDto> a = await _model.GetAllOrder();
-            a.OrderBy(x => x.OrderDate).Take(5).ToList().ForEach((x => OrderList.Add(x)));
+            a.OrderBy(x => x.OrderDate).Take(5).ToList().ForEach(x => OrderList.Add(x));
             _orderCount = a.Count();
            OnPropertyChanged(nameof(OrderList));
            OnPropertyChanged(nameof(OrderCount));
@@ -44,5 +49,12 @@ namespace NamonaAvalonia.ViewModels
             OnPropertyChanged(nameof(UserCount));
             OnPropertyChanged(nameof(UserList));
         }     
+
+        public async Task GetAllProducts()
+        {
+            List<AllClothesDto> c = await _model.GetAllClothes();
+            _productcount = c.Count();
+            OnPropertyChanged(nameof(ProductCount));
+        }
     }
 }

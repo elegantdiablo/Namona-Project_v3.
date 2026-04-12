@@ -5,7 +5,9 @@
              xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 x:Class="NamonaAvalonia.DashboardPanel" x:DataType="viewmodels:DashboardViewModel">
-	<Grid>	<ScrollViewer>
+	<Grid>	
+	
+	<ScrollViewer>
 
 		<StackPanel Margin="30" Spacing="25">
 
@@ -49,7 +51,7 @@
 					<StackPanel>
 						<TextBlock Text="Products"
 								   Classes="cardTitle"/>
-						<TextBlock Text=""
+						<TextBlock Text="{Binding ProductCount}"
 								   Classes="cardValue"/>
 					</StackPanel>
 				</Border>
@@ -78,9 +80,7 @@
 					</ItemsControl>
 				</StackPanel>
 			</ScrollViewer>
-			
-
-				</StackPanel>
+		</StackPanel>
 
 			</Border>
 
