@@ -16,6 +16,9 @@ namespace NamonaAvalonia.ViewModels
             _model = model;
         }
 
-
+        internal async Task GetAllUsers()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

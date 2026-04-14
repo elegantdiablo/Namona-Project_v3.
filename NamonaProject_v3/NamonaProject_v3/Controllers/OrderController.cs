@@ -34,7 +34,7 @@ namespace NamonaProject_v3_.Controllers
             var user = await _userModel.GetByEmail(email);
             return user?.UserId;
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet("AllOrders")]
         public ActionResult GetAllOrders()
         {

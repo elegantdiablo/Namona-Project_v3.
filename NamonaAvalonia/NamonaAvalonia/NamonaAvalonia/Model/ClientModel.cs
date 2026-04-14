@@ -99,9 +99,9 @@ namespace NamonaAvalonia.Model
             res.EnsureSuccessStatusCode();
         }
 
-        public async Task UpdateOrder(ChangeClothingDataDto dto)
+        public async Task UpdateOrder(OrderDto dto)
         {
-            var res = await _client.PutAsJsonAsync<ChangeClothingDataDto>("api/Orders/UpdateOrder", dto);
+            var res = await _client.PutAsJsonAsync<OrderDto>("api/Orders/UpdateOrder", dto);
             res.EnsureSuccessStatusCode();
 
         }

@@ -15,13 +15,20 @@ namespace NamonaAvalonia.ViewModels
 
         private DashboardViewModel _dashboard;
         private CategoryPanelViewModel _categorypanel;
-
+        private OrderPanelViewModel _orderpanel;
+        private UserPanelViewModel _userpanel;
+        private CartPanelViewModel _cartpanel;
+        private ClothesPanelViewModel _clothespanel;
 
         public AdminPanelVM(ClientModel model) 
         {
             _model = model;
             _dashboard = new DashboardViewModel(_model);
             _categorypanel = new CategoryPanelViewModel(_model);
+            _orderpanel = new OrderPanelViewModel(_model);
+            _userpanel = new UserPanelViewModel(_model);
+            _cartpanel = new CartPanelViewModel(_model);
+            _clothespanel = new ClothesPanelViewModel(_model);
             CurrentPage = _dashboard;
             ToDashboardCommand.Execute(null);
 
@@ -30,11 +37,11 @@ namespace NamonaAvalonia.ViewModels
         public ViewModelBase CurrentPage { get; set; }
 
         public RelayCommand ToDashboardCommand => new RelayCommand(async () => { CurrentPage = _dashboard; await _dashboard.GetAllOrder() ; await _dashboard.GetAllProducts();await _dashboard.GetAllUsers() ; OnPropertyChanged(nameof(CurrentPage)); });
-        public RelayCommand ToUserCommand => new RelayCommand(() => { CurrentPage = new UserPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
-        public RelayCommand ToOrdersCommand => new RelayCommand(() => { CurrentPage = new OrderPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
-        public RelayCommand ToClothesCommand => new RelayCommand(() => { CurrentPage = new ClothesPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToUserCommand => new RelayCommand(async () => { CurrentPage = _userpanel; await _userpanel.GetAllUsers(); OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToOrdersCommand => new RelayCommand(async () => { CurrentPage = _orderpanel; await _orderpanel.GetAllOrder(); OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToClothesCommand => new RelayCommand(async () => { CurrentPage = _clothespanel; await _clothespanel.GetAllClothes(); OnPropertyChanged(nameof(CurrentPage)); });
         public RelayCommand ToCategoriesCommand => new RelayCommand(async () => { CurrentPage = _categorypanel; await _categorypanel.GetAllCategories(); OnPropertyChanged(nameof(CurrentPage)); });
-        public RelayCommand ToCartCommand => new RelayCommand(() => { CurrentPage = new CartPanelViewModel(); OnPropertyChanged(nameof(CurrentPage)); });
+        public RelayCommand ToCartCommand => new RelayCommand(async () => { CurrentPage = _cartpanel; await _cartpanel.GetAllCarts(); OnPropertyChanged(nameof(CurrentPage)); });
 
 
 

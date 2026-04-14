@@ -64,7 +64,10 @@
 
 				<StackPanel>
 
-					
+					<Button Content="Refresh"
+							HorizontalAlignment="Right"
+							Margin="0 0 0 10"
+							Command="{Binding RefreshCommand}"/>
 					<TextBlock Text="Recent Orders"
 							   FontSize="18"
 							   FontWeight="Bold"

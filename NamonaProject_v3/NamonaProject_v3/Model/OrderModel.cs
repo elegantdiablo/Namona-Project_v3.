@@ -109,11 +109,16 @@ namespace NamonaProject_v3_.Model
 
         public IEnumerable<OrderDto> AllOrders()
         {
-            return _context.orders.Select(x => new OrderDto
+            return _context.orders.Include(x => x.Carts).ThenInclude(x => x.User).Select(x => new OrderDto
             {
                 OrderId = x.OrderId,
+                Status = x.Status,
+                Address = x.Address,
                 OrderDate = (DateTimeOffset)x.OrderDate,
-                Address = x.Address
+                CompletedAt = (DateTimeOffset)x.CompletedAt != null ? (DateTimeOffset)x.CompletedAt : null,  
+                UserName = x.Carts.Any()
+    ? x.Carts.Select(c => c.User.UserName).FirstOrDefault()
+    : "N/A"
             });
         }
 
@@ -223,10 +228,7 @@ namespace NamonaProject_v3_.Model
                 List<Clothes> clothes2 = new();
                 foreach (Cart item in rendeles.Carts)
                 {
-
                     _context.clothes.Where(x => item.ClothingId == x.ClothingId).First().Stock -= item.Amount;
-
-
                 }
             }
         }

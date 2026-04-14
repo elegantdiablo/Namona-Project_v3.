@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="NamonaAvalonia.OrderHandlerPanel" x:DataType="viewmodels:OrderHandlerPanelViewModel">
+  <StackPanel>
+      <TextBox Text="{Binding Data.OrderId}" IsEnabled="False"/>
+      <TextBox Text="{Binding Data.Status}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.Address}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.OrderDate}" IsEnabled="False"/>
+      <TextBox Text="{Binding Data.CompletedAt}" IsEnabled="False"/>
+      <Button Content="Save Changes" Command="{Binding SaveChangesCommand}"/>
+  </StackPanel>
+
+</UserControl>

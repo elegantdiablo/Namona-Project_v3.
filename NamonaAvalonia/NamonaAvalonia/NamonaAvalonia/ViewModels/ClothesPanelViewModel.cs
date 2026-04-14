@@ -15,5 +15,10 @@ namespace NamonaAvalonia.ViewModels
         {
             _model = model;
         }
+
+        internal async Task GetAllClothes()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

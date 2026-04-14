@@ -9,6 +9,6 @@ namespace NamonaAvalonia.DTO
         public DateTimeOffset OrderDate { get; set; }
         public string Address { get; set; }
         public string Status { get; set; }
-        public DateTime CompletedAt { get; set; }
+        public DateTimeOffset? CompletedAt { get; set; }
     }
 }

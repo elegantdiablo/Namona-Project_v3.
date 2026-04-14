@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using NamonaAvalonia.DTO;
 using NamonaAvalonia.Model;
 
@@ -31,30 +32,51 @@ namespace NamonaAvalonia.ViewModels
         public int OrderCount { get { return _orderCount; } }
         public int UserCount { get { return _usercount; } }
         public int ProductCount { get { return _productcount; } }
+        public RelayCommand RefreshCommand => new RelayCommand(async () =>
+        {
+            _orderCount = 0;
+            _usercount = 0;
+            _productcount = 0;
+            OrderList.Clear();
+            UserList.Clear();
+            ProductList.Clear();
+            await GetAllOrder();
+            await GetAllUsers();
+            await GetAllProducts();
+        });
 
 
         public async Task GetAllOrder()
         {
-            List<OrderDto> a = await _model.GetAllOrder();
-            a.OrderBy(x => x.OrderDate).Take(5).ToList().ForEach(x => OrderList.Add(x));
-            _orderCount = a.Count();
-           OnPropertyChanged(nameof(OrderList));
-           OnPropertyChanged(nameof(OrderCount));
+            if (_orderCount == 0)
+            {
+                List<OrderDto> a = await _model.GetAllOrder();
+                a.OrderBy(x => x.OrderDate).Take(5).ToList().ForEach(x => OrderList.Add(x));
+                _orderCount = a.Count();
+                OnPropertyChanged(nameof(OrderList));
+                OnPropertyChanged(nameof(OrderCount));
+            }
         }
 
         public async Task GetAllUsers()
         {
-            List<UserDto> b = await _model.GetAllUsers();
-            _usercount = b.Count();
-            OnPropertyChanged(nameof(UserCount));
-            OnPropertyChanged(nameof(UserList));
-        }     
+            if (_usercount == 0)
+            {
+                List<UserDto> b = await _model.GetAllUsers();
+                _usercount = b.Count();
+                OnPropertyChanged(nameof(UserCount));
+                OnPropertyChanged(nameof(UserList));
+            }
+        }
 
         public async Task GetAllProducts()
         {
-            List<AllClothesDto> c = await _model.GetAllClothes();
-            _productcount = c.Count();
-            OnPropertyChanged(nameof(ProductCount));
+            if (_productcount == 0)
+            {
+                List<AllClothesDto> c = await _model.GetAllClothes();
+                _productcount = c.Count();
+                OnPropertyChanged(nameof(ProductCount));
+            }
         }
     }
 }
