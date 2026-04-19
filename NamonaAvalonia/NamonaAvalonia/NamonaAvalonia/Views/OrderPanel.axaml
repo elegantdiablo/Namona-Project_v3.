@@ -10,9 +10,10 @@
 
 	<StackPanel>
 		<TextBlock Text="Orders" FontSize="18" Foreground="White"/>
-		<Button Content="EditOrder" Command="{Binding EditOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
-		<Button Content="DeleteOrder" Command="{Binding DeleteOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
-
+		<StackPanel Orientation="Horizontal" Spacing="10">
+			<Button Content="EditOrder" Command="{Binding EditOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
+			<Button Content="DeleteOrder" Command="{Binding DeleteOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
+		</StackPanel>
 		<ContentControl Content="{Binding CurrentPage}" Grid.Row="1">
 			<ContentControl.DataTemplates>
 				<DataTemplate DataType="viewmodels:OrderPanelViewModel">

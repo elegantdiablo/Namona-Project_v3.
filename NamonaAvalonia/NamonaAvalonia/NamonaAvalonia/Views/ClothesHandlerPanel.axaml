@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="NamonaAvalonia.ClothesHandlerPanel" x:DataType="viewmodels:ClothesHandlerPanelViewModel">
+  <StackPanel>
+      <TextBox Text="{Binding Data.ClothingId}" IsEnabled="False"/>
+      <TextBox Text="{Binding Data.ClothingName}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.Collection}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.Size}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.Stock}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.Color}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.Price}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.GenderId}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.GenderType}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.CategoryId}" IsEnabled="True"/>
+      <TextBox Text="{Binding Data.CategoryName}" IsEnabled="True"/>
+      <Button Content="Save Changes" Command="{Binding SaveChangesCommand}"/>
+  </StackPanel>
+</UserControl>

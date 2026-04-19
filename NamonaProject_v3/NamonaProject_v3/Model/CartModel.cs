@@ -44,6 +44,28 @@ namespace NamonaProject_v3_.Model
             };
         }
 
+        public IEnumerable<CartItemDto> GetAllCarts()
+        {
+            return _context.cart.Include(x => x.User).Include(x => x.Clothing).ThenInclude(x => x.Category).Include(x => x.Clothing).ThenInclude(x => x.Gender).Select(x => new CartItemDto
+            {
+                CartId = x.CartId,
+                UserId = x.UserId,
+                ClothingId = x.ClothingId,
+                ClothingName = x.Clothing.ClothingName,
+                Collection = x.Clothing.Collection,
+                CategoryId = x.Clothing.CategoryId,
+                Color = x.Clothing.Color,
+                Price = x.Clothing.Price,
+                PriceSum = x.PriceSum,
+                Stock = x.Clothing.Stock,
+                Amount = x.Amount,
+                Size = x.Clothing.Size,
+                GenderId = x.Clothing.GenderId,
+                CategoryName = x.Clothing.Category.CategoryName,
+                GenderName = x.Clothing.Gender.GenderType
+            });
+        }
+
         public async Task AddToCart(AddToCartDto dto)
         {
             var clothing = await _context.clothes.FirstOrDefaultAsync(x => x.ClothingId == dto.ClothingId);

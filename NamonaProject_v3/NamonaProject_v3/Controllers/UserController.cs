@@ -153,6 +153,25 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPut("EditUser")]
+        public async Task<ActionResult> EditUser([FromBody] UserDto dto)
+        {
+            try
+            {
+                await _userModel.EditUser(dto);
+                return Ok();
+            }
+            catch (InvalidOperationException)
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}/promote")]
         public async Task<ActionResult> PromoteToAdmin(int id)
         {
@@ -188,7 +207,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
+        public async Task<ActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
             return Ok();

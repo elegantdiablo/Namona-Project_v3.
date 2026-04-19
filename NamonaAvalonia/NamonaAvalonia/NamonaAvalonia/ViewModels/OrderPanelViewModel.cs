@@ -14,6 +14,7 @@ namespace NamonaAvalonia.ViewModels
     public class OrderPanelViewModel : ViewModelBase
     {
         private ClientModel _model;
+        private OrderDto _selectedorder;
 
         public OrderPanelViewModel(ClientModel model)
         {
@@ -27,14 +28,32 @@ namespace NamonaAvalonia.ViewModels
                 CurrentPage = handlerVM;
                 OnPropertyChanged(nameof(CurrentPage));
             });
-            DeleteOrderCommand = new RelayCommand<OrderDto>(p => { });
+            DeleteOrderCommand = new RelayCommand(async () =>
+            {
+                if (SelectedOrder != null)
+                {
+                    await DeleteOrder();
+                }
+            });
             CurrentPage = this;
         }
 
         public ObservableCollection<OrderDto> OrderOC { get; set; }
         public RelayCommand<OrderDto> EditOrderCommand { get; set; }
-        public RelayCommand<OrderDto> DeleteOrderCommand { get; set; }
-        public OrderDto SelectedOrder { get; set; }
+        public RelayCommand DeleteOrderCommand { get; set; }
+
+        public OrderDto SelectedOrder
+        {
+            get => _selectedorder;
+            set
+            {
+                if (_selectedorder != value)
+                {
+                    _selectedorder = value;
+                    OnPropertyChanged(nameof(SelectedOrder));
+                }
+            }
+        }
         public ViewModelBase CurrentPage { get; set; }
 
         public async Task GetAllOrder()
@@ -46,5 +65,18 @@ namespace NamonaAvalonia.ViewModels
                 OnPropertyChanged(nameof(OrderOC));
             }
         }
+
+        public async Task DeleteOrder() 
+        { 
+            if(SelectedOrder != null)
+            {
+                await _model.DeleteOrder(SelectedOrder.OrderId);
+                OrderOC.Remove(SelectedOrder);
+                SelectedOrder = null;
+            }
+        }
+
     }
+
+
 }

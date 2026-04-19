@@ -157,5 +157,23 @@ namespace NamonaProject_v3_.Model
                 Role = user.Role
             };
         }
+
+        public async Task EditUser(UserDto dto)
+        {
+            if(dto.UserName == null || dto.Email == null || dto.Phone == null || dto.Role == null)
+            {
+                throw new InvalidDataException();
+            }
+            using(var trx = _context.Database.BeginTransaction())
+            {
+                _context.users.Where(x =>x.UserId == dto.UserId).First().UserName = dto.UserName;
+                _context.users.Where(x =>x.UserId == dto.UserId).First().PhoneNumber = dto.UserName;
+                _context.users.Where(x =>x.UserId == dto.UserId).First().Email = dto.Email;
+                _context.users.Where(x =>x.UserId == dto.UserId).First().Role = dto.Role;
+                await trx.CommitAsync();
+                await _context.SaveChangesAsync();
+            }
+            await Task.CompletedTask;
+        }
     }
 }

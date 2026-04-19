@@ -146,8 +146,8 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Authorize(Roles = "User")]
-        [HttpPut("cancel")]
+        //[Authorize(Roles = "User")]
+        [HttpDelete("cancel")]
         public async Task<ActionResult> CancelOrder([FromQuery]int id)
         {
             try
@@ -159,9 +159,9 @@ namespace NamonaProject_v3_.Controllers
             {
                 return NotFound();
             }
-            catch (Exception ex)
+            catch
             {
-                return BadRequest(ex.Message);
+                return BadRequest();
             }
         }
         [Authorize(Roles = "Admin")]

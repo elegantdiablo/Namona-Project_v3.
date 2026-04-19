@@ -5,13 +5,15 @@
         public int ClothingId { get; set; }
         public string ClothingName { get; set; }
         public string Collection { get; set; }
-        public string Size { get; set; }
-        public string CategoryName { get; set; }
-        public string GenderName { get; set; }
+        public string Size { get; set; }     
         public int Stock { get; set; }
         public string Color { get; set; }
         public int Price { get; set; }
         public int GenderId { get; set; }
-        public int CategoryId { get; set; } 
+        public string GenderType { get; set; }
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+
+
     }
 }

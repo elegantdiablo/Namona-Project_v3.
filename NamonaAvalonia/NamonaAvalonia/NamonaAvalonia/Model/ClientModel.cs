@@ -51,11 +51,7 @@ namespace NamonaAvalonia.Model
             var res = await _client.DeleteAsync($"api/Clothes/remove?id={id}");
             res.EnsureSuccessStatusCode();
         }
-        public async Task DeleteUser(int id)
-        {
-            var res = await _client.DeleteAsync($"api/user/{id}");
-            res.EnsureSuccessStatusCode();
-        }
+        
         public async Task PromoteToAdmin(int id)
         {
             var res = await _client.PutAsync($"api/user/{id}/promote", null);
@@ -111,6 +107,7 @@ namespace NamonaAvalonia.Model
             res.EnsureSuccessStatusCode();
 
         }
+        
         public async Task CompleteOrder(OrderDto dto)
         {
             var res = await _client.PutAsJsonAsync($"api/Orders/UpdateOrder", dto);
@@ -176,5 +173,16 @@ namespace NamonaAvalonia.Model
             return res;
         }
 
+        public async Task EditUser(UserDto dto)
+        {
+            var res = await _client.PutAsJsonAsync<UserDto>("api/user/EditUser", dto);
+            res.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteUser(int id)
+        {
+            var res = await _client.DeleteAsync($"api/user/{id}");
+            res.EnsureSuccessStatusCode();
+        }
     }
 }
