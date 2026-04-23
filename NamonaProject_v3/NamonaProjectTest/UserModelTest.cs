@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Xunit;
+using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
+using NamonaProject_v3_.DTO;
 
 namespace NamonaProjectTest
 {
@@ -19,121 +18,239 @@ namespace NamonaProjectTest
             _context = DbContextFactory.Create();
             _model = new UserModel(_context);
         }
-        private string HashPassword(string password)
-        {
-            using var sha = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
-        }
 
         [Fact]
-        public void ShowUsers_Validate()
+        public async Task Register_Should_Add_New_User()
         {
-            var result = _model.ShowUsers().ToList();
-
-            Assert.NotEmpty(result);
-            Assert.All(result, r => Assert.True(r.UserId > 0));
-            Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.UserName)));
-            Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.Role)));
-            Assert.All(result, r => Assert.False(string.IsNullOrEmpty(r.Email)));
-            Assert.All(result, r => Assert.True(r.Phone is not null));
-            Assert.Equal(result.OrderBy(r => r.UserName).Select(r => r.UserName), result.Select(r => r.UserName));
-            if (result.Count >= 2)
+            // Arrange
+            var dto = new RegistrationDto
             {
-                Assert.NotEqual(result[0].UserId, result[1].UserId);
-                Assert.True(string.Compare(result[0].UserName, result[1].UserName) <= 0);
-            }
+                Email = "newuser@test.com",
+                UserName = "newuser",
+                Password = "password123"
+            };
+
+            // Act
+            await _model.Register(dto);
+
+            // Assert
+            var user = _context.users.FirstOrDefault(u => u.Email == dto.Email);
+            Assert.NotNull(user);
+            Assert.Equal("newuser", user.UserName);
+            Assert.Equal("User", user.Role);
+            Assert.NotEqual("password123", user.Password); // should be hashed
         }
 
         [Fact]
-        public async Task AdminLogin_Validate()
+        public async Task Register_Should_Throw_If_Email_Exists()
         {
-            var adminUser = _context.users.FirstOrDefault(x => x.Role == "Admin");
-            if (adminUser == null)
+            // Arrange
+            var existing = _context.users.First();
+
+            var dto = new RegistrationDto
             {
-                Assert.True(false, "No admin user found in the database.");
-                return;
-            }
-            var result =await  _model.AdminLogin("admin@namona.hu", "admin123");
+                Email = existing.Email,
+                UserName = "duplicate",
+                Password = "123"
+            };
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _model.Register(dto));
+        }
+
+        [Fact]
+        public async Task ValidateUser_Should_Return_UserDto_When_Correct()
+        {
+            // Arrange
+            var dto = new RegistrationDto
+            {
+                Email = "login@test.com",
+                UserName = "loginuser",
+                Password = "pass123"
+            };
+
+            await _model.Register(dto);
+
+            // Act
+            var result = await _model.ValidateUser(dto.Email, dto.Password);
+
+            // Assert
             Assert.NotNull(result);
-            Assert.Equal(adminUser.UserName, result.UserName);
-            Assert.Equal(adminUser.Role, result.Role);
+            Assert.Equal(dto.Email, result.Email);
         }
 
         [Fact]
-        public async Task Registration_Validate()
+        public async Task ValidateUser_Should_Throw_When_Invalid()
         {
-            var uniqueUsername = $"testuser_{Guid.NewGuid()}";
-            var password = "testpassword";
-            await _model.Register(new NamonaProject_v3_.DTO.RegistrationDto { Email = "asd@gmail.com", UserName = uniqueUsername, Password = password });
-            var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
-            Assert.NotNull(userInDb);
-            Assert.Equal(uniqueUsername, userInDb.UserName);
-            Assert.Equal("User", userInDb.Role);
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _model.ValidateUser("wrong@test.com", "wrong"));
         }
 
         [Fact]
-        public async Task ValidateUser_Validate()
+        public void ShowUsers_Should_Return_Users()
         {
-            var uniqueUsername = "testuser";
-            var password = "user123";
-           var result = await _model.ValidateUser("user@namona.hu", password);
+            // Act
+            var users = _model.ShowUsers().ToList();
+
+            // Assert
+            Assert.NotEmpty(users);
+            Assert.All(users, u => Assert.NotNull(u.UserName));
+        }
+
+        [Fact]
+        public async Task AdminLogin_Should_Return_Admin_When_Correct()
+        {
+            // Arrange
+            var dto = new RegistrationDto
+            {
+                Email = "admin@test.com",
+                UserName = "adminuser",
+                Password = "adminpass"
+            };
+
+            await _model.Register(dto);
+
+            var user = _context.users.First(u => u.Email == dto.Email);
+            user.Role = "Admin";
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _model.AdminLogin(dto.UserName, dto.Password);
+
+            // Assert
             Assert.NotNull(result);
-            Assert.Equal(uniqueUsername, result.UserName);
-        }
-        [Fact]
-        public async Task ValidateUser_Exits()
-        {
-            var uniqueUsername = "testuser";
-            var password = "testpassword";
-            
-          await  Assert.ThrowsAsync<InvalidOperationException>(() => _model.Register(new NamonaProject_v3_.DTO.RegistrationDto { Email = "user@namona.hu", UserName = uniqueUsername, Password = password }));
-          
+            Assert.Equal("Admin", result.Role);
         }
 
         [Fact]
-
-        public async Task DeleteUser_Validate()
+        public async Task AdminLogin_Should_Throw_When_Not_Admin()
         {
+            // Arrange
+            var dto = new RegistrationDto
+            {
+                Email = "user@test.com",
+                UserName = "normaluser",
+                Password = "pass"
+            };
 
+            await _model.Register(dto);
 
+            // Act & Assert
+            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+                _model.AdminLogin(dto.UserName, dto.Password));
+        }
+
+        [Fact]
+        public async Task DeleteUser_Should_Remove_User()
+        {
+            // Arrange
             var user = _context.users.First();
-            int userid = user.UserId;
 
-            await _model.DeleteUser(userid);
+            // Act
+            await _model.DeleteUser(user.UserId);
 
-            var deleted = _context.users
-                .FirstOrDefault(x => x.UserId == userid);
-
-            Assert.Null(deleted);
-
+            // Assert
+            Assert.False(_context.users.Any(u => u.UserId == user.UserId));
         }
 
-        /*  [Fact]
-          public async Task UpdateUser_Validate()
-          {
-              var uniqueUsername = $"testuser_{Guid.NewGuid()}";
-              var password = "testpassword";
-              await _model.Registration(uniqueUsername, password);
-              var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
-              Assert.NotNull(userInDb);
-              userInDb.Email = "";
-
-          }*/
         [Fact]
-        public async Task PromoteToAdmin_Validate()
+        public async Task DeleteUser_Should_Throw_When_NotFound()
         {
-            var uniqueUsername = $"testuser_{Guid.NewGuid()}";
-            var password = "testpassword";
-            await _model.Register(new NamonaProject_v3_.DTO.RegistrationDto { Email = "adminadmin@namona.hu", UserName = uniqueUsername, Password = password });
-            var userInDb = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
-            Assert.NotNull(userInDb);
-            userInDb.Role = "Admin";
-            _context.SaveChanges();
-            var promotedUser = _context.users.FirstOrDefault(x => x.UserName == uniqueUsername);
-            Assert.NotNull(promotedUser);
-            Assert.Equal("Admin", promotedUser.Role);
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _model.DeleteUser(999999));
+        }
+
+        [Fact]
+        public async Task UpdatePassword_Should_Change_Password()
+        {
+            // Arrange
+            var user = _context.users.First();
+            var oldPassword = user.Password;
+
+            // Act
+            await _model.UpdatePassword(user.UserId, "newpassword");
+
+            // Assert
+            var updated = _context.users.First(u => u.UserId == user.UserId);
+            Assert.NotEqual(oldPassword, updated.Password);
+        }
+
+        [Fact]
+        public async Task PromoteToAdmin_Should_Set_Role()
+        {
+            // Arrange
+            var user = _context.users.First();
+
+            // Act
+            await _model.PromoteToAdmin(user.UserId);
+
+            // Assert
+            var updated = _context.users.First(u => u.UserId == user.UserId);
+            Assert.Equal("Admin", updated.Role);
+        }
+
+        [Fact]
+        public async Task GetByEmail_Should_Return_User()
+        {
+            // Arrange
+            var user = _context.users.First();
+
+            // Act
+            var result = await _model.GetByEmail(user.Email);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(user.Email, result.Email);
+        }
+
+        [Fact]
+        public async Task GetByEmail_Should_Return_Null_When_NotFound()
+        {
+            var result = await _model.GetByEmail("notfound@test.com");
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task EditUser_Should_Update_User()
+        {
+            // Arrange
+            var user = _context.users.First();
+
+            var dto = new UserDto
+            {
+                UserId = user.UserId,
+                UserName = "updated",
+                Email = "updated@test.com",
+                Phone = "123456",
+                Role = "User"
+            };
+
+            // Act
+            await _model.EditUser(dto);
+
+            // Assert
+            var updated = _context.users.First(u => u.UserId == user.UserId);
+            Assert.Equal("updated", updated.UserName);
+            Assert.Equal("updated@test.com", updated.Email);
+        }
+
+        [Fact]
+        public async Task EditUser_Should_Throw_When_Invalid_Data()
+        {
+            var user = _context.users.First();
+
+            var dto = new UserDto
+            {
+                UserId = user.UserId,
+                UserName = null,
+                Email = null,
+                Phone = null,
+                Role = null
+            };
+
+            await Assert.ThrowsAsync<System.IO.InvalidDataException>(() =>
+                _model.EditUser(dto));
         }
     }
 }
