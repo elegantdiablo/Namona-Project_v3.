@@ -30,7 +30,7 @@ namespace NamonaProjectTest
             {
                 Assert.NotNull(x.ClothingName);
                 Assert.NotNull(x.CategoryName);
-                Assert.NotNull(x.GenderName);
+                Assert.NotNull(x.GenderType);
             });
         }
 
@@ -45,9 +45,7 @@ namespace NamonaProjectTest
             {
                 ClothingName = "TestCloth",
                 Collection = "Summer",
-                CategoryId = category.CategoryId,
                 CategoryName = category.CategoryName,
-                GenderId = gender.GenderId,
                 GenderName = gender.GenderType,
                 Size = "M",
                 Stock = 5,
@@ -73,9 +71,7 @@ namespace NamonaProjectTest
             {
                 ClothingName = "Test",
                 Collection = "Summer",
-                CategoryId = 999,
                 CategoryName = "INVALID",
-                GenderId = gender.GenderId,
                 GenderName = gender.GenderType,
                 Size = "M",
                 Stock = 5,
@@ -97,9 +93,7 @@ namespace NamonaProjectTest
             {
                 ClothingName = null,
                 Collection = null,
-                CategoryId = category.CategoryId,
                 CategoryName = category.CategoryName,
-                GenderId = gender.GenderId,
                 GenderName = gender.GenderType,
                 Size = null,
                 Stock = -1,
