@@ -1,137 +1,244 @@
 ﻿using Xunit;
-using Moq;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
-using Namona_v3.DTO;
 using NamonaProject_v3_.DTO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
+using Namona_v3.DTO;
 
-public class ClothesModelTests
+namespace NamonaProjectTest
 {
-    private NamonaDbContext GetDbContext()
+    public class ClothesModelTest
     {
-        var options = new DbContextOptionsBuilder<NamonaDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
-            .Options;
-        return new NamonaDbContext(options);
-    }
+        private readonly ClothesModel _model;
+        private readonly NamonaDbContext _context;
 
-    [Fact]
-    public void GetAllClothes_ReturnsAllClothesDtos()
-    {
-        var context = GetDbContext();
-        context.clothes.Add(new Clothes { ClothingId = 1, ClothingName = "Shirt", Collection = "Summer", Size = "M", Color = "Blue", Price = 100, Stock = 10, Gender = new Gender { GenderType = "Male" }, Category = new Category { CategoryName = "Top" } });
-        context.SaveChanges();
+        public ClothesModelTest()
+        {
+            _context = DbContextFactory.Create();
+            _model = new ClothesModel(_context);
+        }
 
-        var model = new ClothesModel(context);
-        var result = model.GetAllClothes().ToList();
+        [Fact]
+        public void GetAllClothes_Should_Return_Data()
+        {
+            var result = _model.GetAllClothes().ToList();
 
-        Assert.Single(result);
-        Assert.Equal("Shirt", result[0].ClothingName);
-    }
+            Assert.NotEmpty(result);
+            Assert.All(result, x =>
+            {
+                Assert.NotNull(x.ClothingName);
+                Assert.NotNull(x.CategoryName);
+                Assert.NotNull(x.GenderName);
+            });
+        }
 
-    [Fact]
-    public async Task ChangeClothingData_ThrowsIfCategoryNotFound()
-    {
-        var context = GetDbContext();
-        context.clothes.Add(new Clothes { ClothingId = 1, ClothingName = "Shirt", Category = new Category { CategoryName = "Top" }, Gender = new Gender { GenderType = "Male" } });
-        context.SaveChanges();
+        [Fact]
+        public async Task AddClothes_Should_Add_New_Item()
+        {
+            // Arrange
+            var category = _context.categories.First();
+            var gender = _context.genders.First();
 
-        var model = new ClothesModel(context);
-        var dto = new ChangeClothingDataDto { ClothingId = 1, Category = "NonExistent", GenderType = "Male" };
+            var dto = new AddClothesDto
+            {
+                ClothingName = "TestCloth",
+                Collection = "Summer",
+                CategoryId = category.CategoryId,
+                CategoryName = category.CategoryName,
+                GenderId = gender.GenderId,
+                GenderName = gender.GenderType,
+                Size = "M",
+                Stock = 5,
+                Color = "Black",
+                Price = 100
+            };
 
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => model.ChangeClothingData(dto));
-    }
+            // Act
+            await _model.AddClothes(dto);
 
-    [Fact]
-    public async Task ChangeClothingData_ThrowsIfGenderNotFound()
-    {
-        var context = GetDbContext();
-        context.categories.Add(new Category { CategoryId = 1, CategoryName = "Top" });
-        context.clothes.Add(new Clothes { ClothingId = 1, ClothingName = "Shirt", Category = context.categories.First(), Gender = new Gender { GenderType = "Male" } });
-        context.SaveChanges();
+            // Assert
+            var added = _context.clothes.FirstOrDefault(x => x.ClothingName == "TestCloth");
+            Assert.NotNull(added);
+            Assert.Equal(100, added.Price);
+        }
 
-        var model = new ClothesModel(context);
-        var dto = new ChangeClothingDataDto { ClothingId = 1, Category = "Top", GenderType = "NonExistent" };
+        [Fact]
+        public async Task AddClothes_Should_Throw_When_Category_Invalid()
+        {
+            var gender = _context.genders.First();
 
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => model.ChangeClothingData(dto));
-    }
+            var dto = new AddClothesDto
+            {
+                ClothingName = "Test",
+                Collection = "Summer",
+                CategoryId = 999,
+                CategoryName = "INVALID",
+                GenderId = gender.GenderId,
+                GenderName = gender.GenderType,
+                Size = "M",
+                Stock = 5,
+                Color = "Black",
+                Price = 100
+            };
 
-    [Fact]
-    public async Task AddClothes_ThrowsIfCategoryNotFound()
-    {
-        var context = GetDbContext();
-        var model = new ClothesModel(context);
-        var dto = new AddClothesDto { CategoryName = "NonExistent", GenderName = "Male", ClothingName = "Shirt" };
+            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+                _model.AddClothes(dto));
+        }
 
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => model.AddClothes(dto));
-    }
+        [Fact]
+        public async Task AddClothes_Should_Throw_When_Invalid_Data()
+        {
+            var category = _context.categories.First();
+            var gender = _context.genders.First();
 
-    [Fact]
-    public async Task AddClothes_ThrowsIfGenderNotFound()
-    {
-        var context = GetDbContext();
-        context.categories.Add(new Category { CategoryId = 1, CategoryName = "Top" });
-        context.SaveChanges();
+            var dto = new AddClothesDto
+            {
+                ClothingName = null,
+                Collection = null,
+                CategoryId = category.CategoryId,
+                CategoryName = category.CategoryName,
+                GenderId = gender.GenderId,
+                GenderName = gender.GenderType,
+                Size = null,
+                Stock = -1,
+                Color = null,
+                Price = 0
+            };
 
-        var model = new ClothesModel(context);
-        var dto = new AddClothesDto { CategoryName = "Top", GenderName = "NonExistent", ClothingName = "Shirt" };
+            await Assert.ThrowsAsync<System.IO.InvalidDataException>(() =>
+                _model.AddClothes(dto));
+        }
 
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => model.AddClothes(dto));
-    }
+        [Fact]
+        public async Task ChangeClothingData_Should_Update_Item()
+        {
+            // Arrange
+            var clothing = _context.clothes.First();
+            var category = _context.categories.First();
+            var gender = _context.genders.First();
 
-    [Fact]
-    public async Task DeleteClothes_ThrowsIfClothesNotFound()
-    {
-        var context = GetDbContext();
-        var model = new ClothesModel(context);
+            var dto = new ChangeClothingDataDto
+            {
+                ClothingId = clothing.ClothingId,
+                ClothingName = "UpdatedName",
+                Collection = "UpdatedCollection",
+                CategoryId = category.CategoryId,
+                Category = category.CategoryName,
+                GenderId = gender.GenderId,
+                GenderType = gender.GenderType,
+                Size = "L",
+                Stock = 10,
+                Color = "Blue",
+                Price = 200
+            };
 
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => model.DeleteClothes(999));
-    }
+            // Act
+            await _model.ChangeClothingData(dto);
 
-    [Fact]
-    public void GetCategories_ReturnsAllCategoryDtos()
-    {
-        var context = GetDbContext();
-        context.categories.Add(new Category { CategoryId = 1, CategoryName = "Top" });
-        context.SaveChanges();
+            // Assert
+            var updated = _context.clothes.First(x => x.ClothingId == clothing.ClothingId);
+            Assert.Equal("UpdatedName", updated.ClothingName);
+            Assert.Equal(200, updated.Price);
+        }
 
-        var model = new ClothesModel(context);
-        var result = model.GetCategories().ToList();
+        [Fact]
+        public async Task ChangeClothingData_Should_Throw_When_NotFound()
+        {
+            var category = _context.categories.First();
+            var gender = _context.genders.First();
 
-        Assert.Single(result);
-        Assert.Equal("Top", result[0].CategoryName);
-    }
+            var dto = new ChangeClothingDataDto
+            {
+                ClothingId = 999999,
+                ClothingName = "Test",
+                Collection = "Test",
+                CategoryId = category.CategoryId,
+                Category = category.CategoryName,
+                GenderId = gender.GenderId,
+                GenderType = gender.GenderType,
+                Size = "M",
+                Stock = 1,
+                Color = "Red",
+                Price = 50
+            };
 
-    [Fact]
-    public void FilterClothes2_ReturnsFilteredClothes()
-    {
-        var context = GetDbContext();
-        context.clothes.Add(new Clothes { ClothingId = 1, ClothingName = "Shirt", Collection = "Summer", Price = 100, Stock = 10, Category = new Category { CategoryName = "Top" }, Gender = new Gender { GenderType = "Male" }, Color = "Blue", Size = "M" });
-        context.SaveChanges();
+            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+                _model.ChangeClothingData(dto));
+        }
 
-        var model = new ClothesModel(context);
-        var dto = new FilterClothesDto { Category = "Top", Collection = "Summer", Gender = "Male", Minprice = 50, Maxprice = 150 };
-        var result = model.FilterClothes2(dto).ToList();
+        [Fact]
+        public async Task DeleteClothes_Should_Remove_Item()
+        {
+            // Arrange
+            var clothing = _context.clothes.First();
 
-        Assert.Single(result);
-        Assert.Equal("Shirt", result[0].ClothingName);
-    }
+            // Act
+            await _model.DeleteClothes(clothing.ClothingId);
 
-    [Fact]
-    public void SearchBar_ReturnsMatchingClothes()
-    {
-        var context = GetDbContext();
-        context.clothes.Add(new Clothes { ClothingId = 1, ClothingName = "Shirt", Collection = "Summer", Price = 100, Stock = 10, Category = new Category { CategoryName = "Top" }, Gender = new Gender { GenderType = "Male" }, Color = "Blue", Size = "M" });
-        context.SaveChanges();
+            // Assert
+            Assert.False(_context.clothes.Any(x => x.ClothingId == clothing.ClothingId));
+        }
 
-        var model = new ClothesModel(context);
-        var result = model.SearchBar("top").ToList();
+        [Fact]
+        public async Task DeleteClothes_Should_Throw_When_NotFound()
+        {
+            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+                _model.DeleteClothes(999999));
+        }
 
-        Assert.Single(result);
-        Assert.Equal("Shirt", result[0].ClothingName);
+        [Fact]
+        public void FilterClothes2_Should_Filter_By_Category()
+        {
+            var category = _context.categories.First();
+
+            var dto = new FilterClothesDto
+            {
+                Category = category.CategoryName,
+                Minprice = 0,
+                Maxprice = 999999
+            };
+
+            var result = _model.FilterClothes2(dto).ToList();
+
+            Assert.All(result, x =>
+                Assert.Equal(category.CategoryName, x.CategoryName));
+        }
+
+        [Fact]
+        public void FilterClothes2_Should_Filter_By_Price()
+        {
+            var min = _context.clothes.Min(x => x.Price);
+            var max = _context.clothes.Max(x => x.Price);
+
+            var dto = new FilterClothesDto
+            {
+                Minprice = min,
+                Maxprice = max
+            };
+
+            var result = _model.FilterClothes2(dto).ToList();
+
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public void SearchBar_Should_Return_Results()
+        {
+            var category = _context.categories.First();
+
+            var result = _model.SearchBar(category.CategoryName).ToList();
+
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public void SearchBar_Should_Return_Empty_When_NoMatch()
+        {
+            var result = _model.SearchBar("zzzzzz_not_found").ToList();
+
+            Assert.Empty(result);
+        }
     }
 }

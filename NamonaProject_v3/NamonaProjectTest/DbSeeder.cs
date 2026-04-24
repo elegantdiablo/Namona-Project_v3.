@@ -4,11 +4,9 @@ using NamonaProject_v3_.Persistance;
 
 public static class DbSeeder
 {
-
-
     public static void Seed(NamonaDbContext _db)
     {
-        // Ha már van adat, ne seedeljen újra
+        // Ha már van user, akkor feltételezzük hogy seedelt
         if (_db.users.Any())
             return;
 
@@ -39,8 +37,9 @@ public static class DbSeeder
         {
             ClothingName = "Namona Classic Tee",
             Collection = "Summer 2025",
-            Gender = unisex,
-            Category = tshirt,
+            Size = "M",
+            GenderId = unisex.GenderId,
+            CategoryId = tshirt.CategoryId,
             Stock = 100,
             Color = "Black",
             Price = 8990
@@ -50,8 +49,9 @@ public static class DbSeeder
         {
             ClothingName = "Namona Oversized Hoodie",
             Collection = "Winter 2025",
-            Gender = male,
-            Category = hoodie,
+            Size = "L",
+            GenderId = male.GenderId,
+            CategoryId = hoodie.CategoryId,
             Stock = 50,
             Color = "Grey",
             Price = 19990
@@ -61,8 +61,9 @@ public static class DbSeeder
         {
             ClothingName = "Namona Slim Pants",
             Collection = "Autumn 2025",
-            Gender = female,
-            Category = pants,
+            Size = "S",
+            GenderId = female.GenderId,
+            CategoryId = pants.CategoryId,
             Stock = 40,
             Color = "Beige",
             Price = 14990
@@ -100,16 +101,16 @@ public static class DbSeeder
         // ============================
         var cart1 = new Cart
         {
-            Clothing = tee,
-            User = user,
+            ClothingId = tee.ClothingId,
+            UserId = user.UserId,
             Amount = 2,
             PriceSum = tee.Price * 2
         };
 
         var cart2 = new Cart
         {
-            Clothing = hoodieItem,
-            User = user,
+            ClothingId = hoodieItem.ClothingId,
+            UserId = user.UserId,
             Amount = 1,
             PriceSum = hoodieItem.Price
         };
@@ -124,20 +125,22 @@ public static class DbSeeder
         {
             OrderDate = DateTimeOffset.Now,
             Address = "Budapest, Fő utca 1.",
-            Status = "Completed",
+            Status = "Done",
             CompletedAt = DateTime.Now,
-            Carts = new System.Collections.Generic.List<Cart> { cart1, cart2 }
+            Carts = new List<Cart> { cart1, cart2 }
         };
 
         _db.orders.Add(order);
         _db.SaveChanges();
 
-        // Frissítjük a Cart elemek Order-jét
-        cart1.Order = order;
-        cart2.Order = order;
+        // Cartok hozzárendelése az Orderhöz
+        cart1.OrderId = order.OrderId;
+        cart2.OrderId = order.OrderId;
+
         _db.cart.UpdateRange(cart1, cart2);
         _db.SaveChanges();
     }
+
     private static string HashPassword(string password)
     {
         using var sha = SHA256.Create();
@@ -145,5 +148,4 @@ public static class DbSeeder
         var hash = sha.ComputeHash(bytes);
         return Convert.ToBase64String(hash);
     }
-
 }
