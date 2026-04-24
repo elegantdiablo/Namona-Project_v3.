@@ -32,9 +32,15 @@ namespace NamonaAvalonia.Model
             return res;
 
         }
+        public async Task<int> GetRevenue()
+        {
+            var res = await _client.GetFromJsonAsync<int>("api/Orders/GetRevenue");
+            return res;
+
+        }
         public async Task AddClothes(AddClothesDto dto)
         {
-            var res = await _client.PostAsJsonAsync<AddClothesDto>("api/Clothes/add", dto);
+            var res = await _client.PostAsJsonAsync<AddClothesDto>("api/Clothes/AddClothes", dto);
             res.EnsureSuccessStatusCode();
 
         }
@@ -83,11 +89,16 @@ namespace NamonaAvalonia.Model
             return res;
 
         }
-        public async Task<List<OrderDto>> GetAllOrdersFromUser(int id)
+        public async Task<List<OrderDto>> GetOrdersFromUSer(int id)
         {
             var res = await _client.GetFromJsonAsync<List<OrderDto>>($"api/Orders/AllOrders?id={id}");
             return res;
+        }
 
+        public async Task<OrderDto> GetOrderById(int id)
+        {
+            var res = await _client.GetFromJsonAsync<OrderDto>($"api/Orders/GetOrdeById?id={id}");
+            return res;
         }
         public async Task AddOrder(OrderDto dto)
         {
@@ -101,16 +112,16 @@ namespace NamonaAvalonia.Model
             res.EnsureSuccessStatusCode();
 
         }
-        public async Task UpdateOrdeStatus(OrderDto dto)
+        public async Task UpdateOrderStatus(OrderDto dto)
         {
             var res = await _client.PutAsJsonAsync($"api/Orders/UpdateOrder", dto);
             res.EnsureSuccessStatusCode();
 
         }
         
-        public async Task CompleteOrder(OrderDto dto)
+        public async Task CompleteOrder(int id)
         {
-            var res = await _client.PutAsJsonAsync($"api/Orders/UpdateOrder", dto);
+            var res = await _client.PutAsync($"api/Orders/Complete?id={id}", null);
             res.EnsureSuccessStatusCode();
 
         }

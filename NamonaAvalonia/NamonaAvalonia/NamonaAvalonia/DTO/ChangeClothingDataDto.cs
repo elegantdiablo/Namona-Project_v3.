@@ -10,8 +10,6 @@
         public string Color { get; set; }
         public int Price { get; set; }
         public int CategoryId { get; set; }
-        public string CategoryName { get; set; }
         public int GenderId { get; set; }   
-        public string GenderType { get; set; }
     }
 }

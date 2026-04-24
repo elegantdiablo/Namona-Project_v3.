@@ -60,6 +60,18 @@ namespace NamonaProject_v3_.Model
                 .ToList();
         }
 
+        public OrderDto GetOrderById(int id)
+        {
+            return _context.orders.Where(x => x.OrderId == id).Select(x => new OrderDto
+            {
+                OrderId = x.OrderId,
+                Address = x.Address,
+                Status = x.Status,
+                CompletedAt = x.CompletedAt,
+                OrderDate = x.OrderDate
+            }).First();
+        }
+
         public async Task<int> CheckoutOrder(int userId, CheckoutOrderDto dto)
         {
             var cartItems = await _context.cart
@@ -177,7 +189,7 @@ namespace NamonaProject_v3_.Model
         {
             var order = _context.orders.FirstOrDefault(x => x.OrderId == id);
 
-            if (order == null)
+            if (order == null) 
                 throw new KeyNotFoundException("Order not found");
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -211,6 +223,7 @@ namespace NamonaProject_v3_.Model
             using (var trx = _context.Database.BeginTransaction())
             {
                 order.Status = dto.Status;
+                order.CompletedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
                 await trx.CommitAsync();
 
@@ -231,6 +244,10 @@ namespace NamonaProject_v3_.Model
                     _context.clothes.Where(x => item.ClothingId == x.ClothingId).First().Stock -= item.Amount;
                 }
             }
+        }
+        public int Revenue()
+        {
+            return  (int)(_context.orders.Sum(x => x.Carts.Sum(x => x.PriceSum))) ;
         }
 
     }

@@ -9,8 +9,8 @@
   <StackPanel>
 		<TextBlock Text="Users" FontSize="18" Foreground="White"/>
 		<StackPanel Orientation="Horizontal" Spacing="10">
-			<Button Content="EditOrder" Command="{Binding EditUserCommand}" CommandParameter="{Binding SelectedUser}"/>
-			<Button Content="DeleteOrder" Command="{Binding DeleteUserCommand}" CommandParameter="{Binding SelectedUser}"/>
+			<Button Content="Edit User" Command="{Binding EditUserCommand}" CommandParameter="{Binding SelectedUser}"/>
+			<Button Content="Delete User" Command="{Binding DeleteUserCommand}" CommandParameter="{Binding SelectedUser}"/>
 		</StackPanel>
 		<ContentControl Content="{Binding CurrentPage}" Grid.Row="1">
 			<ContentControl.DataTemplates>
@@ -19,7 +19,7 @@
 						<ListBox ItemsSource="{Binding UserOC}" SelectedItem="{Binding SelectedUser}">
 							<ListBox.ItemTemplate>
 								<DataTemplate>
-									<Border Classes="orderCard" Margin="0 0 0 15">
+									<Border Classes="userCard" Margin="0 0 0 15">
 										<StackPanel Spacing="10" Orientation="Horizontal">
 											<TextBlock Text="{Binding UserId}"/>
 											<TextBlock Text="{Binding UserName}"/>

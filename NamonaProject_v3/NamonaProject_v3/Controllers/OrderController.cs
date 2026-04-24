@@ -34,7 +34,7 @@ namespace NamonaProject_v3_.Controllers
             var user = await _userModel.GetByEmail(email);
             return user?.UserId;
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("AllOrders")]
         public ActionResult GetAllOrders()
         {
@@ -47,6 +47,20 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetOrdeById")]
+        public ActionResult<OrderDto> GetOrderById(int id)
+        {
+            try
+            {
+                return Ok(_orderModel.GetOrderById(id));
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
         [Authorize(Roles = "User")]
         [HttpGet("Orders")]
         public async Task<ActionResult<IEnumerable<OrderHistoryDto>>> GetOrders([FromQuery]int userid)
@@ -212,6 +226,18 @@ namespace NamonaProject_v3_.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("GetRevenue")]
+        public async Task<ActionResult<int>> GetRevenue()
+        {
+            try
+            {
+                return Ok(_orderModel.Revenue());
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
         }
 

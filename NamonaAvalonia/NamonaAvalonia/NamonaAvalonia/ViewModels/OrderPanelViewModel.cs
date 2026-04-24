@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Controls.Platform;
+using CommunityToolkit.Mvvm.Input;
 using NamonaAvalonia.DTO;
 using NamonaAvalonia.Model;
 using System;
@@ -35,13 +36,17 @@ namespace NamonaAvalonia.ViewModels
                     await DeleteOrder();
                 }
             });
+            CompleteOrderCommand = new RelayCommand( async () => 
+            {
+                    await CompleteOrder();
+            });
             CurrentPage = this;
         }
 
         public ObservableCollection<OrderDto> OrderOC { get; set; }
         public RelayCommand<OrderDto> EditOrderCommand { get; set; }
         public RelayCommand DeleteOrderCommand { get; set; }
-
+        public RelayCommand CompleteOrderCommand { get; set; }
         public OrderDto SelectedOrder
         {
             get => _selectedorder;
@@ -62,6 +67,7 @@ namespace NamonaAvalonia.ViewModels
             {
                 List<OrderDto> orderlist = await _model.GetAllOrder();
                 orderlist.ForEach(x => OrderOC.Add(x));
+                OrderOC = new ObservableCollection<OrderDto>(OrderOC.OrderBy(x => x.OrderId));
                 OnPropertyChanged(nameof(OrderOC));
             }
         }
@@ -73,6 +79,22 @@ namespace NamonaAvalonia.ViewModels
                 await _model.DeleteOrder(SelectedOrder.OrderId);
                 OrderOC.Remove(SelectedOrder);
                 SelectedOrder = null;
+            }
+        }
+
+        public async Task CompleteOrder()
+        {
+            if(SelectedOrder != null)
+            {
+                await _model.CompleteOrder(SelectedOrder.OrderId);
+                int UpdateId = SelectedOrder.OrderId;
+                OrderOC.Remove(SelectedOrder);
+                OrderDto temp = await _model.GetOrderById(UpdateId);
+                OrderOC.Add(temp);
+                SelectedOrder = null;
+                OrderOC = new ObservableCollection<OrderDto>(OrderOC.OrderBy(x => x.OrderId));
+                OrderOC.Clear();
+                await GetAllOrder();
             }
         }
 

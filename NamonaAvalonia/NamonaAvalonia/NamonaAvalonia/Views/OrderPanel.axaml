@@ -11,13 +11,14 @@
 	<StackPanel>
 		<TextBlock Text="Orders" FontSize="18" Foreground="White"/>
 		<StackPanel Orientation="Horizontal" Spacing="10">
-			<Button Content="EditOrder" Command="{Binding EditOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
-			<Button Content="DeleteOrder" Command="{Binding DeleteOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
+			<Button Content="Edit Order" Command="{Binding EditOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
+			<Button Content="Delete Order" Command="{Binding DeleteOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
+			<Button Content="Complete Order" Command="{Binding CompleteOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
 		</StackPanel>
 		<ContentControl Content="{Binding CurrentPage}" Grid.Row="1">
 			<ContentControl.DataTemplates>
 				<DataTemplate DataType="viewmodels:OrderPanelViewModel">
-					<ScrollViewer>
+					<ScrollViewer VerticalScrollBarVisibility="Visible">
 						<ListBox ItemsSource="{Binding OrderOC}" SelectedItem="{Binding SelectedOrder}">
 							<ListBox.ItemTemplate>
 								<DataTemplate>

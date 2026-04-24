@@ -19,15 +19,17 @@ namespace NamonaProject_v3_.Model
         {
             return _context.clothes.Include(x => x.Category).Include(x => x.Gender).Select(x => new AllClothesDto
             {
-
+                ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
                 Size = x.Size,
                 Color = x.Color,
                 Price = x.Price,
                 Stock = x.Stock,
-                GenderName = x.Gender.GenderType,
-                CategoryName   = x.Category.CategoryName
+                GenderId = x.GenderId,
+                GenderType = x.Gender.GenderType,
+                CategoryId = x.CategoryId,
+                CategoryName = x.Category.CategoryName
             });
         }
 
@@ -52,8 +54,8 @@ namespace NamonaProject_v3_.Model
                 {
                     ClothingName = dto.ClothingName,
                     Collection = dto.Collection,
-                    CategoryId = dto.CategoryId,
-                    GenderId = dto.GenderId,
+                    CategoryId = _context.categories.Where(x => x.CategoryName == dto.CategoryName).First().CategoryId,
+                    GenderId = _context.genders.Where(x => x.GenderType == dto.GenderName).First().GenderId,
                     Size = dto.Size,
                     Stock = dto.Stock,
                     Color = dto.Color,
@@ -238,7 +240,7 @@ namespace NamonaProject_v3_.Model
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
                 CategoryName = x.Category.CategoryName,
-                GenderName = x.Gender.GenderType,
+                GenderType = x.Gender.GenderType,
                 Stock = x.Stock,
                 Color = x.Color,
                 Price = x.Price
@@ -257,7 +259,7 @@ namespace NamonaProject_v3_.Model
                     ClothingName = x.ClothingName,
                     Collection = x.Collection,
                     CategoryName = x.Category.CategoryName,
-                    GenderName = x.Gender.GenderType,
+                    GenderType = x.Gender.GenderType,
                     Stock = x.Stock,
                     Color = x.Color,
                     Price = x.Price

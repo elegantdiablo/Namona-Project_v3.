@@ -2,9 +2,8 @@
 {
     public class AddClothesDto 
     {
-        public int CategoryId { get; set; }
         public string CategoryName { get; set; }
-        public int GenderId { get; set; }
+
         public string GenderName { get; set; }
         public string ClothingName { get; set; }
         public string Collection { get; set; }
