@@ -129,8 +129,7 @@ namespace NamonaProject_v3_.Model
                 OrderDate = (DateTimeOffset)x.OrderDate,
                 CompletedAt = (DateTimeOffset)x.CompletedAt != null ? (DateTimeOffset)x.CompletedAt : null,  
                 UserName = x.Carts.Any()
-    ? x.Carts.Select(c => c.User.UserName).FirstOrDefault()
-    : "N/A"
+                ? x.Carts.Select(c => c.User.UserName).FirstOrDefault() : "Unknown User"
             });
         }
 

@@ -11,7 +11,7 @@ using NamonaProject_v3_.Persistance;
 
 namespace NamonaIntegrationTest
 {
-    internal class MyContextFactory : WebApplicationFactory<Program>
+    public class MyContextFactory : WebApplicationFactory<Program>
     {
         private SqliteConnection _connection;
 
