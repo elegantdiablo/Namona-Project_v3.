@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NamonaProject_v3_.DTO;
-using NamonaProjectTest;
 
 namespace NamonaIntegrationTest.ControllerTest
 {
