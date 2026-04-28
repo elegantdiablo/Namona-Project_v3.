@@ -7,7 +7,7 @@ using System.Text.Json;
 using Microsoft.VisualStudio.CodeCoverage;
 using NamonaProject_v3_.DTO;
 
-namespace NamonaProjectTest
+namespace NamonaIntegrationTest.ControllerTest
 {
     public class ClothesControllerIntegrationTest : IClassFixture<MyContextFactory>
     {
