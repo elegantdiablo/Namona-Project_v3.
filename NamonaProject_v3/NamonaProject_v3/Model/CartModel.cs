@@ -14,6 +14,7 @@ namespace NamonaProject_v3_.Model
         }
         public MyCartDto GetCartContent(int userid)
         {
+            
             var carts = _context.cart.Include(x => x.Clothing).ThenInclude(c => c.Category)
                 .Include(x => x.Clothing).ThenInclude(c => c.Gender)
                 .Where(x => x.UserId == userid && x.OrderId == null)

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NamonaProject_v3_.Persistance;
 
-namespace NamonaProjectTest
+namespace NamonaIntegrationTest.ControllerTest
 {
     public class MyContextFactory : WebApplicationFactory<Program>
     {

@@ -36,24 +36,28 @@ namespace NamonaProject_v3_.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("AllOrders")]
-        public ActionResult GetAllOrders()
+        public ActionResult<IEnumerable<OrderDto>> GetAllOrders()
         {
             try
             {
                 return Ok(_orderModel.AllOrders());
             }
-            catch (Exception ex)
+            catch 
             {
-                return BadRequest(ex.Message);
+                return BadRequest();
             }
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet("GetOrdeById")]
+        [HttpGet("GetOrderById")]
         public ActionResult<OrderDto> GetOrderById(int id)
         {
             try
             {
                 return Ok(_orderModel.GetOrderById(id));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
             }
             catch
             {
@@ -136,6 +140,10 @@ namespace NamonaProject_v3_.Controllers
                 await _orderModel.UpdateOrder(order);
                 return Ok("Order successfully updated");
             }
+            catch(InvalidDataException)
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable);
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -155,12 +163,12 @@ namespace NamonaProject_v3_.Controllers
             {
                 return NotFound();
             }
-            catch (Exception ex)
+            catch 
             {
-                return BadRequest(ex.Message);
+                return BadRequest();
             }
         }
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "User")]
         [HttpDelete("cancel")]
         public async Task<ActionResult> CancelOrder([FromQuery]int id)
         {
@@ -196,38 +204,26 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("status")]
-        public async Task<ActionResult> UpdateOrderStatus( [FromBody]UpdateStatusDto dto)
+        public async Task<ActionResult> UpdateOrderStatus([FromBody]UpdateStatusDto dto)
         {
             try
             {
                 await _orderModel.UpdateOrderStatus(dto);
                 return Ok("Order status updated");
             }
-            catch (KeyNotFoundException)
+            catch (InvalidDataException)
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status406NotAcceptable);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
         [Authorize(Roles = "Admin")]
-        [HttpDelete("clear")]
-        public async Task<ActionResult> ClearOrders()
-        {
-            try
-            {
-                await _orderModel.ClearOrders();
-                return Ok("All orders cleared");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
         [HttpGet("GetRevenue")]
         public async Task<ActionResult<int>> GetRevenue()
         {
