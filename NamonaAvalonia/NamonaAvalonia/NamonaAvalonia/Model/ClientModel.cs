@@ -89,9 +89,9 @@ namespace NamonaAvalonia.Model
             return res;
 
         }
-        public async Task<List<OrderDto>> GetOrdersFromUSer(int id)
+        public async Task<List<OrderDto>> GetOrdersForUser(int id)
         {
-            var res = await _client.GetFromJsonAsync<List<OrderDto>>($"api/Orders/AllOrders?id={id}");
+            var res = await _client.GetFromJsonAsync<List<OrderDto>>($"api/Orders/Orders?id={id}");
             return res;
         }
 
@@ -192,7 +192,7 @@ namespace NamonaAvalonia.Model
 
         public async Task DeleteUser(int id)
         {
-            var res = await _client.DeleteAsync($"api/user/{id}");
+            var res = await _client.DeleteAsync($"api/user/DeleteUser?id={id}");
             res.EnsureSuccessStatusCode();
         }
     }
