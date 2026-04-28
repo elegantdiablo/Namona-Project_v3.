@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContextPool<NamonaDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("Connect"))
+    );}
 
-builder.Services.AddDbContextPool<NamonaDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Connect"))
-);
 
 
 builder.Services.AddTransient<CartModel>();
@@ -88,3 +91,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program
+{
+
+}

@@ -1,6 +1,8 @@
-﻿namespace NamonaProject_v3_.DTO
+﻿using System;
+
+namespace NamonaProject_v3_.DTO
 {
-    public class OrderDto 
+    public class OrderDto
     {
         public int OrderId { get; set; }
         public string UserName { get; set; }

@@ -6,7 +6,7 @@ using NamonaProject_v3_.Persistance;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Model;
 
-namespace NamonaProjectTest
+namespace NamonaProjectTest.ModelTest
 {
     public class OrderModelTest
     {
@@ -87,7 +87,7 @@ namespace NamonaProjectTest
             await _context.SaveChangesAsync();
 
             // Act & Assert
-            await Assert.ThrowsAsync<System.IO.InvalidDataException>(() =>
+            await Assert.ThrowsAsync<InvalidDataException>(() =>
                 _model.CheckoutOrder(user.UserId, new CheckoutOrderDto()));
         }
 
@@ -115,7 +115,7 @@ namespace NamonaProjectTest
         [Fact]
         public async Task DeleteOrder_Should_Throw_When_Not_Found()
         {
-            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(() =>
                 _model.DeleteOrder(999999));
         }
 

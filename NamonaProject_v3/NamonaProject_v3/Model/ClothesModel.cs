@@ -44,9 +44,13 @@ namespace NamonaProject_v3_.Model
             {
                 throw new KeyNotFoundException();
             }
-            if(dto.ClothingName == null || dto.Collection == null || dto.Color == null || dto.Price <= 0 || dto.Stock < 0 || dto.Size == null)
+            if(string.IsNullOrWhiteSpace(dto.ClothingName) || dto.Collection == null || dto.Color == null || dto.Price <= 0 || dto.Stock < 0 || dto.Size == null)
             {
                 throw new InvalidDataException();
+            }
+            if(_context.clothes.Any(x => x.ClothingName == dto.ClothingName))
+            {
+                throw new InvalidOperationException();
             }
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -72,19 +76,20 @@ namespace NamonaProject_v3_.Model
         public async Task ChangeClothingData(ChangeClothingDataDto dto)
         {
             
-            if (!_context.categories.Any(x => x.CategoryName == dto.Category))
+            if (!_context.categories.Any(x => x.CategoryId == dto.CategoryId))
             {
                 throw new KeyNotFoundException();
             }
-            if (!_context.genders.Any(x => x.GenderType == dto.GenderType))
+            if (!_context.genders.Any(x => x.GenderId == dto.GenderId))
             {
                 throw new KeyNotFoundException();
             }
-            if(!_context.clothes.Any(x => x.ClothingId == dto.ClothingId))
+            if(_context.clothes.Any(x => x.ClothingName == dto.ClothingName))
             {
-                throw new KeyNotFoundException();
+                throw new InvalidOperationException();
             }
-            if (dto.ClothingName == null || dto.Collection == null || dto.Color == null || dto.Price <= 0 || dto.Stock < 0 || dto.Size == null)
+            if (string.IsNullOrWhiteSpace(dto.ClothingName) || string.IsNullOrWhiteSpace(dto.Collection)  || string.IsNullOrWhiteSpace(dto.Color) 
+                || dto.Price <= 0 || dto.Stock < 0 || string.IsNullOrWhiteSpace(dto.Size))
             {
                 throw new InvalidDataException();
             }
@@ -95,8 +100,8 @@ namespace NamonaProject_v3_.Model
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Color = dto.Color;
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Price = dto.Price;
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Size = dto.Size;
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().GenderId = dto.GenderId; //???
-                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().CategoryId = dto.CategoryId; //???
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().GenderId = _context.genders.Where(x => x.GenderId == dto.GenderId).First().GenderId;
+                _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().CategoryId = _context.categories.Where(x => x.CategoryId == dto.CategoryId).First().CategoryId;
                 _context.clothes.Where(x => x.ClothingId == dto.ClothingId).First().Stock = dto.Stock;
 
                 await _context.SaveChangesAsync();

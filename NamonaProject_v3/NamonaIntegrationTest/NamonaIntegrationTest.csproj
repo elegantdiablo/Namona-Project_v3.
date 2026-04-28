@@ -35,11 +35,6 @@
 	  </None>
 	</ItemGroup>
 
-	<Target Name="CopyDepsFile" AfterTargets="Build">
-		<Copy
-		  SourceFiles="$(SolutionDir)NamonaProject_v3\NamonaIntegrationTest\bin\Debug\net8.0\testhost.deps.json"
-		  DestinationFolder="$(OutDir)"
-		  SkipUnchangedFiles="true" />
-	</Target>
+
 
 </Project>

@@ -1,4 +1,4 @@
-namespace NamonaIntegrationTest
+namespace NamonaProjectTest
 {
     public class UnitTest1
     {

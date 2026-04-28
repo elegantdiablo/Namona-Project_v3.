@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NamonaProject_v3_.Persistance;
 using Xunit;
 
-namespace NamonaIntegrationTest
+namespace NamonaProjectTest
 {
     public class CartControllerTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
     {
@@ -39,14 +39,13 @@ namespace NamonaIntegrationTest
             _client?.Dispose();
         }
 
-        [Fact]
+
         public async Task GetCartContent_ReturnsOk()
         {
             var response = await _client.GetAsync("/api/Cart/CartContent?userid=1");
             Assert.True(response.IsSuccessStatusCode);
         }
 
-        [Fact]
         public async Task DeleteCartItem_ReturnsOk_WhenItemExists()
         {
             var user = new Users

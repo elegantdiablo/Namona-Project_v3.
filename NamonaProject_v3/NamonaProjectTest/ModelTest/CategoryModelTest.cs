@@ -6,7 +6,7 @@ using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
 using NamonaProject_v3_.DTO;
 
-namespace NamonaProjectTest
+namespace NamonaProjectTest.ModelTest
 {
     public class CategoryModelTest
     {
@@ -61,7 +61,7 @@ namespace NamonaProjectTest
                 CategoryName = null
             };
 
-            await Assert.ThrowsAsync<System.IO.InvalidDataException>(() =>
+            await Assert.ThrowsAsync<InvalidDataException>(() =>
                 _model.AddCategory(dto));
         }
 
@@ -98,7 +98,7 @@ namespace NamonaProjectTest
                 CategoryName = null
             };
 
-            await Assert.ThrowsAsync<System.IO.InvalidDataException>(() =>
+            await Assert.ThrowsAsync<InvalidDataException>(() =>
                 _model.EditCategory(dto));
         }
 
@@ -119,7 +119,7 @@ namespace NamonaProjectTest
         [Fact]
         public async Task DeleteCategory_Should_Throw_When_NotFound()
         {
-            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(() =>
                 _model.DeleteCategory(999999));
         }
     }
