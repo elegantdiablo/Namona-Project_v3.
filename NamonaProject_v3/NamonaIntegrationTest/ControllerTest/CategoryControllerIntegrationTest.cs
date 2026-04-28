@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NamonaProject_v3_.DTO;
-using NamonaProjectTest;
 
 namespace NamonaIntegrationTest.ControllerTest
 {
