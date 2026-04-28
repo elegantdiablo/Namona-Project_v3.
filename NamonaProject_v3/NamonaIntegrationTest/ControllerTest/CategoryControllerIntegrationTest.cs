@@ -89,7 +89,7 @@ namespace NamonaIntegrationTest.ControllerTest
 
             var dto = new AddCategoryDto
             {
-                CategoryName = "T-Shirt"
+                CategoryName = "Hoodie"
             };
 
             var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
@@ -143,6 +143,64 @@ namespace NamonaIntegrationTest.ControllerTest
             var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
             var response = await _client.PutAsync("/api/Category/EditCategory", content);
             Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task ModifyCategory_ReturnsConflict()
+        {
+
+            var logindto = new
+            {
+                UserName = "admin",
+                Password = "admin123"
+            };
+
+            var logincontent = new StringContent(JsonSerializer.Serialize(logindto), Encoding.UTF8, "application/json");
+            var loginres = await _client.PostAsync("api/User/admin/login", logincontent);
+            loginres.EnsureSuccessStatusCode();
+            var dto = new
+            {
+                Id = 1,
+                CategoryName = "Hoodie"
+
+            };
+            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+            var response = await _client.PutAsync("/api/Category/EditCategory", content);
+            Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteCategory_ReturnOk()
+        {
+            var logindto = new
+            {
+                UserName = "admin",
+                Password = "admin123"
+            };
+
+            var logincontent = new StringContent(JsonSerializer.Serialize(logindto), Encoding.UTF8, "application/json");
+            var loginres = await _client.PostAsync("api/User/admin/login", logincontent);
+            loginres.EnsureSuccessStatusCode();
+
+            var response = await _client.DeleteAsync("/api/Category/DeleteCategory?id=1");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteCategory_ReturnNotFound()
+        {
+            var logindto = new
+            {
+                UserName = "admin",
+                Password = "admin123"
+            };
+
+            var logincontent = new StringContent(JsonSerializer.Serialize(logindto), Encoding.UTF8, "application/json");
+            var loginres = await _client.PostAsync("api/User/admin/login", logincontent);
+            loginres.EnsureSuccessStatusCode();
+
+            var response = await _client.DeleteAsync("/api/Category/DeleteCategory?id=10");
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }
