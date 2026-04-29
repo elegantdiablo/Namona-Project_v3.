@@ -198,6 +198,26 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet("me")]
+        public async Task<ActionResult> Me()
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            var identityValue = User.Identity.Name;
+            if (string.IsNullOrWhiteSpace(identityValue))
+                return Unauthorized();
+
+            var user = await _userModel.GetByEmail(identityValue);
+            user ??= await _userModel.GetByUserName(identityValue);
+            user ??= await _userModel.GetByUserName(User.FindFirst("username")?.Value ?? "");
+
+            if (user == null)
+                return Unauthorized();
+
+            return Ok(user);
+        }
+
 
         [Authorize(Roles = "User")]
         [HttpPost("logout")]
