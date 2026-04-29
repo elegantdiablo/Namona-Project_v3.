@@ -166,7 +166,7 @@ namespace NamonaIntegrationTest.ControllerTest
 
             };
             var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/api/Clothes/modify", content);
+            var response = await _client.PutAsync("/api/Clothes/modify", content);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -197,7 +197,7 @@ namespace NamonaIntegrationTest.ControllerTest
 
             };
             var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("api/Clothes/modify", content);
+            var response = await _client.PutAsync("api/Clothes/modify", content);
             Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
@@ -243,7 +243,7 @@ namespace NamonaIntegrationTest.ControllerTest
 
             };
             var modifycontent = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("api/Clothes/modify", modifycontent);
+            var response = await _client.PutAsync("api/Clothes/modify", modifycontent);
             Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         }
 
@@ -275,7 +275,7 @@ namespace NamonaIntegrationTest.ControllerTest
 
             };
             var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/api/Clothes/modify", content);
+            var response = await _client.PutAsync("/api/Clothes/modify", content);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
@@ -289,7 +289,7 @@ namespace NamonaIntegrationTest.ControllerTest
             };
 
             var logincontent = new StringContent(JsonSerializer.Serialize(logindto), Encoding.UTF8, "application/json");
-            var loginres = await _client.PostAsync("api/User/admin/login", logincontent);
+            var loginres = await _client.PutAsync("api/User/admin/login", logincontent);
             loginres.EnsureSuccessStatusCode();
 
             var response = await _client.DeleteAsync("/api/Clothes/remove?id=3");
