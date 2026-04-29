@@ -35,7 +35,7 @@
 				<Button Classes="nav" Content="🛒 Orders" Command="{Binding ToOrdersCommand}"/>
 				<Button Classes="nav" Content="👕 Clothes" Command="{Binding ToClothesCommand}"/>
 				<Button Classes="nav" Content="📦 Categories" Command="{Binding ToCategoriesCommand}"/>
-				<Button Classes="nav" Content="🛍 Carts" Command="{Binding ToCartCommand}"/>
+				
 
 			</StackPanel>
 
@@ -81,9 +81,6 @@
 					</DataTemplate>
 					<DataTemplate DataType="viewmodels:UserPanelViewModel">
 						<local:UserPanel />
-					</DataTemplate>
-					<DataTemplate DataType="viewmodels:CartPanelViewModel">
-						<local:CartPanel />
 					</DataTemplate>
 					<DataTemplate DataType="viewmodels:OrderPanelViewModel">
 						<local:OrderPanel />
