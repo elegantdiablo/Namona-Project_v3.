@@ -7,7 +7,7 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 x:Class="NamonaAvalonia.ClothesPanel" x:DataType="viewmodels:ClothesPanelViewModel">
 	<StackPanel>
-		<TextBlock Text="Clothes" FontSize="18" Foreground="White"/>
+		<TextBlock Text="Clothes" FontSize="28" FontWeight="Bold" Foreground="White"/>
 		<StackPanel Orientation="Horizontal" Spacing="10">
 			<Button Content="Add Clothes" Command="{Binding AddClothesCommand}"/>
 			<Button Content="Edit Clothes" Command="{Binding EditClothesCommand}" CommandParameter="{Binding SelectedClothes}"/>
