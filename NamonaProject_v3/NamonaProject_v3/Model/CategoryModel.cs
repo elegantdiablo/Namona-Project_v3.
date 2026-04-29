@@ -25,9 +25,13 @@ namespace NamonaProject_v3_.Model
 
         public async Task AddCategory(AddCategoryDto dto)
         {
-            if(dto.CategoryName == null)
+            if(string.IsNullOrWhiteSpace(dto.CategoryName))
             {
                 throw new InvalidDataException();
+            }
+            if(_context.categories.Any(x => x.CategoryName == dto.CategoryName))
+            {
+                throw new InvalidOperationException();
             }
             using (var trx = _context.Database.BeginTransaction())
             {
@@ -43,9 +47,13 @@ namespace NamonaProject_v3_.Model
        
         public async Task EditCategory(EditCategoryDto dto)
         {
-            if(dto.CategoryName == null)
+            if(string.IsNullOrWhiteSpace(dto.CategoryName))
             {
                 throw new InvalidDataException();
+            }
+            if (_context.categories.Any(x => x.CategoryName == dto.CategoryName))
+            {
+                throw new InvalidOperationException();
             }
             using (var trx = _context.Database.BeginTransaction())
             {

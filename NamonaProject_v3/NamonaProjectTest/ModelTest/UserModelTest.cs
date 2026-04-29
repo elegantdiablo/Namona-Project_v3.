@@ -6,7 +6,7 @@ using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
 using NamonaProject_v3_.DTO;
 
-namespace NamonaProjectTest
+namespace NamonaProjectTest.ModelTest
 {
     public class UserModelTest
     {
@@ -137,7 +137,7 @@ namespace NamonaProjectTest
             await _model.Register(dto);
 
             // Act & Assert
-            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(() =>
                 _model.AdminLogin(dto.UserName, dto.Password));
         }
 
@@ -249,7 +249,7 @@ namespace NamonaProjectTest
                 Role = ""
             };
 
-            await Assert.ThrowsAsync<System.IO.InvalidDataException>(() =>
+            await Assert.ThrowsAsync<InvalidDataException>(() =>
                 _model.EditUser(dto));
         }
     }

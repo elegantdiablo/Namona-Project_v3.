@@ -60,6 +60,22 @@ namespace NamonaProject_v3_.Model
                 .ToList();
         }
 
+        public OrderDto GetOrderById(int id)
+        {
+            if(!_context.orders.Any(x => x.OrderId == id))
+            {
+                throw new KeyNotFoundException();
+            }
+            return _context.orders.Where(x => x.OrderId == id).Select(x => new OrderDto
+            {
+                OrderId = x.OrderId,
+                Address = x.Address,
+                Status = x.Status,
+                CompletedAt = x.CompletedAt,
+                OrderDate = x.OrderDate
+            }).First();
+        }
+
         public async Task<int> CheckoutOrder(int userId, CheckoutOrderDto dto)
         {
             var cartItems = await _context.cart
@@ -117,8 +133,7 @@ namespace NamonaProject_v3_.Model
                 OrderDate = (DateTimeOffset)x.OrderDate,
                 CompletedAt = (DateTimeOffset)x.CompletedAt != null ? (DateTimeOffset)x.CompletedAt : null,  
                 UserName = x.Carts.Any()
-    ? x.Carts.Select(c => c.User.UserName).FirstOrDefault()
-    : "N/A"
+                ? x.Carts.Select(c => c.User.UserName).FirstOrDefault() : "Unknown User"
             });
         }
 
@@ -156,9 +171,9 @@ namespace NamonaProject_v3_.Model
 
         public async Task UpdateOrder(OrderDto order)
         {
-            if (!_context.orders.Any(x => x.OrderId == order.OrderId))
+            if(string.IsNullOrWhiteSpace(order.Address) || string.IsNullOrWhiteSpace(order.Status))
             {
-                throw new KeyNotFoundException("nincs ilyen ruha");
+                throw new InvalidDataException();
             }
             var existingOrder = _context.orders.Where(x => x.OrderId == order.OrderId).First();
             using (var trx = _context.Database.BeginTransaction())
@@ -177,8 +192,11 @@ namespace NamonaProject_v3_.Model
         {
             var order = _context.orders.FirstOrDefault(x => x.OrderId == id);
 
-            if (order == null)
-                throw new KeyNotFoundException("Order not found");
+            if (!_context.orders.Any(x => x.OrderId == id))
+            {
+                throw new KeyNotFoundException();
+            } 
+                
             using (var trx = _context.Database.BeginTransaction())
             {
                 order.Status = "Completed";
@@ -192,25 +210,16 @@ namespace NamonaProject_v3_.Model
         }
 
 
-        public async Task ClearOrders()
-        {
-            using (var trx = _context.Database.BeginTransaction())
-            {
-                _context.orders.RemoveRange(_context.orders);
-                await _context.SaveChangesAsync();
-                await trx.CommitAsync();
-            }
-            await Task.CompletedTask;
-        }
 
         public async Task UpdateOrderStatus(UpdateStatusDto dto)
         {
             var order = _context.orders.FirstOrDefault(x => x.OrderId == dto.OrderId);
-            if (order == null)
-                throw new KeyNotFoundException("Order not found");
+            if (string.IsNullOrWhiteSpace(dto.Status))
+                throw new InvalidDataException();
             using (var trx = _context.Database.BeginTransaction())
             {
                 order.Status = dto.Status;
+                order.CompletedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
                 await trx.CommitAsync();
 
@@ -231,6 +240,10 @@ namespace NamonaProject_v3_.Model
                     _context.clothes.Where(x => item.ClothingId == x.ClothingId).First().Stock -= item.Amount;
                 }
             }
+        }
+        public int Revenue()
+        {
+            return  (int)(_context.orders.Sum(x => x.Carts.Sum(x => x.PriceSum))) ;
         }
 
     }

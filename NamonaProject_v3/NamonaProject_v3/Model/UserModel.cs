@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Persistance;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -17,16 +19,20 @@ namespace NamonaProject_v3_.Model
 
         public async Task Register(RegistrationDto dto)
         {
-            var existingUser = await _context.users
-                .FirstOrDefaultAsync(u => u.Email == dto.Email);
-
-            if (existingUser != null) throw new InvalidOperationException("User with this email already exists");
+            if (string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.UserName) || string.IsNullOrEmpty(dto.Password))
+            {
+                throw new InvalidDataException();
+            }
+            if (_context.users.Any(x => x.Email == dto.Email))
+            {
+                throw new InvalidOperationException("Email already exists");
+            }
             var user = new Users
             {
                 Email = dto.Email,
                 UserName = dto.UserName,
                 Password = HashPassword(dto.Password),
-                Role = "User"   
+                Role = "User"
             };
 
             _context.users.Add(user);
@@ -87,7 +93,7 @@ namespace NamonaProject_v3_.Model
             {
                 throw new KeyNotFoundException();
             }
-                
+
 
             return new UserDto
             {
@@ -103,44 +109,55 @@ namespace NamonaProject_v3_.Model
             var user = await _context.users.FindAsync(userId);
 
             if (user == null)
-                throw new InvalidOperationException("User not found");
+                throw new KeyNotFoundException();
 
-            using var trx = await _context.Database.BeginTransactionAsync();
-
-            _context.users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            await trx.CommitAsync();
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.users.Remove(user);
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
+            }
+            await Task.CompletedTask;
         }
 
-        public async Task UpdatePassword(int userId, string newPassword)
+        public async Task UpdatePassword(UpdatePasswordDto dto)
         {
-            var user = await _context.users.FindAsync(userId);
+            if(string.IsNullOrWhiteSpace(dto.Password))
+            {
+                throw new InvalidDataException("New password cannot be empty");
+            }
 
-            if (user == null)
-                throw new InvalidOperationException("User not found");
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.users.Where(x => x.UserId == dto.UserId).First().Password = HashPassword(dto.Password);
 
-            using var trx = await _context.Database.BeginTransactionAsync();
-
-            user.Password = HashPassword(newPassword);
-
-            await _context.SaveChangesAsync();
-            await trx.CommitAsync();
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
+            }
+            await Task.CompletedTask;
+            
         }
 
-        public async Task PromoteToAdmin(int userId)
+        public async Task PromoteToAdmin(PromoteDto dto)
         {
-            var user = await _context.users.FindAsync(userId);
 
-            if (user == null)
-                throw new InvalidOperationException("User not found");
+            if (string.IsNullOrWhiteSpace(dto.Role))
+            {
+                throw new InvalidDataException();
+            }
+            if(dto.Role != "Admin" && dto.Role != "User")
+            {
+                throw new InvalidCredentialException();
+            }
 
-            using var trx = await _context.Database.BeginTransactionAsync();
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.users.Where(x => x.UserId == dto.UserId).First().Role = dto.Role;
+                await _context.SaveChangesAsync();
+                await trx.CommitAsync();
+            }
 
-            user.Role = "Admin";
-
-            await _context.SaveChangesAsync();
-            await trx.CommitAsync();
+            await Task.CompletedTask;
         }
         public async Task<UserDto?> GetByEmail(string email)
         {
@@ -160,16 +177,20 @@ namespace NamonaProject_v3_.Model
 
         public async Task EditUser(UserDto dto)
         {
-            if(dto.UserName == null || dto.Email == null || dto.Phone == null || dto.Role == null)
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.UserName) || string.IsNullOrWhiteSpace(dto.Role) || string.IsNullOrWhiteSpace(dto.Phone))
             {
                 throw new InvalidDataException();
             }
-            using(var trx = _context.Database.BeginTransaction())
+            if (_context.users.Any(x => x.Email == dto.Email))
             {
-                _context.users.Where(x =>x.UserId == dto.UserId).First().UserName = dto.UserName;
-                _context.users.Where(x =>x.UserId == dto.UserId).First().PhoneNumber = dto.UserName;
-                _context.users.Where(x =>x.UserId == dto.UserId).First().Email = dto.Email;
-                _context.users.Where(x =>x.UserId == dto.UserId).First().Role = dto.Role;
+                throw new InvalidOperationException();
+            }
+            using (var trx = _context.Database.BeginTransaction())
+            {
+                _context.users.Where(x => x.UserId == dto.UserId).First().UserName = dto.UserName;
+                _context.users.Where(x => x.UserId == dto.UserId).First().PhoneNumber = dto.UserName;
+                _context.users.Where(x => x.UserId == dto.UserId).First().Email = dto.Email;
+                _context.users.Where(x => x.UserId == dto.UserId).First().Role = dto.Role;
                 await trx.CommitAsync();
                 await _context.SaveChangesAsync();
             }

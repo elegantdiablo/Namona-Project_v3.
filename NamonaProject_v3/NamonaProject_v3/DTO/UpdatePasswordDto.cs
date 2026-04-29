@@ -1,9 +1,8 @@
 ﻿namespace NamonaProject_v3_.DTO
 {
-    public class LoginDto
+    public class UpdatePasswordDto
     {
-        public string Email { get; set; }
+        public int UserId { get; set; } 
         public string Password { get; set; }
     }
 }
-

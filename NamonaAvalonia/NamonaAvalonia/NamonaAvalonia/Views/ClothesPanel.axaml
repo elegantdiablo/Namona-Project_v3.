@@ -1,16 +1,17 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="using:NamonaAvalonia"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="NamonaAvalonia.ClothesPanel" x:DataType="viewmodels:ClothesPanelViewModel">
-  <StackPanel>
-		<TextBlock Text="Orders" FontSize="18" Foreground="White"/>
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:local="using:NamonaAvalonia"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:NamonaAvalonia.ViewModels"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:Class="NamonaAvalonia.ClothesPanel" x:DataType="viewmodels:ClothesPanelViewModel">
+	<StackPanel>
+		<TextBlock Text="Clothes" FontSize="18" Foreground="White"/>
 		<StackPanel Orientation="Horizontal" Spacing="10">
-			<Button Content="EditOrder" Command="{Binding EditClothesCommand}" CommandParameter="{Binding SelectedClothes}"/>
-			<Button Content="DeleteOrder" Command="{Binding DeleteClothesCommand}" CommandParameter="{Binding SelectedClothes}"/>
+			<Button Content="Add Clothes" Command="{Binding AddClothesCommand}"/>
+			<Button Content="Edit Clothes" Command="{Binding EditClothesCommand}" CommandParameter="{Binding SelectedClothes}"/>
+			<Button Content="Delete Clothes" Command="{Binding DeleteClothesCommand}" CommandParameter="{Binding SelectedClothes}"/>
 		</StackPanel>
 		<ContentControl Content="{Binding CurrentPage}" Grid.Row="1">
 			<ContentControl.DataTemplates>
@@ -19,21 +20,17 @@
 						<ListBox ItemsSource="{Binding ClothesOC}" SelectedItem="{Binding SelectedClothes}">
 							<ListBox.ItemTemplate>
 								<DataTemplate>
-									<Border Classes="clothesCard" Margin="0 0 0 15">
-										<StackPanel Spacing="10" Orientation="Horizontal">
-											<TextBlock Text="{Binding ClothingId}"/>
-											<TextBlock Text="{Binding ClothingName}"/>
-											<TextBlock Text="{Binding Collection}"/>
-											<TextBlock Text="{Binding Size}"/>
-											<TextBlock Text="{Binding Stock}"/>
-											<TextBlock Text="{Binding Color}"/>
-											<TextBlock Text="{Binding Price}"/>
-											<TextBlock Text="{Binding CategoryId}"/>
-											<TextBlock Text="{Binding CategoryName}"/>
-											<TextBlock Text="{Binding GenderId}"/>
-											<TextBlock Text="{Binding GenderType}"/>
-										</StackPanel>
-									</Border>
+									<StackPanel Spacing="10" Orientation="Horizontal">
+										<TextBlock Text="{Binding ClothingId}"/>
+										<TextBlock Text="{Binding ClothingName}"/>
+										<TextBlock Text="{Binding Collection}"/>
+										<TextBlock Text="{Binding Size}"/>
+										<TextBlock Text="{Binding Stock}"/>
+										<TextBlock Text="{Binding Color}"/>
+										<TextBlock Text="{Binding Price}"/>
+										<TextBlock Text="{Binding CategoryName}"/>
+										<TextBlock Text="{Binding GenderType}"/>
+									</StackPanel>
 								</DataTemplate>
 							</ListBox.ItemTemplate>
 						</ListBox>
@@ -41,6 +38,9 @@
 				</DataTemplate>
 				<DataTemplate DataType="viewmodels:ClothesHandlerPanelViewModel">
 					<local:ClothesHandlerPanel/>
+				</DataTemplate>
+				<DataTemplate DataType="viewmodels:AddClothesHandlePanelViewModel">
+					<local:AddClothesPanel/>
 				</DataTemplate>
 			</ContentControl.DataTemplates>
 		</ContentControl>

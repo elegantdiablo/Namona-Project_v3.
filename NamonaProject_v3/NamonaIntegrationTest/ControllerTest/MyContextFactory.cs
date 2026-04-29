@@ -9,20 +9,26 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NamonaProject_v3_.Persistance;
 
-namespace NamonaIntegrationTest
+namespace NamonaIntegrationTest.ControllerTest
 {
-    internal class MyContextFactory : WebApplicationFactory<Program>
+    public class MyContextFactory : WebApplicationFactory<Program>
     {
         private SqliteConnection _connection;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+
+            builder.UseEnvironment("Testing");
+
             builder.ConfigureServices(services =>
             {
-                services.RemoveAll(typeof(DbContextOptions<NamonaDbContext>));
-                services.RemoveAll(typeof(IDbContextPool<NamonaDbContext>));
-                services.RemoveAll(typeof(IScopedDbContextLease<NamonaDbContext>));
+                //services.RemoveAll(typeof(DbContextOptions<NamonaDbContext>));
+                //services.RemoveAll(typeof(IDbContextPool<NamonaDbContext>));
+                //services.RemoveAll(typeof(IScopedDbContextLease<NamonaDbContext>));
 
+                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<NamonaDbContext>));
+
+                if(descriptor != null) services.Remove(descriptor);
                 _connection = new SqliteConnection("Data Source=:memory:");
                 _connection.Open();
 
@@ -34,7 +40,7 @@ namespace NamonaIntegrationTest
 
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
-                var db = scope.ServiceProvider.GetService<NamonaDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<NamonaDbContext>();
                 db.Database.EnsureCreated();
                 if (!db.clothes.Any())
                 {

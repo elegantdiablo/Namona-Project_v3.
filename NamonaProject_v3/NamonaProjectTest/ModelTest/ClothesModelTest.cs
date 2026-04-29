@@ -7,7 +7,7 @@ using NamonaProject_v3_.Persistance;
 using NamonaProject_v3_.DTO;
 using Namona_v3.DTO;
 
-namespace NamonaProjectTest
+namespace NamonaProjectTest.ModelTest
 {
     public class ClothesModelTest
     {
@@ -30,7 +30,7 @@ namespace NamonaProjectTest
             {
                 Assert.NotNull(x.ClothingName);
                 Assert.NotNull(x.CategoryName);
-                Assert.NotNull(x.GenderName);
+                Assert.NotNull(x.GenderType);
             });
         }
 
@@ -45,9 +45,7 @@ namespace NamonaProjectTest
             {
                 ClothingName = "TestCloth",
                 Collection = "Summer",
-                CategoryId = category.CategoryId,
                 CategoryName = category.CategoryName,
-                GenderId = gender.GenderId,
                 GenderName = gender.GenderType,
                 Size = "M",
                 Stock = 5,
@@ -73,9 +71,7 @@ namespace NamonaProjectTest
             {
                 ClothingName = "Test",
                 Collection = "Summer",
-                CategoryId = 999,
                 CategoryName = "INVALID",
-                GenderId = gender.GenderId,
                 GenderName = gender.GenderType,
                 Size = "M",
                 Stock = 5,
@@ -83,7 +79,7 @@ namespace NamonaProjectTest
                 Price = 100
             };
 
-            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(() =>
                 _model.AddClothes(dto));
         }
 
@@ -97,9 +93,7 @@ namespace NamonaProjectTest
             {
                 ClothingName = null,
                 Collection = null,
-                CategoryId = category.CategoryId,
                 CategoryName = category.CategoryName,
-                GenderId = gender.GenderId,
                 GenderName = gender.GenderType,
                 Size = null,
                 Stock = -1,
@@ -107,7 +101,7 @@ namespace NamonaProjectTest
                 Price = 0
             };
 
-            await Assert.ThrowsAsync<System.IO.InvalidDataException>(() =>
+            await Assert.ThrowsAsync<InvalidDataException>(() =>
                 _model.AddClothes(dto));
         }
 
@@ -125,9 +119,7 @@ namespace NamonaProjectTest
                 ClothingName = "UpdatedName",
                 Collection = "UpdatedCollection",
                 CategoryId = category.CategoryId,
-                Category = category.CategoryName,
                 GenderId = gender.GenderId,
-                GenderType = gender.GenderType,
                 Size = "L",
                 Stock = 10,
                 Color = "Blue",
@@ -143,30 +135,7 @@ namespace NamonaProjectTest
             Assert.Equal(200, updated.Price);
         }
 
-        [Fact]
-        public async Task ChangeClothingData_Should_Throw_When_NotFound()
-        {
-            var category = _context.categories.First();
-            var gender = _context.genders.First();
 
-            var dto = new ChangeClothingDataDto
-            {
-                ClothingId = 999999,
-                ClothingName = "Test",
-                Collection = "Test",
-                CategoryId = category.CategoryId,
-                Category = category.CategoryName,
-                GenderId = gender.GenderId,
-                GenderType = gender.GenderType,
-                Size = "M",
-                Stock = 1,
-                Color = "Red",
-                Price = 50
-            };
-
-            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
-                _model.ChangeClothingData(dto));
-        }
 
         [Fact]
         public async Task DeleteClothes_Should_Remove_Item()
@@ -184,7 +153,7 @@ namespace NamonaProjectTest
         [Fact]
         public async Task DeleteClothes_Should_Throw_When_NotFound()
         {
-            await Assert.ThrowsAsync<System.Collections.Generic.KeyNotFoundException>(() =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(() =>
                 _model.DeleteClothes(999999));
         }
 

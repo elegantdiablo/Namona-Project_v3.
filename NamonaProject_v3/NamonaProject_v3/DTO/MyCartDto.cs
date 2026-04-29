@@ -1,4 +1,6 @@
-﻿namespace NamonaProject_v3_.DTO
+﻿using System.Collections;
+using System.Collections.Generic;
+namespace NamonaProject_v3_.DTO
 {
     public class MyCartDto
     {

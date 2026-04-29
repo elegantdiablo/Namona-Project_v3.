@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NamonaProjectTest
+namespace NamonaProjectTest.ModelTest
 {
     internal class DbContextFactory
     {

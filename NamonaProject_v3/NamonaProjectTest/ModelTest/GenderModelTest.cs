@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
 
-namespace NamonaProjectTest
+namespace NamonaProjectTest.ModelTest
 {
     public class GenderModelTest
     {

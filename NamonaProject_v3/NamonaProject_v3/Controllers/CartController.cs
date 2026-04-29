@@ -42,12 +42,14 @@ namespace NamonaProject_v3_.Controllers
         {
             try
             {
-                var currentUserId = await GetAuthenticatedUserId();
+                
+                  
+               var currentUserId = await GetAuthenticatedUserId();
                 if (!currentUserId.HasValue)
                 {
                     return Unauthorized();
                 }
-
+                
                 return Ok(_cartModel.GetCartContent(currentUserId.Value));
             }
             catch

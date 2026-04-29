@@ -42,7 +42,7 @@
 					<StackPanel>
 						<TextBlock Text="Revenue"
 								   Classes="cardTitle"/>
-						<TextBlock Text=""
+						<TextBlock Text="{Binding Revenue}"
 								   Classes="cardValue"/>
 					</StackPanel>
 				</Border>
