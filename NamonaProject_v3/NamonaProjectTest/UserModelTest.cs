@@ -243,10 +243,10 @@ namespace NamonaProjectTest
             var dto = new UserDto
             {
                 UserId = user.UserId,
-                UserName = null,
-                Email = null,
-                Phone = null,
-                Role = null
+                UserName = "",
+                Email = "",
+                Phone = "",
+                Role = ""
             };
 
             await Assert.ThrowsAsync<System.IO.InvalidDataException>(() =>
