@@ -9,11 +9,11 @@
 
 
 	<StackPanel>
-		<TextBlock Text="Orders" FontSize="18" Foreground="White"/>
+		<TextBlock Text="Orders" FontSize="28" FontWeight="Bold" Foreground="White"/>
 		<StackPanel Orientation="Horizontal" Spacing="10">
-			<Button Content="Edit Order" Command="{Binding EditOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
-			<Button Content="Delete Order" Command="{Binding DeleteOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
-			<Button Content="Complete Order" Command="{Binding CompleteOrderCommand}" CommandParameter="{Binding SelectedOrder}"/>
+			<Button Content="Edit Order" Command="{Binding EditOrderCommand}" CommandParameter="{Binding SelectedOrder}" Foreground="White"/>
+			<Button Content="Delete Order" Command="{Binding DeleteOrderCommand}" CommandParameter="{Binding SelectedOrder}" Foreground="White"/>
+			<Button Content="Complete Order" Command="{Binding CompleteOrderCommand}" CommandParameter="{Binding SelectedOrder}" Foreground="White"/>
 		</StackPanel>
 		<ContentControl Content="{Binding CurrentPage}" Grid.Row="1">
 			<ContentControl.DataTemplates>
@@ -24,12 +24,12 @@
 								<DataTemplate>
 									<Border Classes="orderCard" Margin="0 0 0 15">
 										<StackPanel Spacing="10" Orientation="Horizontal">
-											<TextBlock Text="{Binding OrderId}"/>
-											<TextBlock Text="{Binding UserName}"/>
-											<TextBlock Text="{Binding Address}"/>
-											<TextBlock Text="{Binding Status}"/>
-											<TextBlock Text="{Binding OrderDate}"/>
-											<TextBlock Text="{Binding CompletedAt}"/>
+											<TextBlock Text="{Binding OrderId}" Foreground="White"/>
+											<TextBlock Text="{Binding UserName}" Foreground="White"/>
+											<TextBlock Text="{Binding Address}" Foreground="White"/>
+											<TextBlock Text="{Binding Status}" Foreground="White"/>
+											<TextBlock Text="{Binding OrderDate}" Foreground="White"/>
+											<TextBlock Text="{Binding CompletedAt}" Foreground="White"/>
 										</StackPanel>
 									</Border>
 								</DataTemplate>

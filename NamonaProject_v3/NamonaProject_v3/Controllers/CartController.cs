@@ -86,7 +86,7 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest();
             }
         }
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPost("addCart")]
         public async Task<ActionResult> AddCart([FromBody] AddToCartDto dto)
         {

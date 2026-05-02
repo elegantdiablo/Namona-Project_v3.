@@ -167,9 +167,15 @@ namespace NamonaProjectTest.ModelTest
             // Arrange
             var user = _context.users.First();
             var oldPassword = user.Password;
+            
+            var dto = new UpdatePasswordDto
+            {
+                UserId = user.UserId,
+                Password = "newpass"
+            };
 
             // Act
-            await _model.UpdatePassword(user.UserId, "newpassword");
+            await _model.UpdatePassword(dto);
 
             // Assert
             var updated = _context.users.First(u => u.UserId == user.UserId);
@@ -181,9 +187,13 @@ namespace NamonaProjectTest.ModelTest
         {
             // Arrange
             var user = _context.users.First();
-
+            var dto = new PromoteDto
+            {
+                UserId = user.UserId,
+                Role = "admin"
+            };
             // Act
-            await _model.PromoteToAdmin(user.UserId);
+            await _model.PromoteToAdmin(dto);
 
             // Assert
             var updated = _context.users.First(u => u.UserId == user.UserId);
@@ -243,10 +253,10 @@ namespace NamonaProjectTest.ModelTest
             var dto = new UserDto
             {
                 UserId = user.UserId,
-                UserName = null,
-                Email = null,
-                Phone = null,
-                Role = null
+                UserName = "",
+                Email = "",
+                Phone = "",
+                Role = ""
             };
 
             await Assert.ThrowsAsync<InvalidDataException>(() =>

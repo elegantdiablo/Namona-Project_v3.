@@ -154,9 +154,27 @@ namespace NamonaIntegrationTest
                 CompletedAt = DateTime.Now,
                 Carts = new List<Cart> { cart1, cart2, cart3 }
             };
+            var order4 = new Orders
+            {
+                OrderDate = DateTimeOffset.Now,
+                Address = "Budapest, Dorozsmai utca 123",
+                Status = "InProgress",
+                CompletedAt = DateTime.Now,
+                Carts = new List<Cart> { cart1, cart2, cart3 }
+            };
+            var order5 = new Orders
+            {
+                OrderDate = DateTimeOffset.Now,
+                Address = "Budapest, Dorozsmai utca 123",
+                Status = "InProgress",
+                CompletedAt = DateTime.Now,
+                Carts = new List<Cart> { cart1, cart2, cart3 }
+            };
             _db.orders.Add(order1);
             _db.orders.Add(order2);
             _db.orders.Add(order3);
+            _db.orders.Add(order4);
+            _db.orders.Add(order5);
             _db.SaveChanges();
 
             // Cartok hozzárendelése az Orderhöz

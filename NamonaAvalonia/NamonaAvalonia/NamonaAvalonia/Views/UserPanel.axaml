@@ -7,10 +7,10 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="NamonaAvalonia.UserPanel" x:DataType="viewmodels:UserPanelViewModel">
   <StackPanel>
-		<TextBlock Text="Users" FontSize="18" Foreground="White"/>
+		<TextBlock Text="Users" FontSize="28" FontWeight="Bold" Foreground="White"/>
 		<StackPanel Orientation="Horizontal" Spacing="10">
-			<Button Content="Edit User" Command="{Binding EditUserCommand}" CommandParameter="{Binding SelectedUser}"/>
-			<Button Content="Delete User" Command="{Binding DeleteUserCommand}" CommandParameter="{Binding SelectedUser}"/>
+			<Button Content="Edit User" Command="{Binding EditUserCommand}" CommandParameter="{Binding SelectedUser}" Foreground="White"/>
+			<Button Content="Delete User" Command="{Binding DeleteUserCommand}" CommandParameter="{Binding SelectedUser}" Foreground="White"/>
 		</StackPanel>
 		<ContentControl Content="{Binding CurrentPage}" Grid.Row="1">
 			<ContentControl.DataTemplates>
@@ -22,8 +22,8 @@
 									<Border Classes="userCard" Margin="0 0 0 15">
 										<StackPanel Spacing="10" Orientation="Horizontal">
 											<TextBlock Text="{Binding UserId}"/>
-											<TextBlock Text="{Binding UserName}"/>
-											<TextBlock Text="{Binding Email}"/>
+											<TextBlock Text="{Binding UserName}" />
+											<TextBlock Text="{Binding Email}" />
 											<TextBlock Text="{Binding Phone}"/>
 											<TextBlock Text="{Binding Role}"/>
 											

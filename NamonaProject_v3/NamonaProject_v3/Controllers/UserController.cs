@@ -28,10 +28,13 @@ namespace NamonaProject_v3_.Controllers
             {
                 var user = await _userModel.ValidateUser(dto.Email, dto.Password);
 
+                // Ensure user has a role (default to "User" for existing users without roles)
+                var userRole = string.IsNullOrEmpty(user.Role) ? "User" : user.Role;
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Email),
-                    new Claim(ClaimTypes.Role, user.Role)
+                    new Claim(ClaimTypes.Role, userRole)
                 };
 
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -57,10 +60,16 @@ namespace NamonaProject_v3_.Controllers
             try
             {
                 var user = await _userModel.AdminLogin(dto.UserName, dto.Password);
+                
+                if (user == null) return Unauthorized(new { message = "Invalid admin credentials" });
+                
+                // Ensure admin has a role (default to "Admin" for existing users without roles)
+                var userRole = string.IsNullOrEmpty(user.Role) ? "Admin" : user.Role;
+                
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Role, user.Role)
+                    new Claim(ClaimTypes.Role, userRole)
                 };
 
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -69,17 +78,15 @@ namespace NamonaProject_v3_.Controllers
                     new ClaimsPrincipal(identity)
                 );
 
-                if (user == null) return Unauthorized(new { message = "Invalid admin credentials" });
-
                 return Ok(user);
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return Unauthorized(new { message = "Admin user not found" });
             }
             catch
             {
-                return BadRequest();
+                return BadRequest(new { message = "Login failed" });
             }
         }
 
@@ -198,6 +205,26 @@ namespace NamonaProject_v3_.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet("me")]
+        public async Task<ActionResult> Me()
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            var identityValue = User.Identity.Name;
+            if (string.IsNullOrWhiteSpace(identityValue))
+                return Unauthorized();
+
+            var user = await _userModel.GetByEmail(identityValue);
+            user ??= await _userModel.GetByUserName(identityValue);
+            user ??= await _userModel.GetByUserName(User.FindFirst("username")?.Value ?? "");
+
+            if (user == null)
+                return Unauthorized();
+
+            return Ok(user);
+        }
+
 
         [Authorize(Roles = "User")]
         [HttpPost("logout")]

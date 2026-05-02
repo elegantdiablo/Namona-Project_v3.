@@ -242,6 +242,7 @@ namespace NamonaProject_v3_.Model
                 .Where(x => x.Price > dto.Minprice && x.Price < dto.Maxprice)
                 .Select(x => new AllClothesDto
             {
+                ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
                 CategoryName = x.Category.CategoryName,
@@ -261,6 +262,7 @@ namespace NamonaProject_v3_.Model
                 x.Collection.ToLower().Contains(text.ToLower()))
                 .Select(x => new AllClothesDto
                 {
+                    ClothingId = x.ClothingId,
                     ClothingName = x.ClothingName,
                     Collection = x.Collection,
                     CategoryName = x.Category.CategoryName,

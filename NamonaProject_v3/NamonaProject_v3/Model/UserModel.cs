@@ -175,6 +175,23 @@ namespace NamonaProject_v3_.Model
             };
         }
 
+        public async Task<UserDto?> GetByUserName(string userName)
+        {
+            var user = await _context.users
+                .FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
+
+            if (user == null) return null;
+
+            return new UserDto
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                Email = user.Email,
+                Role = user.Role
+            };
+        }
+
+
         public async Task EditUser(UserDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.UserName) || string.IsNullOrWhiteSpace(dto.Role) || string.IsNullOrWhiteSpace(dto.Phone))

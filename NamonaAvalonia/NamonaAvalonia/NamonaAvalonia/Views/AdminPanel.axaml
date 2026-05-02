@@ -7,7 +7,7 @@
 
 	<Grid>
 
-		<!-- Background -->
+
 		<Grid.Background>
 			<SolidColorBrush Color="#0f172a"/>
 		</Grid.Background>
@@ -17,7 +17,7 @@
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
 
-		<!-- SIDEBAR -->
+
 		<Border Background="#020617">
 
 			<StackPanel Margin="15" Spacing="10">
@@ -35,20 +35,20 @@
 				<Button Classes="nav" Content="🛒 Orders" Command="{Binding ToOrdersCommand}"/>
 				<Button Classes="nav" Content="👕 Clothes" Command="{Binding ToClothesCommand}"/>
 				<Button Classes="nav" Content="📦 Categories" Command="{Binding ToCategoriesCommand}"/>
-				<Button Classes="nav" Content="🛍 Carts" Command="{Binding ToCartCommand}"/>
+				
 
 			</StackPanel>
 
 		</Border>
 
 
-		<!-- MAIN AREA -->
+
 		<Grid Grid.Column="1"
 			  RowDefinitions="60,*">
 
 
 
-			<!-- TOP BAR -->
+			
 			<Border Background="#020617"
 					Padding="20">
 
@@ -60,11 +60,7 @@
 							Background="#1e293b"
 							CornerRadius="20">
 
-						<TextBlock Grid.Column="1"
-								   Text="❌"
-								   FontSize="18"
-								   Margin="20 0"
-								   VerticalAlignment="Center"/>
+						
 
 					</Border>
 
@@ -73,7 +69,7 @@
 			</Border>
 
 
-			<!-- DASHBOARD CONTENT -->
+			
 			<ContentControl Content="{Binding CurrentPage}" Grid.Row="1">
 				<ContentControl.DataTemplates>
 					<DataTemplate DataType="viewmodels:DashboardViewModel">
@@ -81,9 +77,6 @@
 					</DataTemplate>
 					<DataTemplate DataType="viewmodels:UserPanelViewModel">
 						<local:UserPanel />
-					</DataTemplate>
-					<DataTemplate DataType="viewmodels:CartPanelViewModel">
-						<local:CartPanel />
 					</DataTemplate>
 					<DataTemplate DataType="viewmodels:OrderPanelViewModel">
 						<local:OrderPanel />
@@ -102,10 +95,10 @@
 	</Grid>
 
 
-	<!-- STYLES -->
+
 	<UserControl.Styles>
 
-		<!-- Sidebar buttons -->
+		
 		<Style Selector="Button.nav">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="Foreground" Value="#cbd5f5"/>
@@ -120,7 +113,7 @@
 		</Style>
 
 
-		<!-- Stat cards -->
+		
 		<Style Selector="Border.statCard">
 			<Setter Property="Width" Value="200"/>
 			<Setter Property="Height" Value="110"/>
@@ -146,7 +139,7 @@
 			<Setter Property="FontSize" Value="26"/>
 			<Setter Property="FontWeight" Value="Bold"/>
 		</Style>
-		<!-- Panel -->
+		
 		<Style Selector="Border.panel">
 			<Setter Property="Background" Value="#1e293b"/>
 			<Setter Property="CornerRadius" Value="12"/>

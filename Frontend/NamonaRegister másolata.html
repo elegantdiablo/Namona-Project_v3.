@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<link rel="stylesheet" href="NamonaRegister.css">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Register</title>
+
+</head>
+
+<body>
+
+<header>
+
+<button id="menuButton" class="menu-icon">☰</button>
+
+<img class="midlogo" src="namonalogo.jpg" alt="Namona">
+
+<div class="profile-container">
+<button class="profile-btn">
+<div class="Profile-pic-wrapper">
+<img src="profpic.jpg" class="Profile-pic" alt="Profile Picture">
+</div>
+</button>
+</div>
+
+<div id="profileMenu" class="profile-menu">
+<a href="NamonaRegister.html">📝 Register</a>
+    <a href="NamonaLogin.html">🔐 Login</a>
+    <a href="SavedProducts.html">💾 Saved products</a>
+    <a href="MyOrders.html">📦 My orders</a>
+    <a href="AboutUs.html">ℹ️ About us</a>
+</div>
+
+<button id="cartButton" class="cart-icon">
+<img src="carticon-removebg-preview.png" alt="Cart">
+</button>
+
+</header>
+
+
+<nav id="sideMenu">
+<a href="Namona.html">Main Page</a>
+<a href="Tshirts.html">T-shirts</a>
+<a href="Hoodies.html">Hoodies</a>
+<a href="Pants.html">Pants</a>
+</nav>
+
+
+<main>
+
+<h1>Register</h1>
+
+<form id="registerForm">
+
+<input type="text" placeholder="UserName" class="registuser" id="regUsername" required>
+
+<input type="email" placeholder="Email" class="registuser" id="regEmail" required>
+
+<input type="password" placeholder="Password" class="registuser" id="regPassword" required>
+
+<button type="submit" class="registuserbutton">Register</button>
+
+<p id="registerMessage"></p>
+
+</form>
+
+</main>
+
+
+<script src="Script.js"></script>
+</body>
+</html>

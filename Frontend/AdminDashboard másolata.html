@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namona - Admin Dashboard</title>
+    <link rel="stylesheet" href="Namona.css">
+    <link rel="stylesheet" href="AdminDashboard.css">
+</head>
+<body>
+
+<header>
+    <button id="menuButton" class="menu-icon">☰</button>
+    <img class="midlogo" src="namonalogo.jpg" alt="Namona">
+
+    <div class="profile-container">
+        <button class="profile-btn">
+            <div class="Profile-pic-wrapper">
+                <img src="profpic.jpg" class="Profile-pic" alt="Profile Picture">
+            </div>
+        </button>
+    </div>
+
+    <div id="profileMenu" class="profile-menu">
+        <a href="NamonaLogin.html">🔐 Admin Login</a>
+    </div>
+    <button id="cartButton" class="cart-icon" style="display: none;"><img src="carticon-removebg-preview.png" alt="Cart"></button>
+</header>
+
+<nav id="sideMenu">
+    <a href="Namona.html">Main Page</a>
+    <a href="Tshirts.html">T-shirts</a>
+    <a href="Hoodies.html">Hoodies</a>
+    <a href="Pants.html">Pants</a>
+</nav>
+
+<div id="content">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>👨‍💼 Admin Dashboard</h1>
+            <button onclick="logoutAdmin()">Logout</button>
+        </div>
+
+        <div id="adminMessage" class="message" style="display: none;"></div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="admin-tab" onclick="switchTab('users')">👥 Users</button>
+            <button class="admin-tab" onclick="switchTab('orders')">📦 Orders</button>
+            <button class="admin-tab" onclick="switchTab('clothes')">👕 Clothes</button>
+            <button class="admin-tab" onclick="switchTab('categories')">📂 Categories</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <h2>Dashboard</h2>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Users</div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Orders</div>
+                    <div class="stat-value" id="totalOrders">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Revenue</div>
+                    <div class="stat-value" id="totalRevenue">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Products</div>
+                    <div class="stat-value" id="totalProducts">0</div>
+                </div>
+            </div>
+            <div class="recent-orders">
+                <h3>Recent Orders</h3>
+                <div id="recentOrdersContainer">
+                    <div class="no-data">Loading recent orders...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="users" class="tab-content">
+            <h2>Users</h2>
+            <div class="tab-actions">
+                <button class="btn-primary" onclick="switchTab('add-user')">➕ Add User</button>
+            </div>
+            <div id="usersContainer">
+                <div class="no-data">Loading users...</div>
+            </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="orders" class="tab-content">
+            <h2>Orders</h2>
+            <div id="ordersContainer">
+                <div class="no-data">Loading orders...</div>
+            </div>
+        </div>
+
+        <!-- Clothes Tab -->
+        <div id="clothes" class="tab-content">
+            <h2>Clothes Management</h2>
+            <div class="tab-actions">
+                <button class="btn-primary" onclick="switchTab('add-clothes')">➕ Add Clothes</button>
+            </div>
+            <div id="clothesContainer">
+                <div class="no-data">Loading clothes...</div>
+            </div>
+        </div>
+
+        <!-- Categories Tab -->
+        <div id="categories" class="tab-content">
+            <h2>Categories</h2>
+            <div class="tab-actions">
+                <button class="btn-primary" onclick="switchTab('add-category')">➕ Add Category</button>
+            </div>
+            <div id="categoriesContainer">
+                <div class="no-data">Loading categories...</div>
+            </div>
+        </div>
+
+        <!-- Add Clothes Tab -->
+        <div id="add-clothes" class="tab-content">
+            <h2>Add New Clothes</h2>
+            <form id="addProductForm" onsubmit="handleAddProduct(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Product Name*</label>
+                        <input type="text" id="clothingName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Color*</label>
+                        <input type="text" id="color" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category*</label>
+                        <select id="categoryId" required onchange="updateCategoryName()">
+                            <option value="">Select category</option>
+                            <option value="1">T-Shirt</option>
+                            <option value="2">Hoodie</option>
+                            <option value="3">Pants</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender*</label>
+                        <select id="genderId" required onchange="updateGenderName()">
+                            <option value="">Select gender</option>
+                            <option value="1">Male</option>
+                            <option value="2">Female</option>
+                            <option value="3">Unisex</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Size*</label>
+                        <select id="size" required>
+                            <option value="">Select size</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock*</label>
+                        <input type="number" id="stock" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price*</label>
+                        <input type="number" id="price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Collection</label>
+                        <input type="text" id="collection">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Image Path</label>
+                    <input type="text" id="imagePath" placeholder="e.g., fekete.jpg">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">✓ Add Product</button>
+                    <button type="reset" class="btn-secondary">✕ Clear</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Add Category Tab -->
+        <div id="add-category" class="tab-content">
+            <h2>Add New Category</h2>
+            <form id="addCategoryForm" onsubmit="handleAddCategory(event)">
+                <div class="form-group">
+                    <label>Category Name*</label>
+                    <input type="text" id="newCategoryName" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">✓ Add Category</button>
+                    <button type="reset" class="btn-secondary">✕ Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>Edit Product</h2>
+        <form id="editProductForm" onsubmit="handleEditProduct(event)">
+            <input type="hidden" id="editProductId">
+            
+            <div class="form-group">
+                <label>Product Name*</label>
+                <input type="text" id="editClothingName" required>
+            </div>
+
+            <div class="form-group">
+                <label>Color*</label>
+                <input type="text" id="editColor" required>
+            </div>
+
+            <div class="form-group">
+                <label>Size*</label>
+                <select id="editSize" required>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Category*</label>
+                <select id="editCategorySelect" required>
+                    <option value="">-- Select Category --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Gender*</label>
+                <select id="editGenderSelect" required>
+                    <option value="">-- Select Gender --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Stock*</label>
+                <input type="number" id="editStock" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label>Price*</label>
+                <input type="number" id="editPrice" min="0" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Collection</label>
+                <input type="text" id="editCollection">
+            </div>
+
+            <div class="form-group">
+                <label>Image Path</label>
+                <input type="text" id="editImagePath">
+            </div>
+
+            <input type="hidden" id="editCategoryId">
+            <input type="hidden" id="editGenderId">
+            <input type="hidden" id="editCategory">
+            <input type="hidden" id="editGenderType">
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">✓ Update</button>
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">✕ Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="Script.js"></script>
+<script src="AdminScript.js"></script>
+
+</body>
+</html>

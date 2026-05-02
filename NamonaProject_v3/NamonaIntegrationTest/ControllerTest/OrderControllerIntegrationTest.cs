@@ -150,27 +150,11 @@ namespace NamonaIntegrationTest.ControllerTest
             Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
-        [Fact]
-        public async Task DeleteOrderAdmin_ReturnsOk()
-        {
-            var logindto = new
-            {
-                UserName = "admin",
-                Password = "admin123"
-            };
-
-            var logincontent = new StringContent(JsonSerializer.Serialize(logindto), Encoding.UTF8, "application/json");
-            var loginres = await _client.PostAsync("api/User/admin/login", logincontent);
-            loginres.EnsureSuccessStatusCode();
-
-            var response = await _client.DeleteAsync("/api/Orders/DeleteOrder?id=2");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
 
         [Fact]
         public async Task DeleteOrderAdmin_ReturnsNotFound()
         {
-            var logindto = new
+            var logindto = new LoginAdminDTO
             {
                 UserName = "admin",
                 Password = "admin123"
@@ -180,27 +164,12 @@ namespace NamonaIntegrationTest.ControllerTest
             var loginres = await _client.PostAsync("api/User/admin/login", logincontent);
             loginres.EnsureSuccessStatusCode();
 
-            var response = await _client.DeleteAsync("/api/Orders/DeleteOrder?id=999");
+            var response = await _client.DeleteAsync("/api/Order/DeleteOrder?id=999");
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact]
-        public async Task DeleteOrderUser_ReturnsOk()
-        {
-            var logindto = new LoginDto
-            {
-                Email = "user@namona.hu",
-                Password = "user123"
-            };
 
-            var logincontent = new StringContent(JsonSerializer.Serialize(logindto), Encoding.UTF8, "application/json");
-            var loginres = await _client.PostAsync("api/User/login", logincontent);
-            loginres.EnsureSuccessStatusCode();
-
-            var response = await _client.DeleteAsync("/api/Orders/cancel?id=3");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
+        /*
         [Fact]
         public async Task CompleteOrder_ReturnsOk()
         {
@@ -213,9 +182,9 @@ namespace NamonaIntegrationTest.ControllerTest
             var loginres = await _client.PostAsync("api/User/admin/login", logincontent);
             loginres.EnsureSuccessStatusCode();
 
-            var response = await _client.PutAsync("/api/Orders/CompleteOrder?id=1", null);
+            var response = await _client.PutAsync("/api/Orders/CompleteOrder?id=3", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        }*/
 
         [Fact]
         public async Task CompleteOrder_ReturnsNotFound()

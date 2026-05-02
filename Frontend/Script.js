@@ -41,80 +41,37 @@ document.addEventListener("DOMContentLoaded", () => {
     initSaveButton();
     initGlobalSearchUi();
     
-    if (window.location.pathname.includes('Product')) {
-        loadProductDetails();
-    }
+    const currentPage = window.location.pathname.split('/').pop() || '';
     
-    if (document.getElementById("Tshirts") || document.getElementById("Hoodies") || document.getElementById("Pants")) {
-        renderProductsFromDatabase();
+    if (currentPage.includes('Product')) {
+        loadProductDetails();
+    } else if (currentPage.includes('Hoodies') || 
+               currentPage.includes('Pants') || 
+               currentPage.includes('Tshirts')) {
+        loadCategoryProducts();
+    } else if (currentPage.match(/Product\d+\.html/i)) {
+        // Product detail pages (HoodieProduct1.html, PantsProduct1.html, etc.)
+        loadClothes();
+        loadProduct();
+    } else if (currentPage.toLowerCase().includes('cart')) {
+        initializeCartPage();
+    } else if (currentPage.toLowerCase().includes('myorders')) {
+        loadOrders();
+    } else if (currentPage.toLowerCase().includes('savedproducts')) {
+        loadSavedProducts();
     }
     
     document.getElementById("loginForm")?.addEventListener("submit", loginUser);
     document.getElementById("registerForm")?.addEventListener("submit", registerUser);
+    
+    // Re-initialize profile menu after user login
+    window.addEventListener('storage', function(e) {
+        if (e.key === CURRENT_USER_KEY) {
+            checkLoggedInUser();
+        }
+    });
 });
 
-
-async function renderProductsFromDatabase() {
-    const categoryMap = { 'Tshirt': 'tshirt', 'Hoodie': 'hoodie', 'Pant': 'pants' };
-    const sectionMap = { 'tshirt': 'Tshirts', 'hoodie': 'Hoodies', 'pants': 'Pants' };
-    const currentPage = window.location.pathname.split('/').pop() || 'Namona.html';
-    
-    let categoryKey = '';
-    for (const [key, value] of Object.entries(categoryMap)) {
-        if (currentPage.includes(key)) {
-            categoryKey = value;
-            break;
-        }
-    }
-
-    try {
-        const clothes = await getAllClothes();
-        const sectionId = sectionMap[categoryKey] || (currentPage === 'Namona.html' ? 'Hoodies' : '');
-        
-        if (!sectionId) return;
-
-        const section = document.getElementById(sectionId);
-        if (!section) return;
-
-        const filtered = clothes.filter(item => {
-            const normalized = normalizeCategoryName(item.categoryName);
-            return normalized === categoryKey || (sectionId === 'Hoodies' && categoryKey === '');
-        });
-
-        section.innerHTML = filtered.map(item => {
-            const normalized = normalizeCategoryName(item.categoryName);
-            const frontImg = item.imagePath || getCategoryFallbackImage(normalized, 'front');
-            const fallback = getCategoryFallbackImage(normalized, 'front');
-            
-            return `<a href="${getProductPageUrl(item, clothes)}" class="product-link">
-                <div class="flip-card">
-                    <div class="flip-inner">
-                        <div class="flip-front">
-                            <img src="${frontImg}" alt="${item.clothingName} front" onerror="this.src='${fallback}'">
-                        </div>
-                        <div class="flip-back">
-                            <img src="${item.imagePath || getCategoryFallbackImage(normalized, 'back')}" alt="${item.clothingName} back">
-                        </div>
-                    </div>
-                </div>
-                <p class="product-name">${item.clothingName}</p>
-            </a>`;
-        }).join('');
-
-    } catch (error) {
-        console.error('Error loading products:', error);
-    }
-}
-
-function getCategoryFallbackImage(categoryKey, side) {
-    if (categoryKey === 'tshirt') {
-        return side === 'front' ? 'Tshirtimage (2).png' : 'TshirtimageFlipped.png';
-    } else if (categoryKey === 'pants') {
-        return side === 'front' ? 'pantsimage.png' : 'pantsimageflipped.png';
-    } else {
-        return side === 'front' ? 'elol2.png' : 'hatul2.png';
-    }
-}
 
 async function loadProductDetails() {
     var urlParams = new URLSearchParams(window.location.search);
@@ -131,7 +88,17 @@ async function loadProductDetails() {
         collectionEl.textContent = collectionName;
     }
     
-    if (!productId) return;
+    console.log("DEBUG: Full URL:", window.location.href);
+    console.log("DEBUG: URL search params:", window.location.search);
+    console.log("DEBUG: Product ID from URL:", productId);
+    
+    if (!productId) {
+        console.log("DEBUG: No product ID found in URL");
+        return;
+    }
+    
+    // Ensure productId is a number for comparison
+    productId = parseInt(productId, 10);
 
     try {
         var clothes = await getAllClothes();
@@ -158,13 +125,8 @@ async function loadProductDetails() {
         var title = document.querySelector('title');
         if (title) title.textContent = 'Namona - ' + (product.clothingName || 'Product');
 
-        var imgEl = document.querySelector('.product-image img');
-        if (imgEl) {
-            var categoryNorm = normalizeCategoryName(product.categoryName);
-            var fallback = getCategoryFallbackImage(categoryNorm, 'front');
-            imgEl.src = product.imagePath || fallback;
-            imgEl.alt = product.clothingName;
-        }
+        // Don't override images - use what's in the HTML
+        // Images should be defined directly in the HTML files
 
         var descEl = document.querySelector('.product-description');
         if (descEl) {
@@ -195,6 +157,41 @@ async function loadProductDetails() {
     }
 }
 
+async function loadCategoryProducts() {
+    try {
+        const clothes = await getAllClothes();
+        const currentPage = window.location.pathname.split('/').pop() || '';
+        
+        let categoryFilter = '';
+        if (currentPage.includes('Hoodies')) {
+            categoryFilter = 'hoodie';
+        } else if (currentPage.includes('Tshirts')) {
+            categoryFilter = 'tshirt';
+        } else if (currentPage.includes('Pants')) {
+            categoryFilter = 'pants';
+        }
+        
+        // Filter products by category
+        const filteredProducts = clothes.filter(item => {
+            const normalized = normalizeCategoryName(item.categoryName);
+            return normalized === categoryFilter;
+        });
+        
+        // Update product links and names
+        const productLinks = document.querySelectorAll('.product-link');
+        productLinks.forEach(link => {
+            const index = parseInt(link.getAttribute('data-product-index'));
+            if (filteredProducts[index]) {
+                const nameElement = link.querySelector('.product-name');
+                nameElement.textContent = filteredProducts[index].clothingName;
+                const href = link.getAttribute('href');
+                link.setAttribute('href', href + '?id=' + filteredProducts[index].clothingId);
+            }
+        });
+    } catch (error) {
+        console.error('Error loading category products:', error);
+    }
+}
 
 async function registerUser(e) {
     e.preventDefault();
@@ -303,11 +300,24 @@ async function checkLoggedInUser() {
     if (!profileMenu) return;
 
     var user = await getCurrentUser();
-    if (!user) return;
+    
+    if (!user) {
+        // Not logged in - show default menu
+        profileMenu.innerHTML =
+            '<a href="NamonaRegister.html">📝 Register</a>' +
+            '<a href="NamonaLogin.html">🔐 Login</a>' +
+            '<a href="SavedProducts.html">💾 Saved products</a>' +
+            '<a href="MyOrders.html">📦 My orders</a>' +
+            '<a href="AboutUs.html">ℹ️ About us</a>';
+        return;
+    }
 
+    // Logged in - show user menu with logout
+    var adminLink = user.role === 'Admin' ? '<a href="AdminDashboard.html">⚙️ Admin Dashboard</a>' : '';
     profileMenu.innerHTML =
-        '<span>Welcome, ' + user.userName + '</span>' +
-        '<a href="#" onclick="logout()">🚪 Logout</a>' +
+        '<span class="profile-welcome">Welcome, ' + user.userName + '</span>' +
+        '<a href="#" onclick="logout(); return false;">🚪 Logout</a>' +
+        adminLink +
         '<a href="SavedProducts.html">💾 Saved products</a>' +
         '<a href="MyOrders.html">📦 My orders</a>' +
         '<a href="AboutUs.html">ℹ️ About us</a>';
@@ -346,6 +356,17 @@ async function addToCartBackend(clothingId) {
     var size = document.getElementById("sizeSelect").value;
     var amount = parseInt(document.getElementById("quantityInput").value);
     var messageEl = document.getElementById("cartMessage");
+    
+    console.log("DEBUG: addToCartBackend called with clothingId:", clothingId, "type:", typeof clothingId);
+    
+    if (!clothingId || clothingId <= 0) {
+        console.error("ERROR: Invalid clothingId:", clothingId);
+        if (messageEl) {
+            messageEl.textContent = "Product ID is invalid!";
+            messageEl.style.color = "red";
+        }
+        return;
+    }
 
     if (!size) {
         messageEl.textContent = "Please select a size!";
@@ -368,7 +389,7 @@ async function addToCartBackend(clothingId) {
         console.log("Adding to cart - clothingId:", clothingId, "userId:", user.userId, "amount:", amount);
 
         var response = await fetch(API_URL + "/api/Cart/addCart", {
-            method: "PUT",
+            method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
             body: JSON.stringify({
@@ -553,28 +574,18 @@ function clearCachedUser() {
 }
 
 async function syncCachedUserFromApi() {
-    try {
-        var response = await fetch(API_URL + "/api/User/me", {
-            credentials: "include"
-        });
-
-        if (!response.ok) return null;
-
-        var user = await response.json();
-        if (user) {
-            setCachedUser(user);
-            return user;
-        }
-        return null;
-    } catch (error) {
-        console.error("Error syncing user from API:", error);
-        return null;
-    }
+    // User is cached in localStorage after login
+    // No need to sync from API
+    return null;
 }
 
 async function getCurrentUser() {
-    var apiUser = await syncCachedUserFromApi();
-    if (apiUser) return apiUser;
+    // Get user from localStorage cache (set during login)
+    var cached = getCachedUser();
+    if (cached) return cached;
+    
+    // If not cached, user is not logged in
+    return null;
 
     return getCachedUser();
 }
@@ -634,28 +645,45 @@ async function editCartItem(cartItemId, newQuantity, size) {
 
 async function getAllClothes() {
     try {
-        var response = await fetch(API_URL + "/api/Clothes/AllClothes", {
+        var response = await fetch(API_URL + "/api/Clothes/GetAllClothes", {
             credentials: "include"
         });
 
         if (!response.ok) return [];
 
-        return await response.json();
+        var data = await response.json();
+        
+        // Debug: Log the first item to see its structure
+        if (data && data.length > 0) {
+            console.log("DEBUG: First API response item:", data[0]);
+            console.log("DEBUG: Available properties:", Object.keys(data[0]));
+        }
+        
+        return data;
     } catch (error) {
+        console.error("Error fetching clothes:", error);
         return [];
     }
 }
 
 var globalSearchCache = {
     clothes: null,
-    categoryCounters: null
+    categoryCounters: null,
+    lastCacheTime: 0,
+    CACHE_DURATION: 30000  // 30 seconds cache duration
 };
 
 async function getSearchableClothes() {
-    if (globalSearchCache.clothes) return globalSearchCache.clothes;
+    var now = Date.now();
+    // Invalidate cache if older than CACHE_DURATION
+    if (globalSearchCache.clothes && (now - globalSearchCache.lastCacheTime) < globalSearchCache.CACHE_DURATION) {
+        return globalSearchCache.clothes;
+    }
 
     var clothes = await getAllClothes();
     globalSearchCache.clothes = clothes || [];
+    globalSearchCache.lastCacheTime = now;
+    globalSearchCache.categoryCounters = null;  // Reset category counters
     return globalSearchCache.clothes;
 }
 
@@ -705,6 +733,11 @@ function getCategoryCounters(clothes) {
 }
 
 function getProductPageUrl(item, clothes) {
+    if (!item || !item.clothingId) {
+        console.warn("DEBUG: Product item missing or clothingId undefined:", item);
+        return "Namona.html";
+    }
+    
     var key = normalizeCategoryName(item.categoryName);
     if (!key) return "Namona.html";
 
@@ -725,7 +758,9 @@ function getProductPageUrl(item, clothes) {
     else if (key === "hoodie") baseUrl = "HoodieProduct" + index + ".html";
     else if (key === "pants") baseUrl = "PantsProduct" + index + ".html";
 
-    return baseUrl + "?id=" + item.clothingId;
+    var url = baseUrl + "?id=" + item.clothingId;
+    console.log("DEBUG: Generated product URL:", url, "for clothingId:", item.clothingId);
+    return url;
 }
 
 function getItemSearchText(item) {
@@ -748,7 +783,7 @@ function ensureGlobalSearchStyles() {
         '.global-search-input::placeholder { color: rgba(255,255,255,0.7); }' +
         '.global-search-input:focus { border-color: #FFC700; }' +
         '.global-search-clear { height: 38px; border: none; border-radius: 999px; padding: 0 12px; font-weight: bold; cursor: pointer; }' +
-        '.global-search-results { position: absolute; top: 46px; left: 0; right: 0; background: rgba(0,0,0,0.95); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; max-height: 260px; overflow-y: auto; display: none; }' +
+        '.global-search-results { position: absolute; top: 46px; left: 0; right: 0; background: rgba(0,0,0,0.95); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; max-height: 600px; overflow-y: auto; display: none; }' +
         '.global-search-result-item { display: flex; justify-content: space-between; gap: 8px; width: 100%; text-align: left; border: none; background: transparent; color: white; padding: 10px 12px; cursor: pointer; }' +
         '.global-search-result-item:hover { background: rgba(255,255,255,0.15); }' +
         '.global-side-nav { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }' +
@@ -763,7 +798,7 @@ function ensureGlobalSearchStyles() {
         '.global-check-item { display: flex; align-items: center; gap: 6px; color: white; font-size: 13px; cursor: pointer; }' +
         '.global-check-item input[type="checkbox"] { width: 13px; height: 13px; min-width: 13px; margin: 0; cursor: pointer; }' +
         '.global-check-item span { flex: 1; }' +
-        '.global-side-results { display: flex; flex-direction: column; max-height: 160px; overflow-y: auto; }' +
+        '.global-side-results { display: flex; flex-direction: column; max-height: 600px; overflow-y: auto; }' +
         '.global-side-results a { color: #f3f3f3; text-decoration: none; font-size: 13px; padding: 5px 0; }' +
         '.global-side-results a:hover { text-decoration: underline; }' +
         '.global-side-reset { width: 100%; min-height: 34px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; box-sizing: border-box; }' +
@@ -865,7 +900,7 @@ function initGlobalHeaderSearch() {
             if (getItemSearchText(clothes[i]).indexOf(query) > -1) {
                 matched.push(clothes[i]);
             }
-            if (matched.length >= 8) break;
+            if (matched.length >= 50) break;  // Increased from 8 to 50
         }
 
         renderGlobalSearchResults(results, matched, clothes);
@@ -972,7 +1007,7 @@ function initGlobalSideFilter() {
 
     function renderResultLinks(items, clothes) {
         results.innerHTML = "";
-        var max = items.length > 8 ? 8 : items.length;
+        var max = items.length > 50 ? 50 : items.length;
 
         for (var i = 0; i < max; i++) {
             var item = items[i];
@@ -980,6 +1015,15 @@ function initGlobalSideFilter() {
             link.href = getProductPageUrl(item, clothes);
             link.textContent = item.clothingName + " - " + (item.categoryName || "");
             results.appendChild(link);
+        }
+        
+        if (items.length > max) {
+            var moreMsg = document.createElement("div");
+            moreMsg.style.padding = "5px 10px";
+            moreMsg.style.color = "#FFC700";
+            moreMsg.style.fontSize = "12px";
+            moreMsg.textContent = "... and " + (items.length - max) + " more";
+            results.appendChild(moreMsg);
         }
     }
 
@@ -1006,7 +1050,7 @@ function initGlobalSideFilter() {
     getSearchableClothes().then(function (clothes) {
         renderSideCheckboxes(categoryWrap, "globalCategory", uniqueValuesFromClothes(clothes, "categoryName"));
         renderSideCheckboxes(colorWrap, "globalColor", uniqueValuesFromClothes(clothes, "color"));
-        applySideFilters(clothes);
+        applySideFilters(clothes);  // Show initial results
 
         input.addEventListener("input", function () {
             applySideFilters(clothes);
@@ -1028,7 +1072,699 @@ function initGlobalSideFilter() {
 }
 
 function initGlobalSearchUi() {
+    // Don't initialize global search on cart, product detail, or admin pages - they have their own filtering
+    var currentPage = window.location.pathname.split('/').pop() || '';
+    if (currentPage.toLowerCase().includes('cart') || currentPage.match(/Product\d+\.html/i) || currentPage.toLowerCase().includes('admin')) {
+        return;
+    }
+    
     initGlobalHeaderSearch();
     normalizeSideMenuLayout();
     initGlobalSideFilter();
+}
+// ============================================================================
+// PRODUCT PAGE FUNCTIONS (for Product pages like PantsProduct1.html, etc.)
+// ============================================================================
+
+async function loadClothes() {
+    var container = document.getElementById("productsContainer");
+    if (!container) return;
+
+    try {
+        var response = await fetch(API_URL + "/api/Clothes/AllClothes");
+        var clothes = await response.json();
+
+        container.innerHTML = "";
+
+        for (var i = 0; i < clothes.length; i++) {
+            var item = clothes[i];
+
+            var card = document.createElement("div");
+            card.className = "product-card";
+
+            card.innerHTML =
+                '<img src="pantsimage.png">' +
+                '<h3>' + item.clothingName + '</h3>' +
+                '<p>' + item.categoryName + '</p>' +
+                '<p class="price">$' + item.price + '</p>' +
+                '<button onclick="openProduct(' + item.clothingId + ')">View Product</button>';
+
+            container.appendChild(card);
+        }
+    } catch (err) {
+        console.error("Error loading clothes:", err);
+    }
+}
+
+function openProduct(id) {
+    window.location.href = "Product.html?id=" + id;
+}
+
+async function loadProduct() {
+    var params = new URLSearchParams(window.location.search);
+    var id = params.get("id");
+
+    if (!id) return;
+
+    try {
+        var response = await fetch(API_URL + "/api/Clothes/AllClothes");
+        var clothes = await response.json();
+
+        var product = null;
+        for (var i = 0; i < clothes.length; i++) {
+            if (clothes[i].clothingId == id) {
+                product = clothes[i];
+                break;
+            }
+        }
+
+        if (!product) return;
+
+        var title = document.querySelector(".product-info h1");
+        var price = document.querySelector(".product-price");
+        var description = document.querySelector(".product-description");
+
+        if (title) title.textContent = product.clothingName;
+        if (price) price.textContent = "$" + product.price;
+
+        if (description) {
+            description.innerHTML =
+                '<p>' + product.collection + '</p>' +
+                '<p><strong>Color:</strong> ' + product.color + '</p>' +
+                '<p><strong>Size:</strong> ' + product.size + '</p>' +
+                '<p><strong>Stock:</strong> ' + product.stock + '</p>';
+        }
+    } catch (err) {
+        console.error("Error loading product:", err);
+    }
+}
+
+// ============================================================================
+// LOGIN PAGE FUNCTIONS (for NamonaLogin.html)
+// ============================================================================
+
+function switchLoginMode(mode) {
+    const userForm = document.getElementById("loginForm");
+    const adminForm = document.getElementById("adminLoginForm");
+    const userBtn = document.getElementById("userLoginBtn");
+    const adminBtn = document.getElementById("adminLoginBtn");
+
+    if (mode === 'user') {
+        if (userForm) userForm.style.display = 'block';
+        if (adminForm) adminForm.style.display = 'none';
+        if (userBtn) userBtn.style.background = '#FFC700';
+        if (adminBtn) adminBtn.style.background = '#ddd';
+    } else {
+        if (userForm) userForm.style.display = 'none';
+        if (adminForm) adminForm.style.display = 'block';
+        if (userBtn) userBtn.style.background = '#ddd';
+        if (adminBtn) adminBtn.style.background = '#FFC700';
+    }
+}
+
+async function handleAdminLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const message = document.getElementById("adminLoginMessage");
+
+    if (!username || !password) {
+        message.textContent = "Please enter username and password";
+        message.style.color = "red";
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL + "/api/User/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ userName: username, password: password })
+        });
+
+        if (response.ok) {
+            try {
+                const adminData = await response.json();
+                if (adminData) {
+                    setCachedUser(adminData);
+                }
+            } catch (parseError) {
+                console.error("Error parsing admin login response:", parseError);
+            }
+
+            message.textContent = "Admin login successful!";
+            message.style.color = "green";
+            window.location.href = "AdminDashboard.html";
+        } else {
+            let errorText = response.status === 401 ? "Invalid username or password" : "Admin login failed";
+            message.textContent = errorText;
+            message.style.color = "red";
+        }
+    } catch (error) {
+        message.textContent = "Connection error.";
+        message.style.color = "red";
+        console.error("Admin login error:", error);
+    }
+}
+
+// ============================================================================
+// CART PAGE FUNCTIONS (for NamonaCart.html)
+// ============================================================================
+
+var cartViewState = {
+    allItems: [],
+    user: null,
+    headerQuery: "",
+    sideQuery: "",
+    selectedCategories: [],
+    selectedSizes: [],
+    selectedColors: []
+};
+
+function initializeCartPage() {
+    wireSearchInputs();
+    loadCart();
+}
+
+function wireSearchInputs() {
+    var headerSearchInput = document.getElementById("globalHeaderSearchInput");
+    var headerSearchClear = document.getElementById("globalHeaderSearchClear");
+    var menuSearchInput = document.getElementById("globalSideSearchInput");
+    var sideFilterPanel = document.querySelector(".global-side-filter-panel");
+    var clearFiltersBtn = document.getElementById("globalSideReset");
+
+    if (headerSearchInput) {
+        headerSearchInput.addEventListener("input", function (e) {
+            cartViewState.headerQuery = e.target.value || "";
+            applyFiltersAndRender();
+        });
+    }
+
+    if (headerSearchClear) {
+        headerSearchClear.addEventListener("click", function () {
+            cartViewState.headerQuery = "";
+            if (headerSearchInput) {
+                headerSearchInput.value = "";
+            }
+            applyFiltersAndRender();
+        });
+    }
+
+    if (menuSearchInput) {
+        menuSearchInput.addEventListener("input", function (e) {
+            cartViewState.sideQuery = e.target.value || "";
+            applyFiltersAndRender();
+        });
+    }
+
+    if (sideFilterPanel) {
+        sideFilterPanel.addEventListener("change", function (e) {
+            if (!e.target || e.target.type !== "checkbox") return;
+
+            cartViewState.selectedCategories = getSelectedCheckboxValues("globalCategory");
+            cartViewState.selectedSizes = getSelectedCheckboxValues("globalSize");
+            cartViewState.selectedColors = getSelectedCheckboxValues("globalColor");
+            applyFiltersAndRender();
+        });
+    }
+
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener("click", function () {
+            resetFilters();
+            applyFiltersAndRender();
+        });
+    }
+}
+
+function resetFilters() {
+    cartViewState.headerQuery = "";
+    cartViewState.sideQuery = "";
+    cartViewState.selectedCategories = [];
+    cartViewState.selectedSizes = [];
+    cartViewState.selectedColors = [];
+
+    var headerSearchInput = document.getElementById("globalHeaderSearchInput");
+    var menuSearchInput = document.getElementById("globalSideSearchInput");
+    var allFilterCheckboxes = document.querySelectorAll(".global-check-list input[type='checkbox']");
+
+    if (headerSearchInput) headerSearchInput.value = "";
+    if (menuSearchInput) menuSearchInput.value = "";
+    for (var i = 0; i < allFilterCheckboxes.length; i++) {
+        allFilterCheckboxes[i].checked = false;
+    }
+}
+
+function uniqueSortedValues(items, key) {
+    var dict = {};
+
+    for (var i = 0; i < items.length; i++) {
+        var value = items[i][key];
+        if (!value) continue;
+        dict[value] = true;
+    }
+
+    var values = Object.keys(dict);
+    values.sort(function (a, b) {
+        return a.localeCompare(b);
+    });
+
+    return values;
+}
+
+function renderCheckboxList(containerId, inputName, values, selectedValues) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    for (var i = 0; i < values.length; i++) {
+        var value = values[i];
+        var checked = selectedValues.indexOf(value) > -1 ? "checked" : "";
+
+        container.innerHTML +=
+            '<label class="global-check-item">' +
+                '<input type="checkbox" name="' + inputName + '" value="' + value + '" ' + checked + '>' +
+                '<span>' + value + '</span>' +
+            '</label>';
+    }
+}
+
+function getSelectedCheckboxValues(name) {
+    var checkedNodes = document.querySelectorAll('input[name="' + name + '"]:checked');
+    var values = [];
+
+    for (var i = 0; i < checkedNodes.length; i++) {
+        values.push(checkedNodes[i].value);
+    }
+
+    return values;
+}
+
+function populateFilterOptions(items) {
+    var categories = uniqueSortedValues(items, "categoryName");
+    var sizes = uniqueSortedValues(items, "size");
+    var colors = uniqueSortedValues(items, "color");
+
+    renderCheckboxList("globalCategoryChecks", "globalCategory", categories, cartViewState.selectedCategories);
+    renderCheckboxList("globalSizeChecks", "globalSize", sizes, cartViewState.selectedSizes);
+    renderCheckboxList("globalColorChecks", "globalColor", colors, cartViewState.selectedColors);
+
+    cartViewState.selectedCategories = getSelectedCheckboxValues("globalCategory");
+    cartViewState.selectedSizes = getSelectedCheckboxValues("globalSize");
+    cartViewState.selectedColors = getSelectedCheckboxValues("globalColor");
+}
+
+async function loadCart() {
+    var cartItems = document.getElementById("cartItems");
+    var cartMessage = document.getElementById("cartMessage");
+    var cartTotal = document.getElementById("cartTotal");
+    var checkoutSection = document.getElementById("checkoutSection");
+
+    try {
+        var user = await getCurrentUser();
+        if (!user || !user.userId) {
+            cartMessage.textContent = "Please log in to view your cart.";
+            cartItems.innerHTML = "";
+            cartTotal.innerHTML = "";
+            checkoutSection.innerHTML = "";
+            return;
+        }
+
+        cartViewState.user = user;
+
+        var items = await getCartItemsByUserId(user.userId);
+        cartViewState.allItems = items || [];
+
+        if (!cartViewState.allItems.length) {
+            cartMessage.textContent = "Your cart is empty.";
+            cartItems.innerHTML = "";
+            cartTotal.innerHTML = "";
+            checkoutSection.innerHTML = "";
+            populateFilterOptions([]);
+            return;
+        }
+
+        populateFilterOptions(cartViewState.allItems);
+        applyFiltersAndRender();
+
+    } catch (error) {
+        cartMessage.textContent = "Connection error.";
+        cartItems.innerHTML = "";
+        cartTotal.innerHTML = "";
+        checkoutSection.innerHTML = "";
+        console.error("Error loading cart:", error);
+    }
+}
+
+function matchesAnyTextField(item, query) {
+    if (!query) return true;
+    var q = query.toLowerCase();
+
+    var haystack = [
+        item.clothingName,
+        item.categoryName,
+        item.size,
+        item.color
+    ].join(" ").toLowerCase();
+
+    return haystack.indexOf(q) > -1;
+}
+
+function applyFiltersAndRender() {
+    var cartMessage = document.getElementById("cartMessage");
+    var sourceItems = cartViewState.allItems || [];
+    var filtered = [];
+
+    for (var i = 0; i < sourceItems.length; i++) {
+        var item = sourceItems[i];
+
+        var categoryPass = !cartViewState.selectedCategories.length || cartViewState.selectedCategories.indexOf(item.categoryName) > -1;
+        var sizePass = !cartViewState.selectedSizes.length || cartViewState.selectedSizes.indexOf(item.size) > -1;
+        var colorPass = !cartViewState.selectedColors.length || cartViewState.selectedColors.indexOf(item.color) > -1;
+        var headerPass = matchesAnyTextField(item, cartViewState.headerQuery);
+        var sidePass = matchesAnyTextField(item, cartViewState.sideQuery);
+
+        if (categoryPass && sizePass && colorPass && headerPass && sidePass) {
+            filtered.push(item);
+        }
+    }
+
+    if (!sourceItems.length) {
+        cartMessage.textContent = "Your cart is empty.";
+    } else if (!filtered.length) {
+        cartMessage.textContent = "No items match your current search/filter.";
+    } else {
+        cartMessage.textContent = "";
+    }
+
+    renderCartItems(filtered);
+}
+
+function renderCartItems(items) {
+    var cartItems = document.getElementById("cartItems");
+    var cartTotal = document.getElementById("cartTotal");
+    var checkoutSection = document.getElementById("checkoutSection");
+    var total = 0;
+
+    cartItems.innerHTML = "";
+
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var itemPrice = item.priceSum || (item.price * item.amount);
+        total = total + itemPrice;
+
+        var row = document.createElement("div");
+        row.className = "cart-item";
+        row.id = "cart-item-" + item.clothingId;
+
+        row.innerHTML =
+            '<div class="cart-item-info">' +
+                '<h3>' + item.clothingName + '</h3>' +
+                '<p>' + item.categoryName + ' &middot; ' + item.size + ' &middot; ' + item.color + '</p>' +
+            '</div>' +
+            '<div class="cart-item-qty">' +
+                '<button class="cart-qty-btn" onclick="editCartItemUI(' + item.clothingId + ', ' + (item.amount - 1) + ')">-</button>' +
+                '<span>' + item.amount + '</span>' +
+                '<button class="cart-qty-btn" onclick="editCartItemUI(' + item.clothingId + ', ' + (item.amount + 1) + ')">+</button>' +
+            '</div>' +
+            '<div class="cart-item-price">' +
+                '$' + itemPrice +
+            '</div>' +
+            '<button class="cart-delete-btn" onclick="deleteCartItemUI(' + item.clothingId + ')">&#128465;</button>';
+
+        cartItems.appendChild(row);
+    }
+
+    if (items.length) {
+        cartTotal.innerHTML = '<strong>Total: $' + total + '</strong>';
+        checkoutSection.innerHTML = '<button class="place-order-btn" onclick="placeOrder()">Place Order</button>';
+    } else {
+        cartTotal.innerHTML = "";
+        checkoutSection.innerHTML = "";
+    }
+}
+
+async function editCartItemUI(clothingId, newAmount) {
+    if (newAmount < 1) {
+        deleteCartItemUI(clothingId);
+        return;
+    }
+
+    try {
+        var response = await fetch(API_URL + "/api/Cart/EditCart", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+                clothingId: clothingId,
+                amount: newAmount
+            })
+        });
+
+        if (response.ok) {
+            loadCart();
+        } else {
+            alert("Failed to update quantity.");
+        }
+    } catch (error) {
+        alert("Connection error.");
+        console.error("Error editing cart item:", error);
+    }
+}
+
+async function deleteCartItemUI(clothingId) {
+    try {
+        var response = await fetch(API_URL + "/api/Cart/DeleteCartItem?id=" + clothingId, {
+            method: "DELETE",
+            credentials: "include"
+        });
+
+        if (response.ok) {
+            loadCart();
+        } else {
+            alert("Failed to remove item.");
+        }
+    } catch (error) {
+        alert("Connection error.");
+        console.error("Error deleting cart item:", error);
+    }
+}
+
+async function placeOrder() {
+    try {
+        var user = await getCurrentUser();
+        if (!user || !user.userId) {
+            alert("Please log in to place an order.");
+            return;
+        }
+
+        var items = await getCartItemsByUserId(user.userId);
+
+        if (!items || items.length === 0) {
+            alert("Cart is empty.");
+            return;
+        }
+
+        var orderSaved = await saveOrder(items);
+        
+        if (!orderSaved) {
+            alert("Failed to create order. Please try again.");
+            return;
+        }
+
+        document.getElementById("cartItems").innerHTML = "";
+        document.getElementById("cartTotal").innerHTML = "";
+        document.getElementById("checkoutSection").innerHTML = "";
+        document.getElementById("cartMessage").textContent = "Order placed successfully!";
+        document.getElementById("cartMessage").style.color = "#4CAF50";
+        cartViewState.allItems = [];
+
+    } catch (error) {
+        console.error("Error placing order:", error);
+        alert("Failed to place order. Please try again.");
+    }
+}
+
+// ============================================================================
+// MY ORDERS PAGE FUNCTIONS (for MyOrders.html)
+// ============================================================================
+
+async function loadOrders() {
+    var ordersList = document.getElementById("ordersList");
+    var ordersMessage = document.getElementById("ordersMessage");
+    
+    try {
+        var user = await getCurrentUser();
+        if (!user || !user.userId) {
+            ordersMessage.textContent = "Please log in to view your orders.";
+            return;
+        }
+
+        var orders = await getUserOrders(user.userId);
+
+        if (!orders || orders.length === 0) {
+            ordersMessage.textContent = "You have no orders yet.";
+            return;
+        }
+
+        ordersMessage.textContent = "";
+        ordersList.innerHTML = "";
+
+        for (var i = 0; i < orders.length; i++) {
+            var order = orders[i];
+
+            var orderCard = document.createElement("div");
+            orderCard.className = "order-card";
+
+            var orderHeader = document.createElement("div");
+            orderHeader.className = "order-header";
+
+            var orderTitle = document.createElement("h2");
+            orderTitle.textContent = "Order #" + order.orderId;
+
+            var orderDate = document.createElement("span");
+            orderDate.className = "order-date";
+            orderDate.textContent = order.orderDate || "N/A";
+
+            var orderStatus = document.createElement("span");
+            orderStatus.className = "order-status";
+            orderStatus.textContent = order.status || "Processing";
+
+            orderHeader.appendChild(orderTitle);
+            orderHeader.appendChild(orderDate);
+            orderHeader.appendChild(orderStatus);
+            orderCard.appendChild(orderHeader);
+
+            var orderTotal = 0;
+
+            if (order.items && order.items.length > 0) {
+                var itemsList = document.createElement("div");
+                itemsList.className = "order-items";
+
+                for (var j = 0; j < order.items.length; j++) {
+                    var item = order.items[j];
+                    var itemTotal = item.price * item.amount;
+                    orderTotal += itemTotal;
+
+                    var itemDiv = document.createElement("div");
+                    itemDiv.className = "order-item";
+                    itemDiv.innerHTML =
+                        '<span>' + item.clothingName + ' x' + item.amount + '</span>' +
+                        '<span>$' + itemTotal + '</span>';
+
+                    itemsList.appendChild(itemDiv);
+                }
+
+                orderCard.appendChild(itemsList);
+            }
+
+            var totalDiv = document.createElement("div");
+            totalDiv.className = "order-total";
+            totalDiv.textContent = "Total: $" + orderTotal;
+            orderCard.appendChild(totalDiv);
+
+            ordersList.appendChild(orderCard);
+        }
+    } catch (error) {
+        ordersMessage.textContent = "Error loading orders.";
+        console.error("Error loading orders:", error);
+    }
+}
+
+// ============================================================================
+// SAVED PRODUCTS PAGE FUNCTIONS (for SavedProducts.html)
+// ============================================================================
+
+function loadSavedProducts() {
+    var savedItems = document.getElementById("savedItems");
+    var savedMessage = document.getElementById("savedMessage");
+    var products = getSavedProducts();
+
+    if (!products || products.length === 0) {
+        savedMessage.textContent = "No saved products yet.";
+        return;
+    }
+
+    savedMessage.textContent = "";
+    savedItems.innerHTML = "";
+
+    for (var i = 0; i < products.length; i++) {
+        var item = products[i];
+
+        var row = document.createElement("div");
+        row.className = "saved-item";
+        row.id = "saved-item-" + item.id;
+
+        var imgDiv = document.createElement("div");
+        imgDiv.className = "saved-item-image";
+        var img = document.createElement("img");
+        img.src = item.image;
+        img.alt = item.name;
+        imgDiv.appendChild(img);
+
+        var infoDiv = document.createElement("div");
+        infoDiv.className = "saved-item-info";
+        var h3 = document.createElement("h3");
+        h3.textContent = item.name;
+        var pPrice = document.createElement("p");
+        pPrice.className = "saved-item-price";
+        pPrice.textContent = item.price;
+        infoDiv.appendChild(h3);
+        infoDiv.appendChild(pPrice);
+
+        var actionsDiv = document.createElement("div");
+        actionsDiv.className = "saved-item-actions";
+
+        var viewLink = document.createElement("a");
+        viewLink.href = item.page;
+        viewLink.className = "view-product-btn";
+        viewLink.textContent = "View Product";
+
+        var removeBtn = document.createElement("button");
+        removeBtn.className = "remove-saved-btn";
+        removeBtn.textContent = "\uD83D\uDDD1 Remove";
+        removeBtn.setAttribute("data-id", item.id);
+        removeBtn.onclick = function () {
+            removeSavedItem(parseInt(this.getAttribute("data-id")));
+        };
+
+        actionsDiv.appendChild(viewLink);
+        actionsDiv.appendChild(removeBtn);
+
+        row.appendChild(imgDiv);
+        row.appendChild(infoDiv);
+        row.appendChild(actionsDiv);
+
+        savedItems.appendChild(row);
+    }
+}
+
+function removeSavedItem(id) {
+    var products = getSavedProducts();
+    var index = -1;
+
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id === id) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index > -1) {
+        products.splice(index, 1);
+        localStorage.setItem("savedProducts", JSON.stringify(products));
+        
+        var itemElement = document.getElementById("saved-item-" + id);
+        if (itemElement) {
+            itemElement.remove();
+        }
+        
+        // Check if there are any saved items left
+        if (products.length === 0) {
+            var savedMessage = document.getElementById("savedMessage");
+            if (savedMessage) {
+                savedMessage.textContent = "No saved products yet.";
+            }
+        }
+    }
 }

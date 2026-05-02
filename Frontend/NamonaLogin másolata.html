@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="NamonaLogin.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <header>
+    <button id="menuButton" class="menu-icon">☰</button>
+    <img class="midlogo" src="namonalogo.jpg" alt="Namona">
+
+    <div class="profile-container">
+    <button class="profile-btn">
+        <div class="Profile-pic-wrapper">
+            <img src="profpic.jpg" class="Profile-pic" alt="Profile Picture">
+        </div>
+    </button>
+</div>
+
+<div id="profileMenu" class="profile-menu">
+    <a href="NamonaRegister.html">📝 Register</a>
+    <a href="NamonaLogin.html">🔐 Login</a>
+    <a href="SavedProducts.html">💾 Saved products</a>
+    <a href="MyOrders.html">📦 My orders</a>
+    <a href="AboutUs.html">ℹ️ About us</a>
+</div>
+
+<button id="cartButton" class="cart-icon"><img src="carticon-removebg-preview.png" alt="Cart"></button>
+
+</header>
+<nav id="sideMenu">
+    <a href="Namona.html">Main Page</a>
+    <a href="Tshirts.html">T-shirts</a>
+    <a href="Hoodies.html">Hoodies</a>
+    <a href="Pants.html">Pants</a>
+</nav>
+<div style="text-align: center; margin: 20px 0;">
+    <h1>Login</h1>
+    <div style="margin-bottom: 20px;">
+        <button type="button" id="userLoginBtn" style="padding: 10px 20px; margin: 0 5px; background: #FFC700; border: none; cursor: pointer; font-weight: bold; border-radius: 5px;" onclick="switchLoginMode('user')">👤 User Login</button>
+        <button type="button" id="adminLoginBtn" style="padding: 10px 20px; margin: 0 5px; background: #ddd; border: none; cursor: pointer; font-weight: bold; border-radius: 5px;" onclick="switchLoginMode('admin')">⚙️ Admin Login</button>
+    </div>
+</div>
+
+<!-- User Login Form -->
+<form id="loginForm" style="display: block;">
+    <input type="email" placeholder="Email" class="loginuser" id="loginEmail" required>
+    <input type="password" placeholder="Password" class="loginuser" id="loginPassword" required>
+    <button type="submit" class="loginuserbutton">Login</button>
+    <p id="loginMessage"></p>
+</form>
+
+<!-- Admin Login Form -->
+<form id="adminLoginForm" style="display: none;" onsubmit="handleAdminLogin(event)">
+    <input type="text" placeholder="Username" class="loginuser" id="adminUsername" required>
+    <input type="password" placeholder="Password" class="loginuser" id="adminPassword" required>
+    <button type="submit" class="loginuserbutton">Admin Login</button>
+    <p id="adminLoginMessage"></p>
+</form>
+
+<script src="Script.js"></script>
+<script>
+function switchLoginMode(mode) {
+    const userForm = document.getElementById("loginForm");
+    const adminForm = document.getElementById("adminLoginForm");
+    const userBtn = document.getElementById("userLoginBtn");
+    const adminBtn = document.getElementById("adminLoginBtn");
+
+    if (mode === 'user') {
+        userForm.style.display = 'block';
+        adminForm.style.display = 'none';
+        userBtn.style.background = '#FFC700';
+        adminBtn.style.background = '#ddd';
+    } else {
+        userForm.style.display = 'none';
+        adminForm.style.display = 'block';
+        userBtn.style.background = '#ddd';
+        adminBtn.style.background = '#FFC700';
+    }
+}
+
+async function handleAdminLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const message = document.getElementById("adminLoginMessage");
+
+    if (!username || !password) {
+        message.textContent = "Please enter username and password";
+        message.style.color = "red";
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL + "/api/User/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ userName: username, password: password })
+        });
+
+        if (response.ok) {
+            try {
+                const adminData = await response.json();
+                if (adminData) {
+                    localStorage.setItem("currentUser", JSON.stringify(adminData));
+                }
+            } catch (parseError) {
+                console.error("Error parsing admin login response:", parseError);
+            }
+
+            message.textContent = "Login successful! Redirecting...";
+            message.style.color = "green";
+            setTimeout(() => {
+                window.location.href = "AdminDashboard.html";
+            }, 1000);
+        } else {
+            let errorText = response.status === 401 ? "Invalid username or password" : "Admin login failed";
+
+            try {
+                const errorBody = await response.json();
+                errorText = errorBody?.message || errorBody?.title || errorBody?.error || errorText;
+            } catch (parseError) {
+                const fallbackText = await response.text();
+                if (fallbackText) errorText = fallbackText;
+            }
+
+            message.textContent = errorText;
+            message.style.color = "red";
+        }
+    } catch (error) {
+        console.error("Admin login error:", error);
+        message.textContent = "Server error";
+        message.style.color = "red";
+    }
+}
+</script>
+</body>
+</html>

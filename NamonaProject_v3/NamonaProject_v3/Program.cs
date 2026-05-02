@@ -60,19 +60,38 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5500",
-                "http://127.0.0.1:5500",
-                "https://localhost:5500",
-                "https://127.0.0.1:5500"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        if (builder.Environment.IsDevelopment())
+        {
+            // In development, allow requests from any origin
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+        else
+        {
+            // In production, restrict to specific origins
+            policy.WithOrigins(
+                    "http://localhost:5500",
+                    "http://127.0.0.1:5500",
+                    "https://localhost:5500",
+                    "https://127.0.0.1:5500"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
     });
 });
 
 var app = builder.Build();
+
+
+// Seed Admin User on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<NamonaDbContext>();
+    await SeedAdminUser(dbContext);
+}
 
 
 if (app.Environment.IsDevelopment())
@@ -92,7 +111,54 @@ app.MapControllers();
 
 app.Run();
 
+<<<<<<< HEAD
+async Task SeedAdminUser(NamonaDbContext context)
+{
+    try
+    {
+        // Update all existing users with NULL or empty roles to "User"
+        var usersWithoutRole = context.users.Where(u => string.IsNullOrEmpty(u.Role)).ToList();
+        foreach (var user in usersWithoutRole)
+        {
+            user.Role = "User";
+        }
+        if (usersWithoutRole.Any())
+        {
+            await context.SaveChangesAsync();
+            Console.WriteLine($"Updated {usersWithoutRole.Count} users with NULL roles to 'User'");
+        }
+
+        // Check if admin user already exists
+        var adminExists = context.users.Any(u => u.UserName.ToLower() == "admin" && u.Role == "Admin");
+        if (adminExists)
+            return;
+
+        // Hash the password
+        var adminPassword = "admin";
+        var hash = System.Security.Cryptography.SHA256.Create();
+        var bytes = System.Text.Encoding.UTF8.GetBytes(adminPassword);
+        var hashBytes = hash.ComputeHash(bytes);
+        var hashedPassword = Convert.ToBase64String(hashBytes);
+
+        // Create admin user
+        var adminUser = new Users
+        {
+            UserName = "admin",
+            Email = "admin@namona.com",
+            Password = hashedPassword,
+            Role = "Admin"
+        };
+
+        context.users.Add(adminUser);
+        await context.SaveChangesAsync();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error seeding admin user: {ex.Message}");
+    }
+=======
 public partial class Program
 {
 
+>>>>>>> b6a750cbc40f8a9cf4db5d89d18fbb0432ad1bd8
 }

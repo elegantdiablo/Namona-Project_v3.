@@ -67,11 +67,14 @@
 					<Button Content="Refresh"
 							HorizontalAlignment="Right"
 							Margin="0 0 0 10"
-							Command="{Binding RefreshCommand}"/>
+							Command="{Binding RefreshCommand}"
+							Foreground="White"/>
+					
 					<TextBlock Text="Recent Orders"
 							   FontSize="18"
 							   FontWeight="Bold"
-							   Margin="0 0 0 10"/>
+							   Margin="0 0 0 10"
+							   Foreground="White"/>
 				<ScrollViewer>
 				<StackPanel>
 					<ItemsControl ItemsSource="{Binding OrderList}">

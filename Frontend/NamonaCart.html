@@ -31,26 +31,29 @@
 
 </header>
 <nav id="sideMenu">
-    <a href="Namona.html">Main Page</a>
-    <a href="Tshirts.html">T-shirts</a>
-    <a href="Pants.html">Pants</a>
+    <div class="global-side-nav">
+        <a href="Namona.html">Main Page</a>
+        <a href="Tshirts.html">T-shirts</a>
+        <a href="Hoodies.html">Hoodies</a>
+        <a href="Pants.html">Pants</a>
+    </div>
 
-    <div class="side-filter-panel">
+    <div class="global-side-filter-panel">
         <h3>Filter Cart</h3>
-        <input id="menuSearchInput" type="search" placeholder="Filter by name, color..." aria-label="Side menu filter">
-        <div class="filter-group">
-            <h4>Category</h4>
-            <div id="categoryCheckboxes" class="filter-checkbox-list"></div>
+        <input id="globalSideSearchInput" class="global-side-input" type="search" placeholder="Filter by name, color..." aria-label="Side menu filter">
+        <div class="global-check-group">
+            <span class="global-check-group-title">Category</span>
+            <div id="globalCategoryChecks" class="global-check-list"></div>
         </div>
-        <div class="filter-group">
-            <h4>Size</h4>
-            <div id="sizeCheckboxes" class="filter-checkbox-list"></div>
+        <div class="global-check-group">
+            <span class="global-check-group-title">Size</span>
+            <div id="globalSizeChecks" class="global-check-list"></div>
         </div>
-        <div class="filter-group">
-            <h4>Color</h4>
-            <div id="colorCheckboxes" class="filter-checkbox-list"></div>
+        <div class="global-check-group">
+            <span class="global-check-group-title">Color</span>
+            <div id="globalColorChecks" class="global-check-list"></div>
         </div>
-        <button id="clearFiltersBtn" type="button">Reset filters</button>
+        <button id="globalSideReset" class="global-side-reset" type="button">Reset filters</button>
     </div>
 </nav>
 
@@ -85,11 +88,11 @@
     }
 
     function wireSearchInputs() {
-        var headerSearchInput = document.getElementById("headerSearchInput");
-        var headerSearchClear = document.getElementById("headerSearchClear");
-        var menuSearchInput = document.getElementById("menuSearchInput");
-        var sideFilterPanel = document.querySelector(".side-filter-panel");
-        var clearFiltersBtn = document.getElementById("clearFiltersBtn");
+        var headerSearchInput = document.getElementById("globalHeaderSearchInput");
+        var headerSearchClear = document.getElementById("globalHeaderSearchClear");
+        var menuSearchInput = document.getElementById("globalSideSearchInput");
+        var sideFilterPanel = document.querySelector(".global-side-filter-panel");
+        var clearFiltersBtn = document.getElementById("globalSideReset");
 
         if (headerSearchInput) {
             headerSearchInput.addEventListener("input", function (e) {
@@ -119,9 +122,9 @@
             sideFilterPanel.addEventListener("change", function (e) {
                 if (!e.target || e.target.type !== "checkbox") return;
 
-                cartViewState.selectedCategories = getSelectedCheckboxValues("categoryFilter");
-                cartViewState.selectedSizes = getSelectedCheckboxValues("sizeFilter");
-                cartViewState.selectedColors = getSelectedCheckboxValues("colorFilter");
+                cartViewState.selectedCategories = getSelectedCheckboxValues("globalCategory");
+                cartViewState.selectedSizes = getSelectedCheckboxValues("globalSize");
+                cartViewState.selectedColors = getSelectedCheckboxValues("globalColor");
                 applyFiltersAndRender();
             });
         }
@@ -141,9 +144,9 @@
         cartViewState.selectedSizes = [];
         cartViewState.selectedColors = [];
 
-        var headerSearchInput = document.getElementById("headerSearchInput");
-        var menuSearchInput = document.getElementById("menuSearchInput");
-        var allFilterCheckboxes = document.querySelectorAll(".filter-checkbox-list input[type='checkbox']");
+        var headerSearchInput = document.getElementById("globalHeaderSearchInput");
+        var menuSearchInput = document.getElementById("globalSideSearchInput");
+        var allFilterCheckboxes = document.querySelectorAll(".global-check-list input[type='checkbox']");
 
         if (headerSearchInput) headerSearchInput.value = "";
         if (menuSearchInput) menuSearchInput.value = "";
@@ -180,7 +183,7 @@
             var checked = selectedValues.indexOf(value) > -1 ? "checked" : "";
 
             container.innerHTML +=
-                '<label class="filter-checkbox-item">' +
+                '<label class="global-check-item">' +
                     '<input type="checkbox" name="' + inputName + '" value="' + value + '" ' + checked + '>' +
                     '<span>' + value + '</span>' +
                 '</label>';
@@ -203,13 +206,13 @@
         var sizes = uniqueSortedValues(items, "size");
         var colors = uniqueSortedValues(items, "color");
 
-        renderCheckboxList("categoryCheckboxes", "categoryFilter", categories, cartViewState.selectedCategories);
-        renderCheckboxList("sizeCheckboxes", "sizeFilter", sizes, cartViewState.selectedSizes);
-        renderCheckboxList("colorCheckboxes", "colorFilter", colors, cartViewState.selectedColors);
+        renderCheckboxList("globalCategoryChecks", "globalCategory", categories, cartViewState.selectedCategories);
+        renderCheckboxList("globalSizeChecks", "globalSize", sizes, cartViewState.selectedSizes);
+        renderCheckboxList("globalColorChecks", "globalColor", colors, cartViewState.selectedColors);
 
-        cartViewState.selectedCategories = getSelectedCheckboxValues("categoryFilter");
-        cartViewState.selectedSizes = getSelectedCheckboxValues("sizeFilter");
-        cartViewState.selectedColors = getSelectedCheckboxValues("colorFilter");
+        cartViewState.selectedCategories = getSelectedCheckboxValues("globalCategory");
+        cartViewState.selectedSizes = getSelectedCheckboxValues("globalSize");
+        cartViewState.selectedColors = getSelectedCheckboxValues("globalColor");
     }
 
     async function loadCart() {

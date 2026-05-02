@@ -43,7 +43,7 @@
     
     <div class="product-detail">
         <div class="product-image">
-            <img src="pantsimage.png" alt="Pants Front">
+            <img id="productImg" src="jeansfront.png" alt="Pants" style="width: 100%; max-width: 500px; border-radius: 8px;">
         </div>
         
         <div class="product-info">
@@ -82,89 +82,5 @@
 </div>
 
 <script src="Script.js"></script>
-<script>
-window.addEventListener("DOMContentLoaded", function () {
-    loadClothes();
-    loadProduct();
-});
-
-async function loadClothes() {
-
-    var container = document.getElementById("productsContainer");
-    if (!container) return;
-
-    try {
-
-        var response = await fetch(API_URL + "/api/Clothes/AllClothes");
-        var clothes = await response.json();
-
-        container.innerHTML = "";
-
-        for (var i = 0; i < clothes.length; i++) {
-            var item = clothes[i];
-
-            var card = document.createElement("div");
-            card.className = "product-card";
-
-            card.innerHTML =
-                '<img src="pantsimage.png">' +
-                '<h3>' + item.clothingName + '</h3>' +
-                '<p>' + item.categoryName + '</p>' +
-                '<p class="price">$' + item.price + '</p>' +
-                '<button onclick="openProduct(' + item.clothingId + ')">View Product</button>';
-
-            container.appendChild(card);
-        }
-
-    } catch (err) {
-    }
-}
-
-function openProduct(id) {
-    window.location.href = "Product.html?id=" + id;
-}
-
-async function loadProduct() {
-
-    var params = new URLSearchParams(window.location.search);
-    var id = params.get("id");
-
-    if (!id) return;
-
-    try {
-
-        var response = await fetch(API_URL + "/api/Clothes/AllClothes");
-        var clothes = await response.json();
-
-        var product = null;
-        for (var i = 0; i < clothes.length; i++) {
-            if (clothes[i].clothingId == id) {
-                product = clothes[i];
-                break;
-            }
-        }
-
-        if (!product) return;
-
-        var title = document.querySelector(".product-info h1");
-        var price = document.querySelector(".product-price");
-        var description = document.querySelector(".product-description");
-
-        if (title) title.textContent = product.clothingName;
-        if (price) price.textContent = "$" + product.price;
-
-        if (description) {
-            description.innerHTML =
-                '<p>' + product.collection + '</p>' +
-                '<p><strong>Color:</strong> ' + product.color + '</p>' +
-                '<p><strong>Size:</strong> ' + product.size + '</p>' +
-                '<p><strong>Stock:</strong> ' + product.stock + '</p>';
-        }
-
-    } catch (err) {
-    }
-}
-
-</script>
 </body>
 </html>

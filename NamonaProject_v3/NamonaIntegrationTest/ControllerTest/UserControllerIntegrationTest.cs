@@ -22,7 +22,7 @@ namespace NamonaIntegrationTest.ControllerTest
         [Fact]
         public async Task AdminLogin()
         {
-            var dto = new
+            var dto = new LoginAdminDTO
             {
                 UserName = "admin",
                 Password = "admin123"
