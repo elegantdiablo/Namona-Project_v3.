@@ -57,7 +57,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
         [Authorize(Roles = "Admin")]
-        [HttpPost("modify")]
+        [HttpPut("modify")]
 
         public async Task<ActionResult> ModifyClothes([FromBody] ChangeClothingDataDto dto)
         {

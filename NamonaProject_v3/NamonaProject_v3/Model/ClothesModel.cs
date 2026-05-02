@@ -19,7 +19,7 @@ namespace NamonaProject_v3_.Model
         {
             return _context.clothes.Include(x => x.Category).Include(x => x.Gender).Select(x => new AllClothesDto
             {
-
+                ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
                 Size = x.Size,
@@ -235,6 +235,7 @@ namespace NamonaProject_v3_.Model
                 .Where(x => x.Price > dto.Minprice && x.Price < dto.Maxprice)
                 .Select(x => new AllClothesDto
             {
+                ClothingId = x.ClothingId,
                 ClothingName = x.ClothingName,
                 Collection = x.Collection,
                 CategoryName = x.Category.CategoryName,
@@ -254,6 +255,7 @@ namespace NamonaProject_v3_.Model
                 x.Collection.ToLower().Contains(text.ToLower()))
                 .Select(x => new AllClothesDto
                 {
+                    ClothingId = x.ClothingId,
                     ClothingName = x.ClothingName,
                     Collection = x.Collection,
                     CategoryName = x.Category.CategoryName,
