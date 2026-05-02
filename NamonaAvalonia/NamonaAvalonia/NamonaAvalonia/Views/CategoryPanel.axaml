@@ -14,7 +14,7 @@
 				<StackPanel>
 
 					
-					<TextBlock Text="Categories" FontSize="18"/>
+					<TextBlock Text="Categories" FontSize="28" FontWeight="Bold" Foreground="White"/>
 				<ScrollViewer>
 				<StackPanel>
 
@@ -25,9 +25,9 @@
 							<ColumnDefinition/>
 							<ColumnDefinition/>
 						</Grid.ColumnDefinitions>
-					<Button Content="Add Category" Command="{Binding AddCategoryCommand}" Grid.Column="0"/>
-					<Button Content="Edit Category" Command="{Binding EditCategoryCommand}" Grid.Column="1"/>
-					<Button Content="Delete Category" Command="{Binding DeleteCategoryCommand}" Grid.Column="2"/>
+					<Button Content="Add Category" Command="{Binding AddCategoryCommand}" Grid.Column="0" Foreground="White"/>
+					<Button Content="Edit Category" Command="{Binding EditCategoryCommand}" Grid.Column="1" Foreground="White"/>
+					<Button Content="Delete Category" Command="{Binding DeleteCategoryCommand}" Grid.Column="2" Foreground="White"/>
 						</Grid>
 					<ListBox SelectedItem="{Binding SelectedCategory}">
 						<ListBox.ItemTemplate>
@@ -40,26 +40,12 @@
 						</ListBox.ItemTemplate>
 						<ListBox.ItemsSource>
 							<Binding Path="CategoryOC"/>
+							<!--<Binding Path="CategoryOC"/>-->
 						</ListBox.ItemsSource>
 						
 					</ListBox>
 
 
-					
-					<!--<ItemsControl ItemsSource="{Binding CategoryOC}">
-						<ItemsControl.ItemTemplate>
-							<DataTemplate>
-								<Label Content="{Binding Id}"></Label>
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
-					</ItemsControl>
-					<ItemsControl ItemsSource="{Binding CategoryOC}">
-						<ItemsControl.ItemTemplate>
-							<DataTemplate>
-								<Label Content="{Binding CategoryName}"></Label>
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
-					</ItemsControl>-->
 				</StackPanel>
 			</ScrollViewer>
 		</StackPanel>

@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using NamonaProject_v3_.Model;
 using NamonaProject_v3_.Persistance;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContextPool<NamonaDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("Connect"))
+    );}
 
-builder.Services.AddDbContextPool<NamonaDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Connect"))
-);
 
 
 builder.Services.AddTransient<CartModel>();
@@ -108,6 +111,7 @@ app.MapControllers();
 
 app.Run();
 
+<<<<<<< HEAD
 async Task SeedAdminUser(NamonaDbContext context)
 {
     try
@@ -152,4 +156,9 @@ async Task SeedAdminUser(NamonaDbContext context)
     {
         Console.WriteLine($"Error seeding admin user: {ex.Message}");
     }
+=======
+public partial class Program
+{
+
+>>>>>>> b6a750cbc40f8a9cf4db5d89d18fbb0432ad1bd8
 }

@@ -40,7 +40,7 @@ namespace NamonaAvalonia.ViewModels
 
         public UserDto SelectedUser
         {
-            get => _selectedUser;
+            get { return _selectedUser; }
             set
             {
                 if (_selectedUser != value)
@@ -65,6 +65,7 @@ namespace NamonaAvalonia.ViewModels
 
             List<UserDto> userList = await _model.GetAllUsers();
             userList.ForEach(x => UserOC.Add(x));
+            UserOC = new ObservableCollection<UserDto>(UserOC.OrderBy(x => x.UserName));
             OnPropertyChanged(nameof(UserOC));
         }
 

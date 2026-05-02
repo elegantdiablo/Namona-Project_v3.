@@ -89,7 +89,7 @@ namespace NamonaAvalonia.ViewModels
         public async Task GetAllCategories()
         {
             List<AllCategoryDto> CategoryList = await _model.GetAllCategories();
-            CategoryOC = new ObservableCollection<AllCategoryDto>(CategoryList);
+            CategoryOC = new ObservableCollection<AllCategoryDto>(CategoryList.OrderBy(x => x.CategoryName));
             OnPropertyChanged(nameof(CategoryOC));
         }
 

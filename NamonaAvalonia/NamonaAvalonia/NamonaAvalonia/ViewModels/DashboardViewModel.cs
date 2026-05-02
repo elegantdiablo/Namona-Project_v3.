@@ -26,17 +26,20 @@ namespace NamonaAvalonia.ViewModels
         private int _orderCount;
         private int _usercount;
         private int _productcount;
+        private int _revenue;
         public ObservableCollection<OrderDto> OrderList { get; set; }
         public ObservableCollection<UserDto> UserList { get; set; }
         public ObservableCollection<AllClothesDto> ProductList { get; set; }
         public int OrderCount { get { return _orderCount; } }
         public int UserCount { get { return _usercount; } }
         public int ProductCount { get { return _productcount; } }
+        public int Revenue { get { return _revenue; } }
         public RelayCommand RefreshCommand => new RelayCommand(async () =>
         {
             _orderCount = 0;
             _usercount = 0;
             _productcount = 0;
+            _revenue = 0;
             OrderList.Clear();
             UserList.Clear();
             ProductList.Clear();
@@ -53,8 +56,14 @@ namespace NamonaAvalonia.ViewModels
                 List<OrderDto> a = await _model.GetAllOrder();
                 a.OrderBy(x => x.OrderDate).Take(5).ToList().ForEach(x => OrderList.Add(x));
                 _orderCount = a.Count();
+                OrderList = new ObservableCollection<OrderDto>(OrderList.OrderBy(x => x.OrderDate));
                 OnPropertyChanged(nameof(OrderList));
                 OnPropertyChanged(nameof(OrderCount));
+            }
+            if(_revenue == 0)
+            {
+                _revenue = await _model.GetRevenue();
+                OnPropertyChanged(nameof(Revenue));
             }
         }
 
@@ -76,6 +85,14 @@ namespace NamonaAvalonia.ViewModels
                 List<AllClothesDto> c = await _model.GetAllClothes();
                 _productcount = c.Count();
                 OnPropertyChanged(nameof(ProductCount));
+            }
+        }
+
+        public async Task GetRevenue()
+        {
+            if(_revenue == 0)
+            {
+
             }
         }
     }

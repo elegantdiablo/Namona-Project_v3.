@@ -44,6 +44,10 @@ namespace NamonaProject_v3_.Controllers
             }
             catch (InvalidOperationException)
             {
+                return Conflict();
+            }
+            catch (InvalidDataException)
+            {
                 return StatusCode(StatusCodes.Status406NotAcceptable);
             }
             catch(KeyNotFoundException)
@@ -71,6 +75,10 @@ namespace NamonaProject_v3_.Controllers
                 return NotFound();
             }
             catch (InvalidOperationException)
+            {
+                return Conflict();
+            }
+            catch (InvalidDataException)
             {
                 return StatusCode(StatusCodes.Status406NotAcceptable);
             }

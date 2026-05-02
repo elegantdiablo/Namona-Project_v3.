@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NamonaProject_v3_.DTO;
 using NamonaProject_v3_.Model;
+using System.Security.Authentication;
 using System.Security.Claims;
 
 namespace NamonaProject_v3_.Controllers
@@ -97,9 +98,13 @@ namespace NamonaProject_v3_.Controllers
                 await _userModel.Register(dto);
                 return StatusCode(StatusCodes.Status201Created);
             }
+            catch (InvalidDataException)
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable);
+            }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new { message = ex.Message });
+                return Conflict();
             }
             catch (Exception ex)
             {
@@ -107,7 +112,7 @@ namespace NamonaProject_v3_.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("ShowUsers")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
@@ -122,7 +127,7 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteUser")]
         public async Task<ActionResult> DeleteUser(int id)
         {
             try
@@ -130,9 +135,9 @@ namespace NamonaProject_v3_.Controllers
                 await _userModel.DeleteUser(id);
                 return Ok(new { message = "User deleted" });
             }
-            catch (InvalidOperationException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(new { message = ex.Message });
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -140,18 +145,18 @@ namespace NamonaProject_v3_.Controllers
             }
         }
 
-        [Authorize]
-        [HttpPut("{id}/password")]
-        public async Task<ActionResult> UpdatePassword(int id, [FromBody] string newPassword)
+        [Authorize(Roles = "Admin")]
+        [HttpPut("password")]
+        public async Task<ActionResult> UpdatePassword([FromBody]UpdatePasswordDto dto)
         {
             try
             {
-                await _userModel.UpdatePassword(id, newPassword);
-                return Ok(new { message = "Password updated" });
+                await _userModel.UpdatePassword(dto);
+                return Ok();
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidDataException)
             {
-                return NotFound(new { message = ex.Message });
+                return StatusCode(StatusCodes.Status406NotAcceptable);
             }
             catch (Exception ex)
             {
@@ -179,33 +184,40 @@ namespace NamonaProject_v3_.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPut("{id}/promote")]
-        public async Task<ActionResult> PromoteToAdmin(int id)
+        [HttpPut("promote")]
+        public async Task<ActionResult> PromoteToAdmin(PromoteDto dto)
         {
             try
             {
-                await _userModel.PromoteToAdmin(id);
-                return Ok(new { message = "User promoted to admin" });
+                await _userModel.PromoteToAdmin(dto);
+                return Ok();
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidDataException)
             {
-                return NotFound(new { message = ex.Message });
+                return StatusCode(StatusCodes.Status406NotAcceptable);
             }
-            catch (Exception ex)
+            catch(InvalidCredentialException)
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound();
+            }
+            catch
+            {
+                return BadRequest();
             }
         }
-
         [HttpGet("me")]
-        public async Task<IActionResult> Me()
+        public async Task<ActionResult> Me()
         {
             if (!User.Identity.IsAuthenticated)
                 return Unauthorized();
 
-            var email = User.Identity.Name;
+            var identityValue = User.Identity.Name;
+            if (string.IsNullOrWhiteSpace(identityValue))
+                return Unauthorized();
 
-            var user = await _userModel.GetByEmail(email);
+            var user = await _userModel.GetByEmail(identityValue);
+            user ??= await _userModel.GetByUserName(identityValue);
+            user ??= await _userModel.GetByUserName(User.FindFirst("username")?.Value ?? "");
 
             if (user == null)
                 return Unauthorized();
@@ -213,6 +225,8 @@ namespace NamonaProject_v3_.Controllers
             return Ok(user);
         }
 
+
+        [Authorize(Roles = "User")]
         [HttpPost("logout")]
         public async Task<ActionResult> Logout()
         {

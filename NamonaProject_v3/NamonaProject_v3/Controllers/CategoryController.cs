@@ -32,7 +32,7 @@ namespace NamonaProject_v3_.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost("AddCategory")]
-        public async Task<ActionResult> AddCategory(AddCategoryDto dto)
+        public async Task<ActionResult> AddCategory([FromBody]AddCategoryDto dto)
         {
             try
             {
@@ -43,6 +43,10 @@ namespace NamonaProject_v3_.Controllers
             {
                 return StatusCode(StatusCodes.Status406NotAcceptable);
             }
+            catch (InvalidOperationException)
+            {
+                return Conflict();
+            }
             catch (Exception ex)
             {
                 return BadRequest();
@@ -50,7 +54,7 @@ namespace NamonaProject_v3_.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("EditCategory")]
-        public async Task<ActionResult> EditCategory(EditCategoryDto dto)
+        public async Task<ActionResult> EditCategory([FromBody]EditCategoryDto dto)
         {
             try
             {
@@ -61,6 +65,10 @@ namespace NamonaProject_v3_.Controllers
             {
                 return StatusCode(StatusCodes.Status406NotAcceptable);
             }
+            catch (InvalidOperationException)
+            {
+                return Conflict();
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -68,7 +76,7 @@ namespace NamonaProject_v3_.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteCategory")]
-        public async Task<ActionResult> DeleteCategory(int id)
+        public async Task<ActionResult> DeleteCategory([FromQuery]int id)
         {
             try
             {

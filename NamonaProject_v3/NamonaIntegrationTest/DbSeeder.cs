@@ -1,15 +1,14 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using NamonaProject_v3_.Persistance;
+
 namespace NamonaIntegrationTest
 {
     public static class DbSeeder
     {
-
-
         public static void Seed(NamonaDbContext _db)
         {
-            // Ha már van adat, ne seedeljen újra
+            // Ha már van user, akkor feltételezzük hogy seedelt
             if (_db.users.Any())
                 return;
 
@@ -40,8 +39,9 @@ namespace NamonaIntegrationTest
             {
                 ClothingName = "Namona Classic Tee",
                 Collection = "Summer 2025",
-                Gender = unisex,
-                Category = tshirt,
+                Size = "M",
+                GenderId = unisex.GenderId,
+                CategoryId = tshirt.CategoryId,
                 Stock = 100,
                 Color = "Black",
                 Price = 8990
@@ -51,8 +51,9 @@ namespace NamonaIntegrationTest
             {
                 ClothingName = "Namona Oversized Hoodie",
                 Collection = "Winter 2025",
-                Gender = male,
-                Category = hoodie,
+                Size = "L",
+                GenderId = male.GenderId,
+                CategoryId = hoodie.CategoryId,
                 Stock = 50,
                 Color = "Grey",
                 Price = 19990
@@ -62,8 +63,9 @@ namespace NamonaIntegrationTest
             {
                 ClothingName = "Namona Slim Pants",
                 Collection = "Autumn 2025",
-                Gender = female,
-                Category = pants,
+                Size = "S",
+                GenderId = female.GenderId,
+                CategoryId = pants.CategoryId,
                 Stock = 40,
                 Color = "Beige",
                 Price = 14990
@@ -101,44 +103,89 @@ namespace NamonaIntegrationTest
             // ============================
             var cart1 = new Cart
             {
-                Clothing = tee,
-                User = user,
+                ClothingId = tee.ClothingId,
+                UserId = user.UserId,
                 Amount = 2,
                 PriceSum = tee.Price * 2
             };
 
             var cart2 = new Cart
             {
-                Clothing = hoodieItem,
-                User = user,
+                ClothingId = hoodieItem.ClothingId,
+                UserId = user.UserId,
                 Amount = 1,
                 PriceSum = hoodieItem.Price
             };
+            var cart3 = new Cart
+            {
+                ClothingId = pantsItem.ClothingId,
+                UserId = user.UserId,
+                Amount = 1,
+                PriceSum = pantsItem.Price
+            };
 
-            _db.cart.AddRange(cart1, cart2);
+            _db.cart.AddRange(cart1, cart2, cart3);
             _db.SaveChanges();
 
             // ============================
             // 6️⃣ Orders
             // ============================
-            var order = new Orders
+            var order1 = new Orders
             {
                 OrderDate = DateTimeOffset.Now,
                 Address = "Budapest, Fő utca 1.",
-                Status = "Completed",
+                Status = "Done",
                 CompletedAt = DateTime.Now,
-                Carts = new System.Collections.Generic.List<Cart> { cart1, cart2 }
+                Carts = new List<Cart> { cart1, cart2, cart3 }
             };
-
-            _db.orders.Add(order);
+            var order2 = new Orders
+            {
+                OrderDate = DateTimeOffset.Now,
+                Address = "Budapest, Egressy út 71",
+                Status = "InProgress",
+                CompletedAt = DateTime.Now,
+                Carts = new List<Cart> { cart1, cart2, cart3 }
+            };
+            var order3 = new Orders
+            {
+                OrderDate = DateTimeOffset.Now,
+                Address = "Budapest, Dorozsmai utca 123",
+                Status = "InProgress",
+                CompletedAt = DateTime.Now,
+                Carts = new List<Cart> { cart1, cart2, cart3 }
+            };
+            var order4 = new Orders
+            {
+                OrderDate = DateTimeOffset.Now,
+                Address = "Budapest, Dorozsmai utca 123",
+                Status = "InProgress",
+                CompletedAt = DateTime.Now,
+                Carts = new List<Cart> { cart1, cart2, cart3 }
+            };
+            var order5 = new Orders
+            {
+                OrderDate = DateTimeOffset.Now,
+                Address = "Budapest, Dorozsmai utca 123",
+                Status = "InProgress",
+                CompletedAt = DateTime.Now,
+                Carts = new List<Cart> { cart1, cart2, cart3 }
+            };
+            _db.orders.Add(order1);
+            _db.orders.Add(order2);
+            _db.orders.Add(order3);
+            _db.orders.Add(order4);
+            _db.orders.Add(order5);
             _db.SaveChanges();
 
-            // Frissítjük a Cart elemek Order-jét
-            cart1.Order = order;
-            cart2.Order = order;
-            _db.cart.UpdateRange(cart1, cart2);
+            // Cartok hozzárendelése az Orderhöz
+            cart1.OrderId = order1.OrderId;
+            cart2.OrderId = order2.OrderId;
+            cart3.OrderId = order3.OrderId;
+
+            _db.cart.UpdateRange(cart1, cart2, cart3);
             _db.SaveChanges();
         }
+
         private static string HashPassword(string password)
         {
             using var sha = SHA256.Create();
@@ -146,6 +193,5 @@ namespace NamonaIntegrationTest
             var hash = sha.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
-
     }
 }

@@ -17,7 +17,6 @@ namespace NamonaAvalonia.ViewModels
         private CategoryPanelViewModel _categorypanel;
         private OrderPanelViewModel _orderpanel;
         private UserPanelViewModel _userpanel;
-        private CartPanelViewModel _cartpanel;
         private ClothesPanelViewModel _clothespanel;
 
         public AdminPanelVM(ClientModel model) 
@@ -27,7 +26,6 @@ namespace NamonaAvalonia.ViewModels
             _categorypanel = new CategoryPanelViewModel(_model);
             _orderpanel = new OrderPanelViewModel(_model);
             _userpanel = new UserPanelViewModel(_model);
-            _cartpanel = new CartPanelViewModel(_model);
             _clothespanel = new ClothesPanelViewModel(_model);
             CurrentPage = _dashboard;
             ToDashboardCommand.Execute(null);
@@ -41,7 +39,7 @@ namespace NamonaAvalonia.ViewModels
         public RelayCommand ToOrdersCommand => new RelayCommand(async () => { CurrentPage = _orderpanel; await _orderpanel.GetAllOrder(); OnPropertyChanged(nameof(CurrentPage)); });
         public RelayCommand ToClothesCommand => new RelayCommand(async () => { CurrentPage = _clothespanel; await _clothespanel.GetAllClothes(); OnPropertyChanged(nameof(CurrentPage)); });
         public RelayCommand ToCategoriesCommand => new RelayCommand(async () => { CurrentPage = _categorypanel; await _categorypanel.GetAllCategories(); OnPropertyChanged(nameof(CurrentPage)); });
-        public RelayCommand ToCartCommand => new RelayCommand(async () => { CurrentPage = _cartpanel; await _cartpanel.GetAllCarts(); OnPropertyChanged(nameof(CurrentPage)); });
+        
 
 
 

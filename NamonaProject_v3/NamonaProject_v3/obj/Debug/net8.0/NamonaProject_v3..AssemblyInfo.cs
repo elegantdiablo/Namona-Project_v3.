@@ -13,7 +13,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NamonaProject_v3.")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee82489e667ff25726d6a6639f54e02e7e1bc7a7")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+055ca76927e77668ccba89d6d86fc4d9939db430")]
+>>>>>>> b6a750cbc40f8a9cf4db5d89d18fbb0432ad1bd8
 [assembly: System.Reflection.AssemblyProductAttribute("NamonaProject_v3.")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NamonaProject_v3.")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
