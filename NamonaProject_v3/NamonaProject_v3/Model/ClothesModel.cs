@@ -126,54 +126,6 @@ namespace NamonaProject_v3_.Model
 
 
 
-        /*
-        public IEnumerable<AllClothesDto> FilterClothes(    
-            string category,
-            string collection,
-            string gender,
-            int minprice = 0,
-            int maxprice = 99999999)
-        {
-            var query = _context.clothes
-                .Include(x => x.Category)
-                .Include(x => x.Gender)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(category))
-            {
-                query = query.Where(x =>
-                    x.Category.CategoryName.ToLower() == category.ToLower());
-            }
-
-            if (!string.IsNullOrWhiteSpace(collection))
-            {
-                query = query.Where(x =>
-                    x.Collection.ToLower() == collection.ToLower());
-            }
-
-            if (!string.IsNullOrWhiteSpace(gender))
-            {
-                query = query.Where(x =>
-                    x.Gender.GenderType.ToLower() == gender.ToLower());
-            }
-
-            query = query.Where(x =>
-                x.Price >= minprice && x.Price <= maxprice);
-
-            return query.Select(x => new AllClothesDto
-            {
-                ClothingId = x.ClothingId,
-                ClothingName = x.ClothingName,
-                Collection = x.Collection,
-                Category = x.Category.CategoryName,
-                GenderId = x.GenderId,
-                Stock = x.Stock,
-                Color = x.Color,
-                Price = x.Price
-            }).ToList();
-
-        
-        }*/
         public IEnumerable<AllClothesDto> FilterClothes2(FilterClothesDto dto)
         {
             var result = _context.clothes

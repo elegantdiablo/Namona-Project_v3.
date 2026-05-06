@@ -111,12 +111,10 @@ app.MapControllers();
 
 app.Run();
 
-<<<<<<< HEAD
 async Task SeedAdminUser(NamonaDbContext context)
 {
     try
     {
-        // Update all existing users with NULL or empty roles to "User"
         var usersWithoutRole = context.users.Where(u => string.IsNullOrEmpty(u.Role)).ToList();
         foreach (var user in usersWithoutRole)
         {
@@ -128,19 +126,16 @@ async Task SeedAdminUser(NamonaDbContext context)
             Console.WriteLine($"Updated {usersWithoutRole.Count} users with NULL roles to 'User'");
         }
 
-        // Check if admin user already exists
         var adminExists = context.users.Any(u => u.UserName.ToLower() == "admin" && u.Role == "Admin");
         if (adminExists)
             return;
 
-        // Hash the password
         var adminPassword = "admin";
         var hash = System.Security.Cryptography.SHA256.Create();
         var bytes = System.Text.Encoding.UTF8.GetBytes(adminPassword);
         var hashBytes = hash.ComputeHash(bytes);
         var hashedPassword = Convert.ToBase64String(hashBytes);
 
-        // Create admin user
         var adminUser = new Users
         {
             UserName = "admin",
@@ -156,9 +151,4 @@ async Task SeedAdminUser(NamonaDbContext context)
     {
         Console.WriteLine($"Error seeding admin user: {ex.Message}");
     }
-=======
-public partial class Program
-{
-
->>>>>>> b6a750cbc40f8a9cf4db5d89d18fbb0432ad1bd8
 }

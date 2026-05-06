@@ -71,9 +71,6 @@ namespace NamonaAvalonia.ViewModels
 
         private async Task Login()
         {
-            //EZ CSAK TEST
-            //SuccessLogin.Invoke(this, EventArgs.Empty);
-
             try
             {
                 if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))

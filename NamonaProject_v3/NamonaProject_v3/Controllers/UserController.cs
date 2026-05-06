@@ -28,7 +28,7 @@ namespace NamonaProject_v3_.Controllers
             {
                 var user = await _userModel.ValidateUser(dto.Email, dto.Password);
 
-                // Ensure user has a role (default to "User" for existing users without roles)
+               
                 var userRole = string.IsNullOrEmpty(user.Role) ? "User" : user.Role;
 
                 var claims = new List<Claim>
@@ -63,7 +63,7 @@ namespace NamonaProject_v3_.Controllers
                 
                 if (user == null) return Unauthorized(new { message = "Invalid admin credentials" });
                 
-                // Ensure admin has a role (default to "Admin" for existing users without roles)
+               
                 var userRole = string.IsNullOrEmpty(user.Role) ? "Admin" : user.Role;
                 
                 var claims = new List<Claim>

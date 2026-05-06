@@ -17,7 +17,6 @@ namespace NamonaProject_v3_.Controllers
             _model = model;
         }
 
-        //[Authorize(Roles = "Admin")] Test
         [HttpGet("GetAllCategories")]
         public async Task<ActionResult<IEnumerable<AllCategoryDto>>> GetAllCategories()
         {
